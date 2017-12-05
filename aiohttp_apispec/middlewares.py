@@ -21,7 +21,8 @@ async def aoihttp_apispec_middleware(request: web.Request,
             return (error_handler or _default_error_handler)(errors)
         kwargs.update(data)
     kwargs.update(request.match_info)
-    return await handler(request, **kwargs)
+    request.data = kwargs
+    return await handler(request)
 
 
 def _default_error_handler(errors):
