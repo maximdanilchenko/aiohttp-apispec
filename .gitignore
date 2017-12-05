@@ -1,0 +1,7 @@
+.idea/
+*.pyc
+/.cache
+/lib
+/__pycache__
+.coverage
+t.py
