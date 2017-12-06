@@ -4,6 +4,13 @@ aoihttp-apispec
 
 Build and document REST APIs with aiohttp and apispec
 
+Install
+-------
+
+::
+
+    pip install aiohttp-apispec
+
 Quickstart
 ----------
 
@@ -39,12 +46,12 @@ Quickstart
     app.router.add_post('/v1/test', index)
 
     # init docs with all parameters, usual for ApiSpec
-    docs = AiohttpApiSpec(title='My Documentation',
-                          version='v1',
-                          url='/api/docs/api-docs')
+    doc = AiohttpApiSpec(title='My Documentation',
+                         version='v1',
+                         url='/api/docs/api-docs')
 
     # add startup method to form swagger json
-    app.on_startup.append(docs.register)
+    app.on_startup.append(doc.register)
 
     # now we can find it on 'http://localhost:8080/api/docs/api-docs'
     web.run_app(app)
@@ -72,6 +79,6 @@ Build swagger client with aiohttp_swagger library:
 
     ...
 
-    docs.register(app) # we should do it only after all routes are added to router!
-    setup_swagger(app=app, swagger_url='/api/doc', swagger_info=docs.swagger_dict())
+    doc.register(app) # we should do it only after all routes are added to router!
+    setup_swagger(app=app, swagger_url='/api/doc', swagger_info=doc.swagger_dict())
     # now we can access swagger client on /api/doc url
