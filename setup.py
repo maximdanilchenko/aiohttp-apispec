@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.1.3',
+    version='0.1.4',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=read('README.rst'),
     author='Danilchenko Maksim',
