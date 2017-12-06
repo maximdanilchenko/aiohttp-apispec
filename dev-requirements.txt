@@ -2,4 +2,4 @@ aiohttp
 apispec
 marshmallow
 pytest
-codecov
+pytest-cov
