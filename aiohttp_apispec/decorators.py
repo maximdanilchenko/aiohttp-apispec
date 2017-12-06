@@ -34,7 +34,7 @@ def marshal_with(schema, code=200, required=False):
     def wrapper(func):
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
-        func.__apispec__['responses'][f'{code}'] = schema2parameters(schema, required=required)[0]
+        func.__apispec__['responses']['%s' % code] = schema2parameters(schema, required=required)[0]
         return func
 
     return wrapper
