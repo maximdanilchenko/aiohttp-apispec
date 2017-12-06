@@ -30,7 +30,7 @@ class TestDocumentation:
         assert docs['info']['title'] == 'My Documentation'
         assert docs['info']['version'] == 'v1'
         assert docs['paths']['/v1/test']['get'] == {
-            'parameters': [{'in': 'path', 'name': None, 'required': True, 'type': 'string'}],
+            'parameters': [],
             'responses': {},
             'tags': ['mytag'],
             'summary': 'Test method summary',
