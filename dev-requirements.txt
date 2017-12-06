@@ -3,3 +3,4 @@ apispec
 marshmallow
 pytest
 pytest-cov
+codecov
