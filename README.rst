@@ -1,6 +1,8 @@
 *******
 aoihttp-apispec
 *******
+.. image:: https://travis-ci.org/marshmallow-code/apispec.svg?branch=dev
+    :target: https://travis-ci.org/marshmallow-code/apispec
 
 Build and document REST APIs with aiohttp and apispec
 

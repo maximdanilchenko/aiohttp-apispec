@@ -15,7 +15,7 @@ class TestViewDecorators:
               description='Test method description')
         @use_kwargs(request_schema, location='query')
         @marshal_with(response_schema, 200)
-        async def index(request, **data):
+        def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
         return index
 
@@ -24,21 +24,21 @@ class TestViewDecorators:
         @docs(tags=['mytag'],
               summary='Test method summary',
               description='Test method description')
-        async def index(request, **data):
+        def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
         return index
 
     @pytest.fixture
     def aiohttp_view_kwargs(self, request_schema):
         @use_kwargs(request_schema, location='query')
-        async def index(request, **data):
+        def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
         return index
 
     @pytest.fixture
     def aiohttp_view_marshal(self, response_schema):
         @marshal_with(response_schema, 200)
-        async def index(request, **data):
+        def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
         return index
 

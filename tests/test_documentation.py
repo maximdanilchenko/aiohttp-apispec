@@ -1,24 +1,17 @@
 import pytest
 from aiohttp import web
 
-from aiohttp_apispec import (AiohttpApiSpec, docs)
+from aiohttp_apispec import docs
 
 
 class TestDocumentation:
-
-    @pytest.fixture
-    def doc(self):
-        doc = AiohttpApiSpec(title='My Documentation',
-                             version='v1',
-                             url='/api/docs/api-docs')
-        return doc
 
     @pytest.fixture
     def aiohttp_app(self, doc):
         @docs(tags=['mytag'],
               summary='Test method summary',
               description='Test method description')
-        async def index(request):
+        def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
         app = web.Application()
@@ -44,6 +37,3 @@ class TestDocumentation:
             'description': 'Test method description',
             'produces': ['application/json']
         }
-
-
-
