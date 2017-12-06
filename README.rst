@@ -34,8 +34,8 @@ Quickstart
 
 
     @docs(tags=['mytag'],
-          summary=u'Test method summary',
-          description=u'Test method description')
+          summary='Test method summary',
+          description='Test method description')
     @use_kwargs(RequestSchema())
     @marshal_with(ResponseSchema(), 200)
     async def index(request):
@@ -80,5 +80,5 @@ Build swagger client with aiohttp_swagger library:
     ...
 
     doc.register(app) # we should do it only after all routes are added to router!
-    setup_swagger(app=app, swagger_url='/api/doc', swagger_info=doc.swagger_dict())
+    setup_swagger(app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict'])
     # now we can access swagger client on /api/doc url

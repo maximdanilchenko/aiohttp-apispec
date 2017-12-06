@@ -6,3 +6,5 @@ python:
   - "nightly"
 install:
   - pip install -r dev-requirements.txt
+script:
+  - py.test

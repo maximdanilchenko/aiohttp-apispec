@@ -14,7 +14,7 @@ class AiohttpApiSpec:
         self.url = url
 
     def swagger_dict(self):
-        return dict(self.spec.to_dict())
+        return self.spec.to_dict()
 
     def register(self, app: web.Application, ):
         for route in app.router.routes():
@@ -45,6 +45,5 @@ class AiohttpApiSpec:
         operations = copy.deepcopy(data)
         operations.pop('docked', None)
 
-        if method not in PATHS:
-            return None
-        self.spec.add_path(Path(path=url_path, operations={method: operations}))
+        if method in PATHS:
+            self.spec.add_path(Path(path=url_path, operations={method: operations}))
