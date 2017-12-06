@@ -32,7 +32,7 @@ class AiohttpApiSpec:
                                                                "required": True,
                                                                "type": "string"}
                                                               for path_key in
-                                                              get_path_keys(url_path) if path_key)
+                                                              get_path_keys(url_path))
                         view.__apispec__['docked']['parameters'] = True
                     self._update_paths(view.__apispec__, method, url_path)
                 view.__apispec__['docked'][method] = True

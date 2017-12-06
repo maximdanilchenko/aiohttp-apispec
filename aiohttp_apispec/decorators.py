@@ -17,7 +17,6 @@ def use_kwargs(schema, location=None, required=False):
 
     def wrapper(func):
         parameters = schema2parameters(schema, default_in=location, required=required)
-        # print(parameters)
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         func.__apispec__['parameters'].extend(parameters)

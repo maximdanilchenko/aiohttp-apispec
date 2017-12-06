@@ -7,9 +7,9 @@ from aiohttp import web
 @web.middleware
 @asyncio.coroutine
 def aoihttp_apispec_middleware(request: web.Request,
-                                     handler,
-                                     json_worker=json,
-                                     error_handler=None) -> web.Response:
+                               handler,
+                               json_worker=json,
+                               error_handler=None) -> web.Response:
     if not hasattr(handler, '__schemas__'):
         return (yield from handler(request))
     kwargs = {}
