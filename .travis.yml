@@ -7,4 +7,5 @@ python:
 install:
   - pip install -r dev-requirements.txt
 script:
-  - py.test
+  - py.test --cov aiohttp_apispec
+after_success: codecov

@@ -3,6 +3,8 @@ aoihttp-apispec
 *******
 .. image:: https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg?branch=master
     :target: https://travis-ci.org/maximdanilchenko/aiohttp-apispec
+.. image:: https://badge.fury.io/py/aiohttp-apispec.svg
+    :target: https://pypi.python.org/pypi/aiohttp-apispec
 
 Build and document REST APIs with aiohttp and apispec
 
