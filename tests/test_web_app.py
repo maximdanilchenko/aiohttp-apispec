@@ -61,5 +61,4 @@ class TestViewDecorators:
         res = yield from aiohttp_app.get('/api/docs/api-docs')
         assert res.status == 200
         json = yield from res.json()
-        print(json)
         assert aiohttp_app.server.app['swagger_dict'] == json
