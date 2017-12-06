@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.1.0',
+    version='0.1.2',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=read('README.rst'),
     author='Danilchenko Maksim',
@@ -23,6 +23,7 @@ setup(
         'apispec',
     ],
     license='MIT',
+    url='https://github.com/maximdanilchenko/aiohttp-apispec',
     zip_safe=False,
     keywords='flask marshmallow webargs apispec',
     classifiers=[
@@ -34,4 +35,5 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
+    test_suite='tests'
 )

@@ -1,12 +1,14 @@
-*******
+===============
 aoihttp-apispec
-*******
+===============
+
 .. image:: https://badge.fury.io/py/aiohttp-apispec.svg
     :target: https://pypi.python.org/pypi/aiohttp-apispec
 .. image:: https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg?branch=master
     :target: https://travis-ci.org/maximdanilchenko/aiohttp-apispec
 .. image:: https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/maximdanilchenko/aiohttp-apispec
+    :target: https://codecov.io/gh/maximdanilchenko/aiohttp-apispec
+
 Build and document REST APIs with aiohttp and apispec
 
 Install
@@ -62,7 +64,7 @@ Quickstart
     web.run_app(app)
 
 Adding validation middleware
-----------
+----------------------------
 
 .. code-block:: python
 
@@ -74,9 +76,9 @@ Adding validation middleware
     app.middlewares.append(aoihttp_apispec_middleware)
     # now you can access all validated data in route from dict request.data
 
-Build swagger client with aiohttp_swagger library:
-----------
 
+Build swagger client with aiohttp_swagger library
+-------------------------------------------------
 
 .. code-block:: python
 
