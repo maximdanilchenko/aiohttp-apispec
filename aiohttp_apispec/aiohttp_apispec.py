@@ -10,13 +10,15 @@ PATHS = {'get', 'put', 'post', 'delete', 'patch'}
 
 class AiohttpApiSpec:
     def __init__(self, url='/api/docs/api-docs', **kwargs):
-        self.spec = APISpec(**kwargs, plugins=('apispec.ext.marshmallow',))
+        self.spec = APISpec(**kwargs)
+        if 'apispec.ext.marshmallow' not in self.spec.plugins:
+            self.spec.setup_plugin('apispec.ext.marshmallow')
         self.url = url
 
     def swagger_dict(self):
         return self.spec.to_dict()
 
-    def register(self, app: web.Application, ):
+    def register(self, app: web.Application):
         for route in app.router.routes():
             view = route.handler
             method = route.method.lower()
