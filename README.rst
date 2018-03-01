@@ -1,5 +1,5 @@
 ===============
-aoihttp-apispec
+aiohttp-apispec
 ===============
 
 .. image:: https://badge.fury.io/py/aiohttp-apispec.svg
@@ -69,11 +69,11 @@ Adding validation middleware
 .. code-block:: python
 
 
-    from aiohttp_apispec import aoihttp_apispec_middleware
+    from aiohttp_apispec import aiohttp_apispec_middleware
 
     ...
 
-    app.middlewares.append(aoihttp_apispec_middleware)
+    app.middlewares.append(aiohttp_apispec_middleware)
     # now you can access all validated data in route from dict request.data
 
 
