@@ -1,6 +1,6 @@
 import pytest
 from aiohttp import web
-
+from yarl import URL
 from aiohttp_apispec import docs
 
 
@@ -22,7 +22,7 @@ class TestDocumentation:
         return app
 
     def test_app_swagger_url(self, aiohttp_app):
-        assert '/api/docs/api-docs' in [route.url() for route in aiohttp_app.router.routes()]
+        assert URL('/api/docs/api-docs') in [route.url_for() for route in aiohttp_app.router.routes()]
 
     def test_app_swagger_json(self, aiohttp_app, doc):
         docs = aiohttp_app['swagger_dict']
