@@ -15,7 +15,10 @@ def aoihttp_apispec_middleware(request: web.Request,
     kwargs = {}
     for schema in handler.__schemas__:
         if schema['location'] == 'body':
-            request_data = yield from request.json(loads=json_worker.loads)
+            try:
+                request_data = yield from request.json(loads=json_worker.loads)
+            except json.decoder.JSONDecodeError as e:
+                request_data = {}
         else:
             request_data = request.query
         data, errors = schema['schema'].load(data=request_data)
