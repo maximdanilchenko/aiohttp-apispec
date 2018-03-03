@@ -4,7 +4,7 @@ import pytest
 from aiohttp import web
 
 from aiohttp_apispec import (use_kwargs,
-                             aoihttp_apispec_middleware)
+                             aiohttp_apispec_middleware)
 
 
 class TestViewDecorators:
@@ -26,7 +26,7 @@ class TestViewDecorators:
         app.router.add_get('/v1/test', handler_get)
         app.router.add_post('/v1/test', handler_post)
         app.router.add_get('/v1/other', other)
-        app.middlewares.append(aoihttp_apispec_middleware)
+        app.middlewares.append(aiohttp_apispec_middleware)
         doc.register(app)
 
         return loop.run_until_complete(test_client(app))
