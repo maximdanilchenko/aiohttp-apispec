@@ -13,18 +13,23 @@ class TestViewDecorators:
     def aiohttp_app(self, doc, request_schema, loop, test_client):
         @use_kwargs(request_schema, location='query')
         def handler_get(request):
+            print(request.data)
             return web.json_response({'msg': 'done', 'data': {}})
 
         @use_kwargs(request_schema)
         def handler_post(request):
+            print(request.data)
             return web.json_response({'msg': 'done', 'data': {}})
 
         def other(request):
             return web.Response()
 
         app = web.Application()
-        app.router.add_get('/v1/test', handler_get)
-        app.router.add_post('/v1/test', handler_post)
+        app.router.add_routes([
+            web.get('/v1/test', handler_get),
+            web.post('/v1/test', handler_post)])
+        # app.router.add_get('/v1/test', handler_get)
+        # app.router.add_post('/v1/test', handler_post)
         app.router.add_get('/v1/other', other)
         app.middlewares.append(aoihttp_apispec_middleware)
         doc.register(app)
