@@ -3,8 +3,7 @@ import asyncio
 import pytest
 from aiohttp import web
 
-from aiohttp_apispec import (use_kwargs,
-                             aoihttp_apispec_middleware)
+from aiohttp_apispec import use_kwargs, aoihttp_apispec_middleware
 
 
 class TestViewDecorators:
@@ -21,6 +20,10 @@ class TestViewDecorators:
             print(request.data)
             return web.json_response({'msg': 'done', 'data': {}})
 
+        @use_kwargs(request_schema)
+        def handler_echo(request):
+            return web.json_response(request.data)
+
         def other(request):
             return web.Response()
 
@@ -31,6 +34,7 @@ class TestViewDecorators:
         # app.router.add_get('/v1/test', handler_get)
         # app.router.add_post('/v1/test', handler_post)
         app.router.add_get('/v1/other', other)
+        app.router.add_post('/v1/echo', handler_echo)
         app.middlewares.append(aoihttp_apispec_middleware)
         doc.register(app)
 
@@ -62,8 +66,12 @@ class TestViewDecorators:
         assert res.status == 200
 
     @asyncio.coroutine
+    def test_response_data(self, aiohttp_app):
+        res = yield from aiohttp_app.post('/v1/echo', json={'id': 1, 'name': 'max'})
+        assert (yield from res.json()) == {'id': 1, 'name': 'max'}
+
+    @asyncio.coroutine
     def test_swagger_handler_200(self, aiohttp_app):
         res = yield from aiohttp_app.get('/api/docs/api-docs')
         assert res.status == 200
-        json = yield from res.json()
-        assert aiohttp_app.server.app['swagger_dict'] == json
+        assert aiohttp_app.server.app['swagger_dict'] == (yield from res.json())

@@ -7,4 +7,4 @@ def get_path(route):
 
 
 def get_path_keys(path):
-    return [i[1] for i in Formatter().parse(path)]
+    return [i[1] for i in Formatter().parse(path) if i[1]]

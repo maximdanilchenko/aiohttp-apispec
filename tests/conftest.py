@@ -8,10 +8,9 @@ pytest_plugins = 'aiohttp.pytest_plugin'
 
 @pytest.fixture
 def doc():
-    doc = AiohttpApiSpec(title='My Documentation',
-                         version='v1',
-                         url='/api/docs/api-docs')
-    return doc
+    return AiohttpApiSpec(title='My Documentation',
+                          version='v1',
+                          url='/api/docs/api-docs')
 
 
 @pytest.fixture

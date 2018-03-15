@@ -1,9 +1,7 @@
 import pytest
 from aiohttp import web
 
-from aiohttp_apispec import (docs,
-                             use_kwargs,
-                             marshal_with)
+from aiohttp_apispec import docs, use_kwargs, marshal_with
 
 
 class TestViewDecorators:
