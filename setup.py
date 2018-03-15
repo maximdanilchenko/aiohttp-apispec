@@ -21,6 +21,7 @@ setup(
     install_requires=[
         'aiohttp',
         'apispec',
+        'webargs'
     ],
     license='MIT',
     url='https://github.com/maximdanilchenko/aiohttp-apispec',

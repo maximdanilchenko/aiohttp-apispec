@@ -43,7 +43,7 @@ Quickstart
     @docs(tags=['mytag'],
           summary='Test method summary',
           description='Test method description')
-    @use_kwargs(RequestSchema())
+    @use_kwargs(RequestSchema(strict=True))
     @marshal_with(ResponseSchema(), 200)
     async def index(request):
         return web.json_response({'msg': 'done', 'data': {}})

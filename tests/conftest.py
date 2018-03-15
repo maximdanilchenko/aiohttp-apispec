@@ -8,10 +8,9 @@ pytest_plugins = 'aiohttp.pytest_plugin'
 
 @pytest.fixture
 def doc():
-    doc = AiohttpApiSpec(title='My Documentation',
-                         version='v1',
-                         url='/api/docs/api-docs')
-    return doc
+    return AiohttpApiSpec(title='My Documentation',
+                          version='v1',
+                          url='/api/docs/api-docs')
 
 
 @pytest.fixture
@@ -20,7 +19,18 @@ def request_schema():
         id = fields.Int()
         name = fields.Str(description='name')
         bool_field = fields.Bool()
-    return RequestSchema()
+        list_field = fields.List(fields.Int())
+    return RequestSchema(strict=True)
+
+
+@pytest.fixture
+def request_callable_schema():
+    class RequestSchema(Schema):
+        id = fields.Int()
+        name = fields.Str(description='name')
+        bool_field = fields.Bool()
+        list_field = fields.List(fields.Int())
+    return RequestSchema
 
 
 @pytest.fixture
