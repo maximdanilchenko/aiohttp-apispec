@@ -43,6 +43,8 @@ def use_kwargs(schema, **kwargs):
 
 
 def marshal_with(schema, code=200, required=False):
+    if callable(schema):
+        schema = schema()
 
     def wrapper(func):
         if not hasattr(func, '__apispec__'):
