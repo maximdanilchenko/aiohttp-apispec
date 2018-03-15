@@ -12,17 +12,31 @@ def docs(**kwargs):
     return wrapper
 
 
-def use_kwargs(schema, location=None, required=False):
-    location = location or 'body'
+def use_kwargs(schema, **kwargs):
+    if callable(schema):
+        schema = schema()
+    # location kwarg added for compatibility with old versions
+    locations = kwargs.get('locations', [])
+    if not locations:
+        locations = kwargs.get('location')
+        if locations:
+            locations = [locations]
+        else:
+            locations = None
+
+    options = {'required': kwargs.get('required', False)}
+    if locations:
+        options['default_in'] = locations[0]
 
     def wrapper(func):
-        parameters = schema2parameters(schema, default_in=location, required=required)
+        parameters = schema2parameters(schema, **options)
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         func.__apispec__['parameters'].extend(parameters)
         if not hasattr(func, '__schemas__'):
             func.__schemas__ = []
-        func.__schemas__.append({'schema': schema, 'location': location})
+        func.__schemas__.append({'schema': schema,
+                                 'locations': locations})
 
         return func
     return wrapper

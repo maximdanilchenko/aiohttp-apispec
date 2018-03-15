@@ -1,6 +1,7 @@
 aiohttp
 apispec
 marshmallow
+webargs
 pytest
 pytest-cov
 codecov

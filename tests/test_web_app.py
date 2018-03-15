@@ -8,9 +8,9 @@ from aiohttp_apispec import use_kwargs, aoihttp_apispec_middleware
 
 class TestViewDecorators:
 
-    @pytest.fixture
-    def aiohttp_app(self, doc, request_schema, loop, test_client):
-        @use_kwargs(request_schema, location='query')
+    @pytest.fixture(params=[{'locations': ['query']}, {'location': 'query'}])
+    def aiohttp_app(self, doc, request_schema, request_callable_schema, loop, test_client, request):
+        @use_kwargs(request_schema, **request.param)
         def handler_get(request):
             print(request.data)
             return web.json_response({'msg': 'done', 'data': {}})
@@ -20,8 +20,18 @@ class TestViewDecorators:
             print(request.data)
             return web.json_response({'msg': 'done', 'data': {}})
 
+        @use_kwargs(request_callable_schema)
+        def handler_post_callable_schema(request):
+            print(request.data)
+            return web.json_response({'msg': 'done', 'data': {}})
+
         @use_kwargs(request_schema)
-        def handler_echo(request):
+        def handler_post_echo(request):
+            return web.json_response(request.data)
+
+        @use_kwargs(request_schema, **request.param)
+        def handler_get_echo(request):
+            print(request.data)
             return web.json_response(request.data)
 
         def other(request):
@@ -30,11 +40,12 @@ class TestViewDecorators:
         app = web.Application()
         app.router.add_routes([
             web.get('/v1/test', handler_get),
-            web.post('/v1/test', handler_post)])
-        # app.router.add_get('/v1/test', handler_get)
-        # app.router.add_post('/v1/test', handler_post)
-        app.router.add_get('/v1/other', other)
-        app.router.add_post('/v1/echo', handler_echo)
+            web.post('/v1/test', handler_post),
+            web.post('/v1/test_call', handler_post_callable_schema),
+            web.get('/v1/other', other),
+            web.get('/v1/echo', handler_get_echo),
+            web.post('/v1/echo', handler_post_echo),
+        ])
         app.middlewares.append(aoihttp_apispec_middleware)
         doc.register(app)
 
@@ -46,7 +57,7 @@ class TestViewDecorators:
         assert res.status == 200
 
     @asyncio.coroutine
-    def test_response_400_get(self, aiohttp_app):
+    def test_response_422_get(self, aiohttp_app):
         res = yield from aiohttp_app.get('/v1/test', params={'id': 'string', 'name': 'max'})
         assert res.status == 400
 
@@ -56,7 +67,12 @@ class TestViewDecorators:
         assert res.status == 200
 
     @asyncio.coroutine
-    def test_response_400_post(self, aiohttp_app):
+    def test_response_200_post_callable_schema(self, aiohttp_app):
+        res = yield from aiohttp_app.post('/v1/test_call', json={'id': 1, 'name': 'max'})
+        assert res.status == 200
+
+    @asyncio.coroutine
+    def test_response_422_post(self, aiohttp_app):
         res = yield from aiohttp_app.post('/v1/test', json={'id': 'string', 'name': 'max'})
         assert res.status == 400
 
@@ -66,9 +82,21 @@ class TestViewDecorators:
         assert res.status == 200
 
     @asyncio.coroutine
-    def test_response_data(self, aiohttp_app):
-        res = yield from aiohttp_app.post('/v1/echo', json={'id': 1, 'name': 'max'})
-        assert (yield from res.json()) == {'id': 1, 'name': 'max'}
+    def test_response_data_post(self, aiohttp_app):
+        res = yield from aiohttp_app.post('/v1/echo', json={'id': 1, 'name': 'max',
+                                                            'list_field': [1, 2, 3, 4]})
+        assert (yield from res.json()) == {'id': 1, 'name': 'max', 'list_field': [1, 2, 3, 4]}
+
+    @asyncio.coroutine
+    def test_response_data_get(self, aiohttp_app):
+        res = yield from aiohttp_app.get('/v1/echo', params=[('id', '1'),
+                                                             ('name', 'max'),
+                                                             ('bool_field', '0'),
+                                                             ('list_field', '1'),
+                                                             ('list_field', '2'),
+                                                             ('list_field', '3'),
+                                                             ('list_field', '4')])
+        assert (yield from res.json()) == {'id': 1, 'name': 'max', 'bool_field': False, 'list_field': [1, 2, 3, 4]}
 
     @asyncio.coroutine
     def test_swagger_handler_200(self, aiohttp_app):

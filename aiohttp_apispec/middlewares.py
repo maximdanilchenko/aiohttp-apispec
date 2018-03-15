@@ -1,5 +1,5 @@
-import json
 import asyncio
+from webargs.aiohttpparser import parser
 
 from aiohttp import web
 
@@ -8,24 +8,28 @@ from aiohttp import web
 @asyncio.coroutine
 def aoihttp_apispec_middleware(request: web.Request,
                                handler,
-                               json_worker=json,
                                error_handler=None) -> web.Response:
     if not hasattr(handler, '__schemas__'):
         return (yield from handler(request))
     kwargs = {}
     for schema in handler.__schemas__:
-        if schema['location'] == 'body':
-            request_data = yield from request.json(loads=json_worker.loads)
-        else:
-            request_data = request.query
-        data, errors = schema['schema'].load(data=request_data)
-        if errors:
-            return (error_handler or _default_error_handler)(errors)
-        kwargs.update(data)
+        try:
+            data = (yield from parser.parse(schema['schema'],
+                                            request,
+                                            locations=schema['locations']))
+        except web.HTTPClientError as error:
+            return (error_handler or _default_error_handler)(error)
+        if data:
+            kwargs.update(data)
     kwargs.update(request.match_info)
     request.data = kwargs
     return (yield from handler(request))
 
 
-def _default_error_handler(errors):
-    return web.Response(body=json.dumps(errors), status=400)
+def _default_error_handler(error_handler):
+    """
+    Use it to customize error handler.
+    In aiohttp-apispec we use 400 as default client http error code.
+    """
+    error_handler.set_status(400)
+    return error_handler
