@@ -6,7 +6,7 @@ from aiohttp import web
 
 @web.middleware
 @asyncio.coroutine
-def aoihttp_apispec_middleware(request: web.Request,
+def aiohttp_apispec_middleware(request: web.Request,
                                handler,
                                error_handler=None) -> web.Response:
     if not hasattr(handler, '__schemas__'):

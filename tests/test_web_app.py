@@ -3,7 +3,7 @@ import asyncio
 import pytest
 from aiohttp import web
 
-from aiohttp_apispec import use_kwargs, aoihttp_apispec_middleware
+from aiohttp_apispec import use_kwargs, aiohttp_apispec_middleware
 
 
 class TestViewDecorators:
@@ -46,7 +46,7 @@ class TestViewDecorators:
             web.get('/v1/echo', handler_get_echo),
             web.post('/v1/echo', handler_post_echo),
         ])
-        app.middlewares.append(aoihttp_apispec_middleware)
+        app.middlewares.append(aiohttp_apispec_middleware)
         doc.register(app)
 
         return loop.run_until_complete(test_client(app))
