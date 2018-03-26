@@ -57,8 +57,8 @@ Quickstart
                          version='v1',
                          url='/api/docs/api-docs')
 
-    # add startup method to form swagger json
-    app.on_startup.append(doc.register)
+    # add method to form swagger json:
+    doc.register(app)  # we should do it only after all routes are added to router!
 
     # now we can find it on 'http://localhost:8080/api/docs/api-docs'
     web.run_app(app)
@@ -74,7 +74,7 @@ Adding validation middleware
     ...
 
     app.middlewares.append(aiohttp_apispec_middleware)
-    # now you can access all validated data in route from dict request.data
+    # now you can access all validated data in route from request['data']
 
 
 Build swagger client with aiohttp_swagger library
@@ -86,6 +86,6 @@ Build swagger client with aiohttp_swagger library
 
     ...
 
-    doc.register(app) # we should do it only after all routes are added to router!
+    doc.register(app)
     setup_swagger(app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict'])
     # now we can access swagger client on /api/doc url
