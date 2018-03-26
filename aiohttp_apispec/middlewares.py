@@ -22,7 +22,7 @@ def aiohttp_apispec_middleware(request: web.Request,
         if data:
             kwargs.update(data)
     kwargs.update(request.match_info)
-    request.data = kwargs
+    request['data'] = request.data = kwargs  # request.data will be removed since 1.0.0
     return (yield from handler(request))
 
 
