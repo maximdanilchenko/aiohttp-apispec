@@ -11,6 +11,8 @@ aiohttp-apispec
 
 Build and document REST APIs with aiohttp and apispec
 
+.. image:: https://user-images.githubusercontent.com/10708076/40737480-89a9dd34-6449-11e8-96e9-c904f1420128.png
+
 Install
 -------
 
