@@ -4,7 +4,7 @@
 [![build status](https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg)](https://travis-ci.org/maximdanilchenko/aiohttp-apispec)
 [![codcov](https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg)](https://codecov.io/gh/maximdanilchenko/aiohttp-apispec)
 
-Build and document REST APIs with aiohttp and apispec
+*Build and document REST APIs with [aiohttp](https://github.com/aio-libs/aiohttp) and [apispec](https://github.com/marshmallow-code/apispec)*
 
 ![img](https://user-images.githubusercontent.com/10708076/40740929-bd141942-6452-11e8-911c-d9032f8d625f.png)
 
@@ -80,7 +80,7 @@ async def index(request):
                               'data': {'info': f'name - {name}, id - {uid}'}})
 ```
 
-## Build swagger client with aiohttp_swagger library
+## Build swagger client with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library
 
 ```Python
 from aiohttp_swagger import setup_swagger
