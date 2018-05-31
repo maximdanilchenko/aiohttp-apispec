@@ -12,7 +12,7 @@ setup(
     name='aiohttp-apispec',
     version='0.3.2',
     description='Build and document REST APIs with aiohttp and apispec',
-    long_description=read('README.rst'),
+    long_description=read('README.md'),
     author='Danilchenko Maksim',
     author_email='dmax.dev@gmail.com',
     packages=find_packages(exclude=('test*', )),
