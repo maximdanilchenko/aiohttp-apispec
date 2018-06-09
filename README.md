@@ -80,7 +80,8 @@ async def index(request):
                               'data': {'info': f'name - {name}, id - {uid}'}})
 ```
 
-## Build swagger client with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library
+## Build swagger web client
+You can do it easily with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library:
 
 ```Python
 from aiohttp_swagger import setup_swagger

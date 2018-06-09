@@ -4,4 +4,5 @@ marshmallow
 webargs
 pytest
 pytest-cov
+pytest-sugar
 codecov

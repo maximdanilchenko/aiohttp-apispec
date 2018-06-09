@@ -6,3 +6,4 @@
 .coverage
 t.py
 .pypirc
+.pytest_cache
