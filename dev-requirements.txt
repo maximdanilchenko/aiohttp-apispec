@@ -6,3 +6,5 @@ pytest
 pytest-cov
 pytest-sugar
 codecov
+sphinx
+sphinx_issues

@@ -7,3 +7,4 @@
 t.py
 .pypirc
 .pytest_cache
+/docs/build
