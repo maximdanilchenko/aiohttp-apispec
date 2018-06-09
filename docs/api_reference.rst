@@ -7,16 +7,16 @@ Extension
 ---------
 
 .. automodule:: aiohttp_apispec.aiohttp_apispec
-    :members:
+   :members:
 
 Decorators
 ----------
 
 .. automodule:: aiohttp_apispec.decorators
-    :members:
+   :members:
 
 Middleware
 ----------
 
 .. automodule:: aiohttp_apispec.middlewares
-    :members:
+   :members:
