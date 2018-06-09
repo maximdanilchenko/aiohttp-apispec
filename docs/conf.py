@@ -8,7 +8,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'sphinx_issues',
 ]
 
 project = 'aiohttp-apispec'
@@ -20,4 +19,3 @@ master_doc = 'index'
 pygments_style = 'sphinx'
 html_theme = 'alabaster'
 html_static_path = ['_static']
-issues_github_path = 'maximdanilchenko/aiohttp-apispec'

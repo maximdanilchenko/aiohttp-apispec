@@ -16,7 +16,7 @@ Decorators
     :members:
 
 Middleware
----------
+----------
 
 .. automodule:: aiohttp_apispec.middlewares
     :members:
