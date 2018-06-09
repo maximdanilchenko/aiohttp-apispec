@@ -9,6 +9,7 @@ PATHS = {'get', 'put', 'post', 'delete', 'patch'}
 
 
 class AiohttpApiSpec:
+
     def __init__(self, url='/api/docs/api-docs', **kwargs):
         self.spec = APISpec(**kwargs)
         if 'apispec.ext.marshmallow' not in self.spec.plugins:
@@ -20,32 +21,46 @@ class AiohttpApiSpec:
 
     def register(self, app: web.Application):
         for route in app.router.routes():
-            view = route.handler
-            method = route.method.lower()
-            if hasattr(view, '__apispec__'
-                       ) and view.__apispec__['docked'].get(method) is not True:
-                url_path = get_path(route)
-                if url_path:
-                    if not view.__apispec__['docked'].get('parameters'):
-                        view.__apispec__['parameters'].extend({"in": "path",
-                                                               "name": path_key,
-                                                               "required": True,
-                                                               "type": "string"}
-                                                              for path_key in
-                                                              get_path_keys(url_path))
-                        view.__apispec__['docked']['parameters'] = True
-                    self._update_paths(view.__apispec__, method, url_path)
-                view.__apispec__['docked'][method] = True
-        app['swagger_dict'] = self.spec.to_dict()
+            self._register_route(route)
+        app['swagger_dict'] = self.swagger_dict()
 
         def swagger_handler(request):
             return web.json_response(request.app['swagger_dict'])
 
         app.router.add_routes([web.get(self.url, swagger_handler)])
 
-    def _update_paths(self, data: dict, method, url_path):
+    def _register_route(self, route: web.RouteDef):
+        view = route.handler
+        method = route.method.lower()
+
+        if not hasattr(view, '__apispec__'
+                       ) or view.__apispec__['docked'].get(method) is True:
+            return None
+
+        view.__apispec__['docked'][method] = True
+
+        url_path = get_path(route)
+        if not url_path:
+            return None
+
+        if not view.__apispec__['docked'].get('parameters'):
+            view.__apispec__['parameters'].extend(
+                {"in": "path",
+                 "name": path_key,
+                 "required": True,
+                 "type": "string"}
+                for path_key in
+                get_path_keys(url_path))
+            view.__apispec__['docked']['parameters'] = True
+        self._update_paths(view.__apispec__, method, url_path)
+
+    def _update_paths(self,
+                      data: dict,
+                      method: str,
+                      url_path: str):
         operations = copy.deepcopy(data)
         operations.pop('docked', None)
 
         if method in PATHS:
-            self.spec.add_path(Path(path=url_path, operations={method: operations}))
+            self.spec.add_path(Path(path=url_path,
+                                    operations={method: operations}))
