@@ -9,6 +9,17 @@ from aiohttp import web
 def aiohttp_apispec_middleware(request: web.Request,
                                handler,
                                error_handler=None) -> web.Response:
+    """
+    Validation middleware for aiohttp web app
+
+    Usage:
+
+    .. code-block:: python
+
+        app.middlewares.append(aiohttp_apispec_middleware)
+
+
+    """
     if not hasattr(handler, '__schemas__'):
         return (yield from handler(request))
     kwargs = {}
