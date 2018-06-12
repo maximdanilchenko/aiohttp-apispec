@@ -3,6 +3,7 @@
 [![pypi](https://badge.fury.io/py/aiohttp-apispec.svg)](https://pypi.python.org/pypi/aiohttp-apispec)
 [![build status](https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg)](https://travis-ci.org/maximdanilchenko/aiohttp-apispec)
 [![codcov](https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg)](https://codecov.io/gh/maximdanilchenko/aiohttp-apispec)
+[![docs](http://aiohttp-apispec.readthedocs.io/en/latest/)](https://readthedocs.org/projects/aiohttp-apispec/badge/?version=latest)
 
 *Build and document REST APIs with [aiohttp](https://github.com/aio-libs/aiohttp) and [apispec](https://github.com/marshmallow-code/apispec)*
 
@@ -92,3 +93,14 @@ doc.register(app)
 setup_swagger(app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict'])
 # now we can access swagger client on /api/doc url
 ```
+
+TODO List before 1.0.0 can be released:
+
+- [x] Generating json spec from marshmallow data schemas
+- [x] Kwargs/marshal_with decorators for request/response schemas and docs decorator for connecting schemas to swagger spec with additional params through aiohttp routes
+- [x] Data validation through additional middleware (built using [webargs](https://github.com/sloria/webargs))
+- [x] 97% more cov with tests
+- [x] Documentation on [readthedocs](http://aiohttp-apispec.readthedocs.io/en/latest/)
+- [ ] More simple initialisation - register method is not needed. Instead of it we can use some middleware to register all routs on app start
+- [ ] Nested apps support
+- [ ] More complex settings (like request param name)

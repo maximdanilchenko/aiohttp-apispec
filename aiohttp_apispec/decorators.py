@@ -52,7 +52,7 @@ def use_kwargs(schema, locations=None, **kwargs):
 
         @use_kwargs(RequestSchema(strict=True))
         async def index(request):
-             # aiohttp_apispec_middleware should be used for it
+            # aiohttp_apispec_middleware should be used for it
             data = request['data']
             return web.json_response({'name': data['name'],
                                       'id': data['id']})

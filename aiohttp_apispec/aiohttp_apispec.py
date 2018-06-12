@@ -10,7 +10,7 @@ PATHS = {'get', 'put', 'post', 'delete', 'patch'}
 
 class AiohttpApiSpec:
     """
-    Flask-apispec extension.
+    Aiohttp-apispec extension.
 
     Usage:
 
