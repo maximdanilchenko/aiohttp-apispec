@@ -94,7 +94,7 @@ setup_swagger(app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict'])
 # now we can access swagger client on /api/doc url
 ```
 
-TODO List before 1.0.0 can be released:
+## TODO List before 1.0.0 can be released:
 
 - [x] Generating json spec from marshmallow data schemas
 - [x] Kwargs/marshal_with decorators for request/response schemas and docs decorator for connecting schemas to swagger spec with additional params through aiohttp routes
