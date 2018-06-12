@@ -3,7 +3,7 @@
 [![pypi](https://badge.fury.io/py/aiohttp-apispec.svg)](https://pypi.python.org/pypi/aiohttp-apispec)
 [![build status](https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg)](https://travis-ci.org/maximdanilchenko/aiohttp-apispec)
 [![codcov](https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg)](https://codecov.io/gh/maximdanilchenko/aiohttp-apispec)
-[![docs](http://aiohttp-apispec.readthedocs.io/en/latest/)](https://readthedocs.org/projects/aiohttp-apispec/badge/?version=latest)
+[![docs](https://readthedocs.org/projects/aiohttp-apispec/badge/?version=latest)](https://aiohttp-apispec.readthedocs.io/en/latest/?badge=latest)
 
 *Build and document REST APIs with [aiohttp](https://github.com/aio-libs/aiohttp) and [apispec](https://github.com/marshmallow-code/apispec)*
 
