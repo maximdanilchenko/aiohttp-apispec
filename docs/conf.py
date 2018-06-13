@@ -19,3 +19,10 @@ master_doc = 'index'
 pygments_style = 'sphinx'
 html_theme = 'alabaster'
 html_static_path = ['_static']
+
+html_theme_options = {
+    'description': 'Build and document REST APIs with aiohttp and apispec',
+    'show_powered_by': False,
+}
+html_title = 'aiohttp-apispec Documentation'
+html_short_title = 'aiohttp-apispec'
