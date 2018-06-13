@@ -67,8 +67,8 @@ Now you can access all validated data in route from request['data'] like so:
 .. code-block:: python
 
     @docs(tags=['mytag'],
-      summary='Test method summary',
-      description='Test method description')
+          summary='Test method summary',
+          description='Test method description')
     @use_kwargs(RequestSchema(strict=True))
     @marshal_with(ResponseSchema(), 200)
     async def index(request):
