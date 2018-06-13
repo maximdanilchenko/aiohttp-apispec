@@ -20,6 +20,6 @@ Guide
     :maxdepth: 2
     :caption: Contents:
 
-    install
     usage
-    api_reference
+    install
+    api
