@@ -6,9 +6,9 @@ from aiohttp import web
 
 @web.middleware
 @asyncio.coroutine
-def aiohttp_apispec_middleware(request: web.Request,
-                               handler,
-                               error_handler=None) -> web.Response:
+def aiohttp_apispec_middleware(
+    request: web.Request, handler, error_handler=None
+) -> web.Response:
     """
     Validation middleware for aiohttp web app
 
@@ -25,9 +25,11 @@ def aiohttp_apispec_middleware(request: web.Request,
     kwargs = {}
     for schema in handler.__schemas__:
         try:
-            data = (yield from parser.parse(schema['schema'],
-                                            request,
-                                            locations=schema['locations']))
+            data = (
+                yield from parser.parse(
+                    schema['schema'], request, locations=schema['locations']
+                )
+            )
         except web.HTTPClientError as error:
             return (error_handler or _default_error_handler)(error)
         if data:

@@ -91,8 +91,10 @@ class AiohttpApiSpec:
         view = route.handler
         method = route.method.lower()
 
-        if not hasattr(view, '__apispec__'
-                       ) or view.__apispec__['docked'].get(method) is True:
+        if (
+            not hasattr(view, '__apispec__')
+            or view.__apispec__['docked'].get(method) is True
+        ):
             return None
 
         view.__apispec__['docked'][method] = True
@@ -103,22 +105,15 @@ class AiohttpApiSpec:
 
         if not view.__apispec__['docked'].get('parameters'):
             view.__apispec__['parameters'].extend(
-                {"in": "path",
-                 "name": path_key,
-                 "required": True,
-                 "type": "string"}
-                for path_key in
-                get_path_keys(url_path))
+                {"in": "path", "name": path_key, "required": True, "type": "string"}
+                for path_key in get_path_keys(url_path)
+            )
             view.__apispec__['docked']['parameters'] = True
         self._update_paths(view.__apispec__, method, url_path)
 
-    def _update_paths(self,
-                      data: dict,
-                      method: str,
-                      url_path: str):
+    def _update_paths(self, data: dict, method: str, url_path: str):
         operations = copy.deepcopy(data)
         operations.pop('docked', None)
 
         if method in PATHS:
-            self.spec.add_path(Path(path=url_path,
-                                    operations={method: operations}))
+            self.spec.add_path(Path(path=url_path, operations={method: operations}))

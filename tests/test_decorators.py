@@ -5,25 +5,30 @@ from aiohttp_apispec import docs, use_kwargs, marshal_with
 
 
 class TestViewDecorators:
-
     @pytest.fixture
     def aiohttp_view_all(self, request_schema, response_schema):
-        @docs(tags=['mytag'],
-              summary='Test method summary',
-              description='Test method description')
+        @docs(
+            tags=['mytag'],
+            summary='Test method summary',
+            description='Test method description',
+        )
         @use_kwargs(request_schema, locations=['query'])
         @marshal_with(response_schema, 200)
         def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
+
         return index
 
     @pytest.fixture
     def aiohttp_view_docs(self):
-        @docs(tags=['mytag'],
-              summary='Test method summary',
-              description='Test method description')
+        @docs(
+            tags=['mytag'],
+            summary='Test method summary',
+            description='Test method description',
+        )
         def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
+
         return index
 
     @pytest.fixture
@@ -31,6 +36,7 @@ class TestViewDecorators:
         @use_kwargs(request_schema, locations=['query'])
         def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
+
         return index
 
     @pytest.fixture
@@ -38,6 +44,7 @@ class TestViewDecorators:
         @marshal_with(response_schema, 200)
         def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
+
         return index
 
     def test_docs_view(self, aiohttp_view_docs):
@@ -52,8 +59,9 @@ class TestViewDecorators:
     def test_use_kwargs_view(self, aiohttp_view_kwargs, request_schema):
         assert hasattr(aiohttp_view_kwargs, '__apispec__')
         assert hasattr(aiohttp_view_kwargs, '__schemas__')
-        assert aiohttp_view_kwargs.__schemas__ == [{'schema': request_schema,
-                                                    'locations': ['query']}]
+        assert aiohttp_view_kwargs.__schemas__ == [
+            {'schema': request_schema, 'locations': ['query']}
+        ]
         for param in ('parameters', 'responses', 'docked'):
             assert param in aiohttp_view_kwargs.__apispec__
 
@@ -61,15 +69,29 @@ class TestViewDecorators:
         parameters = aiohttp_view_kwargs.__apispec__['parameters']
         print(sorted(parameters, key=lambda x: x['name']))
         assert sorted(parameters, key=lambda x: x['name']) == [
-            {'in': 'query', 'name': 'bool_field',
-             'required': False, 'type': 'boolean'},
-            {'in': 'query', 'name': 'id',
-             'required': False, 'type': 'integer', 'format': 'int32'},
-            {'in': 'query', 'name': 'list_field',
-             'required': False, 'collectionFormat': 'multi',
-             'type': 'array', 'items': {'type': 'integer', 'format': 'int32'}},
-            {'in': 'query', 'name': 'name',
-             'required': False, 'type': 'string', 'description': 'name'}
+            {'in': 'query', 'name': 'bool_field', 'required': False, 'type': 'boolean'},
+            {
+                'in': 'query',
+                'name': 'id',
+                'required': False,
+                'type': 'integer',
+                'format': 'int32',
+            },
+            {
+                'in': 'query',
+                'name': 'list_field',
+                'required': False,
+                'collectionFormat': 'multi',
+                'type': 'array',
+                'items': {'type': 'integer', 'format': 'int32'},
+            },
+            {
+                'in': 'query',
+                'name': 'name',
+                'required': False,
+                'type': 'string',
+                'description': 'name',
+            },
         ]
 
     def test_marshalling(self, aiohttp_view_marshal):
@@ -78,9 +100,14 @@ class TestViewDecorators:
             assert param in aiohttp_view_marshal.__apispec__
         assert '200' in aiohttp_view_marshal.__apispec__['responses']
         assert aiohttp_view_marshal.__apispec__['responses']['200'] == {
-            'in': 'body', 'required': False, 'name': 'body', 'schema': {
-                'type': 'object', 'properties': {
-                    'data': {'type': 'object'}, 'msg': {'type': 'string'}}}}
+            'in': 'body',
+            'required': False,
+            'name': 'body',
+            'schema': {
+                'type': 'object',
+                'properties': {'data': {'type': 'object'}, 'msg': {'type': 'string'}},
+            },
+        }
 
     def test_all(self, aiohttp_view_all):
         assert hasattr(aiohttp_view_all, '__apispec__')

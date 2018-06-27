@@ -15,14 +15,10 @@ setup(
     long_description=read('README.md'),
     author='Danilchenko Maksim',
     author_email='dmax.dev@gmail.com',
-    packages=find_packages(exclude=('test*', )),
+    packages=find_packages(exclude=('test*',)),
     package_dir={'aiohttp_apispec': 'aiohttp_apispec'},
     include_package_data=True,
-    install_requires=[
-        'aiohttp',
-        'apispec',
-        'webargs'
-    ],
+    install_requires=['aiohttp', 'apispec', 'webargs'],
     license='MIT',
     url='https://github.com/maximdanilchenko/aiohttp-apispec',
     zip_safe=False,
@@ -35,5 +31,5 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],
-    test_suite='tests'
+    test_suite='tests',
 )

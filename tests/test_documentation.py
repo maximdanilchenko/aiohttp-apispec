@@ -5,12 +5,13 @@ from aiohttp_apispec import docs
 
 
 class TestDocumentation:
-
     @pytest.fixture
     def aiohttp_app(self, doc):
-        @docs(tags=['mytag'],
-              summary='Test method summary',
-              description='Test method description')
+        @docs(
+            tags=['mytag'],
+            summary='Test method summary',
+            description='Test method description',
+        )
         def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
@@ -22,7 +23,9 @@ class TestDocumentation:
         return app
 
     def test_app_swagger_url(self, aiohttp_app):
-        assert URL('/api/docs/api-docs') in [route.url_for() for route in aiohttp_app.router.routes()]
+        assert URL('/api/docs/api-docs') in [
+            route.url_for() for route in aiohttp_app.router.routes()
+        ]
 
     def test_app_swagger_json(self, aiohttp_app, doc):
         docs = aiohttp_app['swagger_dict']
@@ -35,5 +38,5 @@ class TestDocumentation:
             'tags': ['mytag'],
             'summary': 'Test method summary',
             'description': 'Test method description',
-            'produces': ['application/json']
+            'produces': ['application/json'],
         }

@@ -19,9 +19,9 @@ def pytest_report_header(config):
 
 @pytest.fixture
 def doc():
-    return AiohttpApiSpec(title='My Documentation',
-                          version='v1',
-                          url='/api/docs/api-docs')
+    return AiohttpApiSpec(
+        title='My Documentation', version='v1', url='/api/docs/api-docs'
+    )
 
 
 @pytest.fixture
@@ -31,6 +31,7 @@ def request_schema():
         name = fields.Str(description='name')
         bool_field = fields.Bool()
         list_field = fields.List(fields.Int())
+
     return RequestSchema(strict=True)
 
 
@@ -41,6 +42,7 @@ def request_callable_schema():
         name = fields.Str(description='name')
         bool_field = fields.Bool()
         list_field = fields.List(fields.Int())
+
     return RequestSchema
 
 
@@ -49,4 +51,5 @@ def response_schema():
     class ResponseSchema(Schema):
         msg = fields.Str()
         data = fields.Dict()
+
     return ResponseSchema()
