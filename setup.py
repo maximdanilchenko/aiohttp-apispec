@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.3.2',
+    version='0.4.0',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=read('README.md'),
     author='Danilchenko Maksim',
@@ -18,7 +18,7 @@ setup(
     packages=find_packages(exclude=('test*',)),
     package_dir={'aiohttp_apispec': 'aiohttp_apispec'},
     include_package_data=True,
-    install_requires=['aiohttp', 'apispec', 'webargs'],
+    install_requires=['aiohttp', 'apispec<=0.38.0', 'webargs'],
     license='MIT',
     url='https://github.com/maximdanilchenko/aiohttp-apispec',
     zip_safe=False,
