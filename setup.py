@@ -18,9 +18,10 @@ def readme(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.5.1',
+    version='0.5.2',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=readme('README.md'),
+    long_description_content_type="text/markdown",
     author='Danilchenko Maksim',
     author_email='dmax.dev@gmail.com',
     packages=find_packages(exclude=('test*',)),
