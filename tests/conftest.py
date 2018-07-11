@@ -50,4 +50,4 @@ def response_schema():
         msg = fields.Str()
         data = fields.Dict()
 
-    return ResponseSchema()
+    return ResponseSchema

@@ -58,7 +58,7 @@ class AiohttpApiSpec:
             self.spec.setup_plugin('apispec.ext.marshmallow')
         self.url = url
         self._registered = False
-        if app:
+        if app is not None:
             self.register(app)
 
     def swagger_dict(self):
