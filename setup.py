@@ -3,22 +3,22 @@ from setuptools import setup
 
 
 def readme(fname):
-    """ Return readme file starting after <start_line> """
+    """ Return readme file starting after <start_line> until <start_line> """
     start_line = '<p>\n'
     start_flag = False
     result = []
     with open(fname) as fp:
         for line in fp.readlines():
-            if start_flag:
+            if line == start_line:
+                start_flag = not start_flag
+            elif start_flag:
                 result.append(line)
-            elif line == start_line:
-                start_flag = True
     return ''.join(result)
 
 
 setup(
     name='aiohttp-apispec',
-    version='0.5.0',
+    version='0.5.1',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=readme('README.md'),
     author='Danilchenko Maksim',

@@ -103,6 +103,8 @@ setup_swagger(
 # now we can access swagger client on /api/doc url
 ```
 
+<p>
+
 ## TODO List before 1.0.0 can be released:
 
 - [x] Generating json spec from marshmallow data schemas
