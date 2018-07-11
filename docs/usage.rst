@@ -41,12 +41,11 @@ Quickstart
     app.router.add_post('/v1/test', index)
 
     # init docs with all parameters, usual for ApiSpec
-    doc = AiohttpApiSpec(title='My Documentation',
+    doc = AiohttpApiSpec(app=app,
+                         title='My Documentation',
                          version='v1',
                          url='/api/docs/api-docs')
 
-    # add method to form swagger json:
-    doc.register(app)
 
     # find it on 'http://localhost:8080/api/docs/api-docs'
     web.run_app(app)
