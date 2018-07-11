@@ -13,6 +13,8 @@
 
 ![img](https://user-images.githubusercontent.com/10708076/40740929-bd141942-6452-11e8-911c-d9032f8d625f.png)
 
+<p>
+
 ## Install
 
 ```
@@ -54,11 +56,8 @@ app.router.add_post('/v1/test', index)
 
 # init docs with all parameters, usual for ApiSpec
 doc = AiohttpApiSpec(
-    title='My Documentation', version='v1', url='/api/docs/api-docs'
+    app=app, title='My Documentation', version='v1', url='/api/docs/api-docs'
 )
-
-# add method to form swagger json:
-doc.register(app)  # we should do it only after all routes are added to router!
 
 # now we can find it on 'http://localhost:8080/api/docs/api-docs'
 web.run_app(app)
@@ -98,7 +97,6 @@ from aiohttp_swagger import setup_swagger
 
 ...
 
-doc.register(app)
 setup_swagger(
     app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
 )
@@ -112,6 +110,6 @@ setup_swagger(
 - [x] Data validation through additional middleware (built using [webargs](https://github.com/sloria/webargs))
 - [x] 97% more cov with tests
 - [x] Documentation on [readthedocs](http://aiohttp-apispec.readthedocs.io/en/latest/)
-- [ ] More simple initialisation - register method is not needed. Instead of it we can use some middleware to register all routs on app start
+- [x] More simple initialisation - register method is not needed. Instead of it we can use some middleware to register all routs on app start
 - [ ] Nested apps support
 - [ ] More complex settings (like request param name)

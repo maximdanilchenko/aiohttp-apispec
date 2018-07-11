@@ -1,5 +1,3 @@
-import asyncio
-
 import pytest
 from aiohttp import web
 
@@ -60,56 +58,48 @@ class TestViewDecorators:
 
         return loop.run_until_complete(test_client(app))
 
-    @asyncio.coroutine
-    def test_response_200_get(self, aiohttp_app):
-        res = yield from aiohttp_app.get('/v1/test', params={'id': 1, 'name': 'max'})
+    async def test_response_200_get(self, aiohttp_app):
+        res = await aiohttp_app.get('/v1/test', params={'id': 1, 'name': 'max'})
         assert res.status == 200
 
-    @asyncio.coroutine
-    def test_response_422_get(self, aiohttp_app):
-        res = yield from aiohttp_app.get(
+    async def test_response_422_get(self, aiohttp_app):
+        res = await aiohttp_app.get(
             '/v1/test', params={'id': 'string', 'name': 'max'}
         )
         assert res.status == 400
 
-    @asyncio.coroutine
-    def test_response_200_post(self, aiohttp_app):
-        res = yield from aiohttp_app.post('/v1/test', json={'id': 1, 'name': 'max'})
+    async def test_response_200_post(self, aiohttp_app):
+        res = await aiohttp_app.post('/v1/test', json={'id': 1, 'name': 'max'})
         assert res.status == 200
 
-    @asyncio.coroutine
-    def test_response_200_post_callable_schema(self, aiohttp_app):
-        res = yield from aiohttp_app.post(
+    async def test_response_200_post_callable_schema(self, aiohttp_app):
+        res = await aiohttp_app.post(
             '/v1/test_call', json={'id': 1, 'name': 'max'}
         )
         assert res.status == 200
 
-    @asyncio.coroutine
-    def test_response_422_post(self, aiohttp_app):
-        res = yield from aiohttp_app.post(
+    async def test_response_422_post(self, aiohttp_app):
+        res = await aiohttp_app.post(
             '/v1/test', json={'id': 'string', 'name': 'max'}
         )
         assert res.status == 400
 
-    @asyncio.coroutine
-    def test_response_not_docked(self, aiohttp_app):
-        res = yield from aiohttp_app.get('/v1/other', params={'id': 1, 'name': 'max'})
+    async def test_response_not_docked(self, aiohttp_app):
+        res = await aiohttp_app.get('/v1/other', params={'id': 1, 'name': 'max'})
         assert res.status == 200
 
-    @asyncio.coroutine
-    def test_response_data_post(self, aiohttp_app):
-        res = yield from aiohttp_app.post(
+    async def test_response_data_post(self, aiohttp_app):
+        res = await aiohttp_app.post(
             '/v1/echo', json={'id': 1, 'name': 'max', 'list_field': [1, 2, 3, 4]}
         )
-        assert (yield from res.json()) == {
+        assert (await res.json()) == {
             'id': 1,
             'name': 'max',
             'list_field': [1, 2, 3, 4],
         }
 
-    @asyncio.coroutine
-    def test_response_data_get_old_data(self, aiohttp_app):
-        res = yield from aiohttp_app.get(
+    async def test_response_data_get_old_data(self, aiohttp_app):
+        res = await aiohttp_app.get(
             '/v1/echo_old',
             params=[
                 ('id', '1'),
@@ -121,16 +111,15 @@ class TestViewDecorators:
                 ('list_field', '4'),
             ],
         )
-        assert (yield from res.json()) == {
+        assert (await res.json()) == {
             'id': 1,
             'name': 'max',
             'bool_field': False,
             'list_field': [1, 2, 3, 4],
         }
 
-    @asyncio.coroutine
-    def test_response_data_get(self, aiohttp_app):
-        res = yield from aiohttp_app.get(
+    async def test_response_data_get(self, aiohttp_app):
+        res = await aiohttp_app.get(
             '/v1/echo',
             params=[
                 ('id', '1'),
@@ -142,15 +131,14 @@ class TestViewDecorators:
                 ('list_field', '4'),
             ],
         )
-        assert (yield from res.json()) == {
+        assert (await res.json()) == {
             'id': 1,
             'name': 'max',
             'bool_field': False,
             'list_field': [1, 2, 3, 4],
         }
 
-    @asyncio.coroutine
-    def test_swagger_handler_200(self, aiohttp_app):
-        res = yield from aiohttp_app.get('/api/docs/api-docs')
+    async def test_swagger_handler_200(self, aiohttp_app):
+        res = await aiohttp_app.get('/api/docs/api-docs')
         assert res.status == 200
-        assert aiohttp_app.server.app['swagger_dict'] == (yield from res.json())
+        assert aiohttp_app.server.app['swagger_dict'] == (await res.json())

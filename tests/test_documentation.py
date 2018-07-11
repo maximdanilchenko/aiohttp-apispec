@@ -6,7 +6,7 @@ from aiohttp_apispec import docs
 
 class TestDocumentation:
     @pytest.fixture
-    def aiohttp_app(self, doc):
+    def aiohttp_app(self, doc, loop, test_client):
         @docs(
             tags=['mytag'],
             summary='Test method summary',
@@ -20,15 +20,15 @@ class TestDocumentation:
 
         doc.register(app)
 
-        return app
+        return loop.run_until_complete(test_client(app))
 
     def test_app_swagger_url(self, aiohttp_app):
         assert URL('/api/docs/api-docs') in [
-            route.url_for() for route in aiohttp_app.router.routes()
+            route.url_for() for route in aiohttp_app.app.router.routes()
         ]
 
     def test_app_swagger_json(self, aiohttp_app, doc):
-        docs = aiohttp_app['swagger_dict']
+        docs = aiohttp_app.app['swagger_dict']
         assert docs == doc.swagger_dict()
         assert docs['info']['title'] == 'My Documentation'
         assert docs['info']['version'] == 'v1'

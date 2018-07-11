@@ -10,7 +10,7 @@ PATHS = {'get', 'put', 'post', 'delete', 'patch'}
 
 class AiohttpApiSpec:
     """
-    Aiohttp-apispec extension.
+    Aiohttp-apispec extension. Add app param to register all routes on startup.
 
     Usage:
 
@@ -39,25 +39,27 @@ class AiohttpApiSpec:
         app.router.add_post('/v1/test', index)
 
         # init docs with all parameters, usual for ApiSpec
-        doc = AiohttpApiSpec(title='My Documentation',
+        doc = AiohttpApiSpec(app=app,
+                             title='My Documentation',
                              version='v1',
                              url='/api/docs/api-docs')
-
-        # add method to form swagger json:
-        doc.register(app)
 
         # now we can find it on 'http://localhost:8080/api/docs/api-docs'
         web.run_app(app)
 
+    :param Application app: aiohttp web app
     :param url: url for swagger spec in JSON format
     :param kwargs: any APISpec kwargs
     """
 
-    def __init__(self, url='/api/docs/api-docs', **kwargs):
+    def __init__(self, url='/api/docs/api-docs', app=None, **kwargs):
         self.spec = APISpec(**kwargs)
         if 'apispec.ext.marshmallow' not in self.spec.plugins:
             self.spec.setup_plugin('apispec.ext.marshmallow')
         self.url = url
+        self._registered = False
+        if app:
+            self.register(app)
 
     def swagger_dict(self):
         return self.spec.to_dict()
@@ -78,6 +80,16 @@ class AiohttpApiSpec:
 
         :param Application app: aiohttp web app
         """
+        if self._registered is True:
+            return None
+
+        async def doc_routes(app):
+            self._register(app)
+
+        app.on_startup.append(doc_routes)
+        self._registered = True
+
+    def _register(self, app: web.Application):
         for route in app.router.routes():
             self._register_route(route)
         app['swagger_dict'] = self.swagger_dict()

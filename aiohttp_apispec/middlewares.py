@@ -1,12 +1,10 @@
-import asyncio
 from webargs.aiohttpparser import parser
 
 from aiohttp import web
 
 
 @web.middleware
-@asyncio.coroutine
-def aiohttp_apispec_middleware(
+async def aiohttp_apispec_middleware(
     request: web.Request, handler, error_handler=None
 ) -> web.Response:
     """
@@ -21,14 +19,12 @@ def aiohttp_apispec_middleware(
 
     """
     if not hasattr(handler, '__schemas__'):
-        return (yield from handler(request))
+        return await handler(request)
     kwargs = {}
     for schema in handler.__schemas__:
         try:
-            data = (
-                yield from parser.parse(
-                    schema['schema'], request, locations=schema['locations']
-                )
+            data = await parser.parse(
+                schema['schema'], request, locations=schema['locations']
             )
         except web.HTTPClientError as error:
             return (error_handler or _default_error_handler)(error)
@@ -36,7 +32,7 @@ def aiohttp_apispec_middleware(
             kwargs.update(data)
     kwargs.update(request.match_info)
     request['data'] = request.data = kwargs  # request.data will be removed since 1.0.0
-    return (yield from handler(request))
+    return await handler(request)
 
 
 def _default_error_handler(error_handler):

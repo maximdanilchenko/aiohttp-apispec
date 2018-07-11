@@ -3,8 +3,6 @@ from marshmallow import Schema, fields
 
 from aiohttp_apispec import AiohttpApiSpec
 
-pytest_plugins = 'aiohttp.pytest_plugin'
-
 
 def pytest_report_header(config):
     return """
