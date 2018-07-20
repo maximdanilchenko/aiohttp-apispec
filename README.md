@@ -15,6 +15,14 @@
 
 <p>
 
+```aiohttp-apispec``` key features:
+- ```docs```, ```use_kwargs``` and ```marshal_with``` decorators 
+to add swagger spec support out of the box
+- ```aiohttp_apispec_middleware``` middleware to enable validating 
+with marshmallow schemas from those decorators
+
+```aiohttp-apispec``` api is fully inspired by ```flask-apispec``` library
+
 ## Install
 
 ```
@@ -90,7 +98,8 @@ async def index(request):
 ```
 
 ## Build swagger web client
-You can do it easily with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library:
+```aiohttp-apispec``` adds ```swagger_dict``` parameter to aiohttp web application. 
+So you can use it easily with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library:
 
 ```Python
 from aiohttp_swagger import setup_swagger
@@ -113,5 +122,6 @@ setup_swagger(
 - [x] 97% more cov with tests
 - [x] Documentation on [readthedocs](http://aiohttp-apispec.readthedocs.io/en/latest/)
 - [x] More simple initialisation - register method is not needed. Instead of it we can use some middleware to register all routs on app start
+- [ ] Flexible settings for  ```aiohttp_apispec_middleware``` middleware
 - [ ] Nested apps support
 - [ ] More complex settings (like request param name)

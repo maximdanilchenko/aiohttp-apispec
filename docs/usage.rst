@@ -61,7 +61,7 @@ Adding validation middleware
 
     app.middlewares.append(aiohttp_apispec_middleware)
 
-Now you can access all validated data in route from request['data'] like so:
+Now you can access all validated data in route from ``request['data']`` like so:
 
 .. code-block:: python
 
@@ -81,7 +81,8 @@ Now you can access all validated data in route from request['data'] like so:
 Build swagger web client
 ------------------------
 
-You can do it easily with aiohttp_swagger library:
+``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp web application.
+So you can use it easily with ``aiohttp_swagger`` library:
 
 .. code-block:: python
 
@@ -94,4 +95,4 @@ You can do it easily with aiohttp_swagger library:
                   swagger_url='/api/doc',
                   swagger_info=app['swagger_dict'])
 
-Now we can access swagger client on /api/doc url
+Now we can access swagger client on ``/api/doc`` url

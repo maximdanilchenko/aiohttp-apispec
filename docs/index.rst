@@ -13,6 +13,15 @@ aiohttp-apispec
 
 Build and document REST APIs with aiohttp and apispec
 
+``aiohttp-apispec`` key features:
+
+- ``docs``, ``use_kwargs`` and ``marshal_with`` decorators 
+to add swagger spec support out of the box
+- ``aiohttp_apispec_middleware`` middleware to enable validating 
+with marshmallow schemas from those decorators
+
+``aiohttp-apispec`` api is fully inspired by ``flask-apispec`` library
+
 Guide
 -----
 
