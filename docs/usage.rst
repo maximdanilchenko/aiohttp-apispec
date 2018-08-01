@@ -81,7 +81,7 @@ Now you can access all validated data in route from ``request['data']`` like so:
 Build swagger web client
 ------------------------
 
-``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp web application.
+``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp web application after initialization.
 So you can use it easily with ``aiohttp_swagger`` library:
 
 .. code-block:: python
@@ -90,9 +90,10 @@ So you can use it easily with ``aiohttp_swagger`` library:
 
     ...
 
-    doc.register(app)
-    setup_swagger(app=app,
-                  swagger_url='/api/doc',
-                  swagger_info=app['swagger_dict'])
+    async def swagger(app):
+        setup_swagger(
+            app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
+        )
+    app.on_startup.append(swagger)
 
 Now we can access swagger client on ``/api/doc`` url

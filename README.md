@@ -98,7 +98,7 @@ async def index(request):
 ```
 
 ## Build swagger web client
-```aiohttp-apispec``` adds ```swagger_dict``` parameter to aiohttp web application. 
+```aiohttp-apispec``` adds ```swagger_dict``` parameter to aiohttp web application after initialization. 
 So you can use it easily with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library:
 
 ```Python
@@ -106,9 +106,11 @@ from aiohttp_swagger import setup_swagger
 
 ...
 
-setup_swagger(
-    app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
-)
+async def swagger(app):
+    setup_swagger(
+        app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
+    )
+app.on_startup.append(swagger)
 # now we can access swagger client on /api/doc url
 ```
 
