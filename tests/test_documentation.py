@@ -15,12 +15,22 @@ class TestDocumentation:
         def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
+        class TheView(web.View):
+            @docs(
+                tags=['mytag'],
+                summary='View method summary',
+                description='View method description',
+            )
+            def delete(self):
+                return web.Response()
+
         app = web.Application()
         doc = AiohttpApiSpec(
             app=app, title='My Documentation', version='v1', url='/api/docs/api-docs'
         )
 
         app.router.add_get('/v1/test', index)
+        app.router.add_view('/v1/view', TheView)
         if request.param['register_twice']:
             doc.register(app)
         return loop.run_until_complete(test_client(app))
@@ -40,5 +50,13 @@ class TestDocumentation:
             'tags': ['mytag'],
             'summary': 'Test method summary',
             'description': 'Test method description',
+            'produces': ['application/json'],
+        }
+        assert docs['paths']['/v1/view']['delete'] == {
+            'parameters': [],
+            'responses': {},
+            'tags': ['mytag'],
+            'summary': 'View method summary',
+            'description': 'View method description',
             'produces': ['application/json'],
         }

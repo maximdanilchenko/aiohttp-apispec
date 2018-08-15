@@ -33,6 +33,11 @@ class TestViewDecorators:
             print(request.data)
             return web.json_response(request['data'])
 
+        class ViewClass(web.View):
+            @use_kwargs(request_schema, **request.param)
+            async def get(self):
+                return web.json_response(self.request['data'])
+
         @use_kwargs(request_schema, **request.param)
         def handler_get_echo_old_data(request):
             print(request.data)
@@ -49,6 +54,7 @@ class TestViewDecorators:
                 web.post('/v1/test_call', handler_post_callable_schema),
                 web.get('/v1/other', other),
                 web.get('/v1/echo', handler_get_echo),
+                web.view('/v1/class_echo', ViewClass),
                 web.get('/v1/echo_old', handler_get_echo_old_data),
                 web.post('/v1/echo', handler_post_echo),
             ]
@@ -121,6 +127,26 @@ class TestViewDecorators:
     async def test_response_data_get(self, aiohttp_app):
         res = await aiohttp_app.get(
             '/v1/echo',
+            params=[
+                ('id', '1'),
+                ('name', 'max'),
+                ('bool_field', '0'),
+                ('list_field', '1'),
+                ('list_field', '2'),
+                ('list_field', '3'),
+                ('list_field', '4'),
+            ],
+        )
+        assert (await res.json()) == {
+            'id': 1,
+            'name': 'max',
+            'bool_field': False,
+            'list_field': [1, 2, 3, 4],
+        }
+
+    async def test_response_data_class_get(self, aiohttp_app):
+        res = await aiohttp_app.get(
+            '/v1/class_echo',
             params=[
                 ('id', '1'),
                 ('name', 'max'),

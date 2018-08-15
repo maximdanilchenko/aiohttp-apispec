@@ -19,9 +19,19 @@ async def aiohttp_apispec_middleware(
 
     """
     if not hasattr(handler, '__schemas__'):
-        return await handler(request)
+        if not issubclass(handler, web.View):
+            return await handler(request)
+        method = request.method.lower()
+        if not hasattr(handler, method):
+            return await handler(request)
+        sub_handler = getattr(handler, method)
+        if not hasattr(sub_handler, '__schemas__'):
+            return await handler(request)
+        schemas = sub_handler.__schemas__
+    else:
+        schemas = handler.__schemas__
     kwargs = {}
-    for schema in handler.__schemas__:
+    for schema in schemas:
         try:
             data = await parser.parse(
                 schema['schema'], request, locations=schema['locations']

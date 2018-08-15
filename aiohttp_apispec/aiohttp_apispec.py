@@ -1,6 +1,7 @@
 import copy
 
 from aiohttp import web
+from aiohttp.hdrs import METH_ANY, METH_ALL
 from apispec import APISpec, Path
 
 from .utils import get_path, get_path_keys
@@ -83,15 +84,24 @@ class AiohttpApiSpec:
         if self._registered is True:
             return None
 
-        async def doc_routes(app):
-            self._register(app)
+        async def doc_routes(app_):
+            self._register(app_)
 
         app.on_startup.append(doc_routes)
         self._registered = True
 
     def _register(self, app: web.Application):
         for route in app.router.routes():
-            self._register_route(route)
+            if issubclass(route.handler, web.View) and route.method == METH_ANY:
+                for attr in dir(route.handler):
+                    if attr.upper() in METH_ALL:
+                        view = getattr(route.handler, attr)
+                        method = attr
+                        self._register_route(route, method, view)
+            else:
+                method = route.method.lower()
+                view = route.handler
+                self._register_route(route, method, view)
         app['swagger_dict'] = self.swagger_dict()
 
         def swagger_handler(request):
@@ -99,9 +109,7 @@ class AiohttpApiSpec:
 
         app.router.add_routes([web.get(self.url, swagger_handler)])
 
-    def _register_route(self, route: web.RouteDef):
-        view = route.handler
-        method = route.method.lower()
+    def _register_route(self, route: web.RouteDef, method, view):
 
         if (
             not hasattr(view, '__apispec__')
