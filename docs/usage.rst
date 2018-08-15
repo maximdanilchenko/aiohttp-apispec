@@ -36,9 +36,22 @@ Quickstart
         return web.json_response({'msg': 'done',
                                   'data': {}})
 
+    # Class based views are also supported:
+    class TheView(web.View):
+        @docs(
+            tags=['mytag'],
+            summary='View method summary',
+            description='View method description',
+        )
+        @use_kwargs(RequestSchema(strict=True))
+        def delete(self):
+            return web.json_response({'msg': 'done',
+                                      'data': {'name': self.request['data']['name']}})
+
 
     app = web.Application()
     app.router.add_post('/v1/test', index)
+    app.router.add_view('/v1/view', TheView)
 
     # init docs with all parameters, usual for ApiSpec
     doc = AiohttpApiSpec(app=app,
