@@ -90,6 +90,11 @@ class AiohttpApiSpec:
         app.on_startup.append(doc_routes)
         self._registered = True
 
+        def swagger_handler(request):
+            return web.json_response(request.app['swagger_dict'])
+
+        app.router.add_routes([web.get(self.url, swagger_handler)])
+
     def _register(self, app: web.Application):
         for route in app.router.routes():
             if issubclass(route.handler, web.View) and route.method == METH_ANY:
@@ -103,11 +108,6 @@ class AiohttpApiSpec:
                 view = route.handler
                 self._register_route(route, method, view)
         app['swagger_dict'] = self.swagger_dict()
-
-        def swagger_handler(request):
-            return web.json_response(request.app['swagger_dict'])
-
-        app.router.add_routes([web.get(self.url, swagger_handler)])
 
     def _register_route(self, route: web.RouteDef, method, view):
 
