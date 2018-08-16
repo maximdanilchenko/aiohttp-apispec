@@ -9,6 +9,13 @@ from .utils import get_path, get_path_keys
 PATHS = {'get', 'put', 'post', 'delete', 'patch'}
 
 
+def issubclass_py37fix(cls, cls_info):
+    try:
+        return issubclass(cls, cls_info)
+    except TypeError:
+        return False
+
+
 class AiohttpApiSpec:
     """
     Aiohttp-apispec extension. Add app param to register all routes on startup.
@@ -97,7 +104,7 @@ class AiohttpApiSpec:
 
     def _register(self, app: web.Application):
         for route in app.router.routes():
-            if issubclass(route.handler, web.View) and route.method == METH_ANY:
+            if issubclass_py37fix(route.handler, web.View) and route.method == METH_ANY:
                 for attr in dir(route.handler):
                     if attr.upper() in METH_ALL:
                         view = getattr(route.handler, attr)
