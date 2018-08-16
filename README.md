@@ -138,6 +138,6 @@ app.on_startup.append(swagger)
 - [x] 97% more cov with tests
 - [x] Documentation on [readthedocs](http://aiohttp-apispec.readthedocs.io/en/latest/)
 - [x] More simple initialisation - register method is not needed. Instead of it we can use some middleware to register all routs on app start
-- [ ] Flexible settings for  ```aiohttp_apispec_middleware``` middleware
-- [ ] Nested apps support
-- [ ] More complex settings (like request param name)
+- [x] Class based views support
+- [x] Nested apps support
+- [ ] Flexible settings for  ```aiohttp_apispec_middleware``` middleware (like request param name and error handling)
