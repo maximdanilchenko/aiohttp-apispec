@@ -1,6 +1,7 @@
+from aiohttp import web
 from webargs.aiohttpparser import parser
 
-from aiohttp import web
+from .utils import issubclass_py37fix
 
 
 @web.middleware
@@ -19,7 +20,7 @@ async def aiohttp_apispec_middleware(
 
     """
     if not hasattr(handler, '__schemas__'):
-        if not issubclass(handler, web.View):
+        if not issubclass_py37fix(handler, web.View):
             return await handler(request)
         method = request.method.lower()
         if not hasattr(handler, method):

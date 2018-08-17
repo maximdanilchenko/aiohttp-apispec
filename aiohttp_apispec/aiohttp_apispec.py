@@ -4,16 +4,9 @@ from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
 from apispec import APISpec, Path
 
-from .utils import get_path, get_path_keys
+from .utils import get_path, get_path_keys, issubclass_py37fix
 
 PATHS = {'get', 'put', 'post', 'delete', 'patch'}
-
-
-def issubclass_py37fix(cls, cls_info):
-    try:
-        return issubclass(cls, cls_info)
-    except TypeError:
-        return False
 
 
 class AiohttpApiSpec:
