@@ -1,0 +1,13 @@
+README.md
+setup.py
+aiohttp_apispec/__init__.py
+aiohttp_apispec/aiohttp_apispec.py
+aiohttp_apispec/decorators.py
+aiohttp_apispec/middlewares.py
+aiohttp_apispec/utils.py
+aiohttp_apispec.egg-info/PKG-INFO
+aiohttp_apispec.egg-info/SOURCES.txt
+aiohttp_apispec.egg-info/dependency_links.txt
+aiohttp_apispec.egg-info/not-zip-safe
+aiohttp_apispec.egg-info/requires.txt
+aiohttp_apispec.egg-info/top_level.txt
