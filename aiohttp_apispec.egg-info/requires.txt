@@ -1,3 +1,0 @@
-aiohttp
-apispec<=0.38.0
-webargs
