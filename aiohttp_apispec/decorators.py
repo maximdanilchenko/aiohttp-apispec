@@ -14,16 +14,16 @@ def docs(**kwargs):
 
         from aiohttp import web
 
-@docs(tags=['my_tag'],
-      summary='Test method summary',
-      description='Test method description',
-      extra_parameters=[{
-              'in': 'header',
-              'name': 'X-Request-ID',
-              'schema': {'type': 'string', 'format': 'uuid'},
-              'required': 'true'
-          }]
-      )
+        @docs(tags=['my_tag'],
+              summary='Test method summary',
+              description='Test method description',
+              parameters=[{
+                      'in': 'header',
+                      'name': 'X-Request-ID',
+                      'schema': {'type': 'string', 'format': 'uuid'},
+                      'required': 'true'
+                  }]
+              )
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
@@ -133,7 +133,9 @@ def marshal_with(schema, code=200, required=False, description=None):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         raw_parameters = schema2parameters(schema, required=required)[0]
         # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
-        parameters = {k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS}
+        parameters = {
+            k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS
+        }
         if description:
             parameters['description'] = description
         func.__apispec__['responses']['%s' % code] = parameters
