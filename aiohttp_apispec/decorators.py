@@ -89,7 +89,7 @@ def use_kwargs(schema, locations=None, **kwargs):
     return wrapper
 
 
-def marshal_with(schema, code=200, required=False):
+def marshal_with(schema, code=200, required=False, description=None):
     """
     Add response info into the swagger spec
 
@@ -122,6 +122,8 @@ def marshal_with(schema, code=200, required=False):
         # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
         valid_response_fields = ('schema', 'description', 'headers', 'examples')
         parameters = {k: v for k, v in raw_parameters.items() if k in valid_response_fields}
+        if description:
+            parameters['description'] = description
         func.__apispec__['responses']['%s' % code] = parameters
         return func
 
