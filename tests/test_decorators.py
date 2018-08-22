@@ -100,9 +100,6 @@ class TestViewDecorators:
             assert param in aiohttp_view_marshal.__apispec__
         assert '200' in aiohttp_view_marshal.__apispec__['responses']
         assert aiohttp_view_marshal.__apispec__['responses']['200'] == {
-            'in': 'body',
-            'required': False,
-            'name': 'body',
             'schema': {
                 'type': 'object',
                 'properties': {'data': {'type': 'object'}, 'msg': {'type': 'string'}},
