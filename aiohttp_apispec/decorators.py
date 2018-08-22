@@ -14,16 +14,16 @@ def docs(**kwargs):
 
         from aiohttp import web
 
-        @docs(tags=['my_tag'],
-              summary='Test method summary',
-              description='Test method description',
-              extra_parameters=[{
-                      'in': 'header',
-                      'name': 'X-Request-ID',
-                      'schema': {'type': 'string', 'format': 'uuid'},
-                      'required': 'true'
-                  }]
-              )
+@docs(tags=['my_tag'],
+      summary='Test method summary',
+      description='Test method description',
+      extra_parameters=[{
+              'in': 'header',
+              'name': 'X-Request-ID',
+              'schema': {'type': 'string', 'format': 'uuid'},
+              'required': 'true'
+          }]
+      )
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
@@ -34,7 +34,7 @@ def docs(**kwargs):
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         func.__apispec__.update(kwargs)
-        func.__apispec__['parameters'].extend(kwargs['extra_parameters'])
+        func.__apispec__['parameters'].extend(kwargs.get('extra_parameters', []))
         func.__apispec__['docked'] = {'route': False}
         return func
 
