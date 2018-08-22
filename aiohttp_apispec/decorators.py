@@ -118,9 +118,11 @@ def marshal_with(schema, code=200, required=False):
     def wrapper(func):
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
-        func.__apispec__['responses']['%s' % code] = schema2parameters(
-            schema, required=required
-        )[0]
+        raw_parameters = schema2parameters(schema, required=required)[0]
+        # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
+        valid_response_fields = ('schema', 'description', 'headers', 'examples')
+        parameters = {k: v for k, v in raw_parameters.items() if k in valid_response_fields}
+        func.__apispec__['responses']['%s' % code] = parameters
         return func
 
     return wrapper
