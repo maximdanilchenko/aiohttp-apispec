@@ -33,8 +33,9 @@ def docs(**kwargs):
         kwargs['produces'] = ['application/json']
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
+        extra_parameters = kwargs.pop('parameters', [])
+        func.__apispec__['parameters'].extend(extra_parameters)
         func.__apispec__.update(kwargs)
-        func.__apispec__['parameters'].extend(kwargs.get('extra_parameters', []))
         func.__apispec__['docked'] = {'route': False}
         return func
 
