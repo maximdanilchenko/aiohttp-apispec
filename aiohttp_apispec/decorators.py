@@ -1,5 +1,7 @@
 from apispec.ext.marshmallow.swagger import schema2parameters
 
+VALID_RESPONSE_FIELDS = {'schema', 'description', 'headers', 'examples'}
+
 
 def docs(**kwargs):
     """
@@ -109,6 +111,8 @@ def marshal_with(schema, code=200, required=False, description=None):
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
+    :param description:
+    :param required:
     :param schema: :class:`Schema <marshmallow.Schema>` class or instance
     :param code: HTTP response code
     """
@@ -120,8 +124,7 @@ def marshal_with(schema, code=200, required=False, description=None):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         raw_parameters = schema2parameters(schema, required=required)[0]
         # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
-        valid_response_fields = ('schema', 'description', 'headers', 'examples')
-        parameters = {k: v for k, v in raw_parameters.items() if k in valid_response_fields}
+        parameters = {k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS}
         if description:
             parameters['description'] = description
         func.__apispec__['responses']['%s' % code] = parameters
