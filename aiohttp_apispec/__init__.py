@@ -1,6 +1,6 @@
 from .aiohttp_apispec import AiohttpApiSpec
 from .decorators import docs, use_kwargs, marshal_with
-from .middlewares import aiohttp_apispec_middleware
+from .middlewares import aiohttp_apispec_middleware, validation_middleware
 
 __all__ = [
     'AiohttpApiSpec',
@@ -8,4 +8,5 @@ __all__ = [
     'use_kwargs',
     'marshal_with',
     'aiohttp_apispec_middleware',
+    'validation_middleware'
 ]
