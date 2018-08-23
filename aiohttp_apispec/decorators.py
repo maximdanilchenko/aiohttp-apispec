@@ -16,7 +16,14 @@ def docs(**kwargs):
 
         @docs(tags=['my_tag'],
               summary='Test method summary',
-              description='Test method description')
+              description='Test method description',
+              parameters=[{
+                      'in': 'header',
+                      'name': 'X-Request-ID',
+                      'schema': {'type': 'string', 'format': 'uuid'},
+                      'required': 'true'
+                  }]
+              )
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
@@ -26,6 +33,8 @@ def docs(**kwargs):
         kwargs['produces'] = ['application/json']
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
+        extra_parameters = kwargs.pop('parameters', [])
+        func.__apispec__['parameters'].extend(extra_parameters)
         func.__apispec__.update(kwargs)
         func.__apispec__['docked'] = {'route': False}
         return func
@@ -124,7 +133,9 @@ def marshal_with(schema, code=200, required=False, description=None):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         raw_parameters = schema2parameters(schema, required=required)[0]
         # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
-        parameters = {k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS}
+        parameters = {
+            k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS
+        }
         if description:
             parameters['description'] = description
         func.__apispec__['responses']['%s' % code] = parameters
