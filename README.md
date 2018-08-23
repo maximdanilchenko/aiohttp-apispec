@@ -23,7 +23,7 @@
 ```aiohttp-apispec``` key features:
 - ```docs```, ```use_kwargs``` and ```marshal_with``` decorators 
 to add swagger spec support out of the box
-- ```aiohttp_apispec_middleware``` middleware to enable validating 
+- ```validation_middleware``` middleware to enable validating 
 with marshmallow schemas from those decorators
 
 ```aiohttp-apispec``` api is fully inspired by ```flask-apispec``` library
@@ -37,7 +37,7 @@ pip install aiohttp-apispec
 ## Quickstart
 
 ```Python
-from aiohttp_apispec import docs, use_kwargs, marshal_with, AiohttpApiSpec
+from aiohttp_apispec import docs, use_kwargs, marshal_with, setup_aiohttp_apispec
 from aiohttp import web
 from marshmallow import Schema, fields
 
@@ -82,7 +82,7 @@ app.router.add_post('/v1/test', index)
 app.router.add_view('/v1/view', TheView)
 
 # init docs with all parameters, usual for ApiSpec
-doc = AiohttpApiSpec(
+setup_aiohttp_apispec(
     app=app, title='My Documentation', version='v1', url='/api/docs/api-docs'
 )
 
@@ -92,11 +92,11 @@ web.run_app(app)
 ## Adding validation middleware
 
 ```Python
-from aiohttp_apispec import aiohttp_apispec_middleware
+from aiohttp_apispec import validation_middleware
 
 ...
 
-app.middlewares.append(aiohttp_apispec_middleware)
+app.middlewares.append(validation_middleware)
 ```
 Now you can access all validated data in route from ```request['data']``` like so:
 
@@ -114,6 +114,41 @@ async def index(request):
     return web.json_response(
         {'msg': 'done', 'data': {'info': f'name - {name}, id - {uid}'}}
     )
+```
+
+
+You can change ``Request``'s ``'data'`` param to another with ``request_data_name`` argument of 
+``setup_aiohttp_apispec`` function:
+
+```python
+setup_aiohttp_apispec(app=app,
+                      request_data_name='validated_data',
+                      title='My Documentation',
+                      version='v1',
+                      url='/api/docs/api-docs')
+                      
+...                  
+
+@use_kwargs(RequestSchema(strict=True))
+async def index(request):
+    uid = request['validated_data']['id']
+        ...
+```
+
+If you want to catch validation errors you should write your own middleware and catch 
+```web.HTTPClientError```, ```json.JSONDecodeError``` and so on. Like this:
+```python
+@web.middleware
+async def my_middleware(request, handler):
+    try:
+        return await handler(request)
+    except web.HTTPClientError:
+        return web.json_response(status=400)
+        
+app.middlewares.extend([
+    my_middleware,  # Catch exception by your own, format it and respond to client
+    validation_middleware,
+])
 ```
 
 ## Build swagger web client

@@ -8,7 +8,7 @@ async def test_response_422_get(aiohttp_app):
     res = await aiohttp_app.get(
         '/v1/test', params={'id': 'string', 'name': 'max'}
     )
-    assert res.status == 400
+    assert res.status == 422
 
 
 async def test_response_200_post(aiohttp_app):
@@ -27,7 +27,7 @@ async def test_response_422_post(aiohttp_app):
     res = await aiohttp_app.post(
         '/v1/test', json={'id': 'string', 'name': 'max'}
     )
-    assert res.status == 400
+    assert res.status == 422
 
 
 async def test_response_not_docked(aiohttp_app):

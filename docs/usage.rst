@@ -11,7 +11,7 @@ Quickstart
     from aiohttp_apispec import (docs,
                                  use_kwargs,
                                  marshal_with,
-                                 AiohttpApiSpec)
+                                 setup_aiohttp_apispec)
     from aiohttp import web
     from marshmallow import Schema, fields
 
@@ -45,8 +45,10 @@ Quickstart
         )
         @use_kwargs(RequestSchema(strict=True))
         def delete(self):
-            return web.json_response({'msg': 'done',
-                                      'data': {'name': self.request['data']['name']}})
+            return web.json_response({
+                'msg': 'done',
+                'data': {'name': self.request['data']['name']},
+            })
 
 
     app = web.Application()
@@ -54,10 +56,12 @@ Quickstart
     app.router.add_view('/v1/view', TheView)
 
     # init docs with all parameters, usual for ApiSpec
-    doc = AiohttpApiSpec(app=app,
-                         title='My Documentation',
-                         version='v1',
-                         url='/api/docs/api-docs')
+    setup_aiohttp_apispec(
+        app=app,
+        title='My Documentation',
+        version='v1',
+        url='/api/docs/api-docs',
+    )
 
 
     # find it on 'http://localhost:8080/api/docs/api-docs'
@@ -68,11 +72,11 @@ Adding validation middleware
 
 .. code-block:: python
 
-    from aiohttp_apispec import aiohttp_apispec_middleware
+    from aiohttp_apispec import validation_middleware
 
     ...
 
-    app.middlewares.append(aiohttp_apispec_middleware)
+    app.middlewares.append(validation_middleware)
 
 Now you can access all validated data in route from ``request['data']`` like so:
 
@@ -91,10 +95,46 @@ Now you can access all validated data in route from ``request['data']`` like so:
              'data': {'info': f'name - {name}, id - {uid}'}}
          )
 
+You can change ``Request``'s ``'data'`` param to another
+with ``request_data_name`` argument of ``setup_aiohttp_apispec`` function:
+
+.. code-block:: python
+
+    setup_aiohttp_apispec(app=app,
+                          request_data_name='validated_data',
+                          title='My Documentation',
+                          version='v1',
+                          url='/api/docs/api-docs')
+
+    ...
+
+    @use_kwargs(RequestSchema(strict=True))
+    async def index(request):
+        uid = request['validated_data']['id']
+        ...
+
+If you want to catch validation errors you should write your own middleware and catch
+``web.HTTPClientError``, ``json.JSONDecodeError`` and so on. Like this:
+
+.. code-block:: python
+
+    @web.middleware
+    async def my_middleware(request, handler):
+        try:
+            return await handler(request)
+        except web.HTTPClientError:
+            return web.json_response(status=400)
+
+    app.middlewares.extend([
+        my_middleware,  # Catch exception by your own, format it and respond to client
+        validation_middleware,
+    ])
+
 Build swagger web client
 ------------------------
 
-``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp web application after initialization.
+``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp
+web application after initialization.
 So you can use it easily with ``aiohttp_swagger`` library:
 
 .. code-block:: python

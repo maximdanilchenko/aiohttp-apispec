@@ -120,10 +120,10 @@ def marshal_with(schema, code=200, required=False, description=None):
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
-    :param description:
-    :param required:
+    :param str description: response description
+    :param bool required:
     :param schema: :class:`Schema <marshmallow.Schema>` class or instance
-    :param code: HTTP response code
+    :param int code: HTTP response code
     """
     if callable(schema):
         schema = schema()

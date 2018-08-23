@@ -1,3 +1,5 @@
+import warnings
+
 from aiohttp import web
 from webargs.aiohttpparser import parser
 
@@ -37,7 +39,8 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         if data:
             kwargs.update(data)
     kwargs.update(request.match_info)
-    request['data'] = request.data = kwargs  # request.data will be removed since 1.0.0
+    # request.data will be removed since 1.0.0
+    request[request.app['_apispec_request_data_name']] = request.data = kwargs
     return await handler(request)
 
 
@@ -45,22 +48,10 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
 async def aiohttp_apispec_middleware(
     request: web.Request, handler, error_handler=None
 ) -> web.Response:
-    """
-    Validation middleware for aiohttp web app
-
-    Usage:
-
-    .. code-block:: python
-
-        app.middlewares.append(aiohttp_apispec_middleware)
-
-
-    """
-    import warnings
     warnings.warn(
-        "'aiohttp_apispec_middleware' will be removed in future versions of 'aiohttp-apispec', "
-        "use 'validation_middleware'",
-        PendingDeprecationWarning
+        "'aiohttp_apispec_middleware' will be removed in future versions"
+        " of 'aiohttp-apispec', use 'validation_middleware' instead",
+        PendingDeprecationWarning,
     )
 
     if not hasattr(handler, '__schemas__'):
@@ -86,7 +77,8 @@ async def aiohttp_apispec_middleware(
         if data:
             kwargs.update(data)
     kwargs.update(request.match_info)
-    request['data'] = request.data = kwargs  # request.data will be removed since 1.0.0
+    # request.data will be removed since 1.0.0
+    request[request.app['_apispec_request_data_name']] = request.data = kwargs
     return await handler(request)
 
 

@@ -2,7 +2,12 @@ import pytest
 from aiohttp import web
 from marshmallow import Schema, fields
 
-from aiohttp_apispec import AiohttpApiSpec, use_kwargs, aiohttp_apispec_middleware, docs
+from aiohttp_apispec import (
+    use_kwargs,
+    docs,
+    validation_middleware,
+    setup_aiohttp_apispec,
+)
 
 
 def pytest_report_header(config):
@@ -47,15 +52,15 @@ def response_schema():
     return ResponseSchema
 
 
-@pytest.fixture(params=[
-    ({'locations': ['query']}, True),
-    ({'location': 'query'}, True),
-    ({'locations': ['query']}, False),
-    ({'location': 'query'}, False),
-])
-def aiohttp_app(
-    request_schema, request_callable_schema, loop, test_client, request
-):
+@pytest.fixture(
+    params=[
+        ({'locations': ['query']}, True),
+        ({'location': 'query'}, True),
+        ({'locations': ['query']}, False),
+        ({'location': 'query'}, False),
+    ]
+)
+def aiohttp_app(request_schema, request_callable_schema, loop, test_client, request):
     locations, nested = request.param
 
     @docs(
@@ -107,10 +112,10 @@ def aiohttp_app(
 
     app = web.Application()
     if nested:
-        doc = AiohttpApiSpec(
-            title='My Documentation', version='v1', url='/api/docs/api-docs'
-        )
         v1 = web.Application()
+        setup_aiohttp_apispec(
+            app=v1, title='My Documentation', version='v1', url='/api/docs/api-docs'
+        )
         v1.router.add_routes(
             [
                 web.get('/test', handler_get),
@@ -123,12 +128,11 @@ def aiohttp_app(
                 web.post('/echo', handler_post_echo),
             ]
         )
-        v1.middlewares.append(aiohttp_apispec_middleware)
-        doc.register(v1)
+        v1.middlewares.append(validation_middleware)
         app.add_subapp('/v1/', v1)
     else:
-        doc = AiohttpApiSpec(
-            title='My Documentation', version='v1', url='/v1/api/docs/api-docs'
+        setup_aiohttp_apispec(
+            app=app, title='My Documentation', version='v1', url='/v1/api/docs/api-docs'
         )
         app.router.add_routes(
             [
@@ -142,7 +146,6 @@ def aiohttp_app(
                 web.post('/v1/echo', handler_post_echo),
             ]
         )
-        app.middlewares.append(aiohttp_apispec_middleware)
-        doc.register(app)
+        app.middlewares.append(validation_middleware)
 
     return loop.run_until_complete(test_client(app))

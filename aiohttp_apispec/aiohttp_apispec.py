@@ -1,4 +1,5 @@
 import copy
+import warnings
 
 from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
@@ -10,55 +11,20 @@ PATHS = {'get', 'put', 'post', 'delete', 'patch'}
 
 
 class AiohttpApiSpec:
-    """
-    Aiohttp-apispec extension. Add app param to register all routes on startup.
-
-    Usage:
-
-    .. code-block:: python
-
-        from aiohttp_apispec import docs, use_kwargs, AiohttpApiSpec
-        from aiohttp import web
-        from marshmallow import Schema, fields
-
-
-        class RequestSchema(Schema):
-            id = fields.Int()
-            name = fields.Str(description='name')
-            bool_field = fields.Bool()
-
-
-        @docs(tags=['mytag'],
-              summary='Test method summary',
-              description='Test method description')
-        @use_kwargs(RequestSchema)
-        async def index(request):
-            return web.json_response({'msg': 'done', 'data': {}})
-
-
-        app = web.Application()
-        app.router.add_post('/v1/test', index)
-
-        # init docs with all parameters, usual for ApiSpec
-        doc = AiohttpApiSpec(app=app,
-                             title='My Documentation',
-                             version='v1',
-                             url='/api/docs/api-docs')
-
-        # now we can find it on 'http://localhost:8080/api/docs/api-docs'
-        web.run_app(app)
-
-    :param Application app: aiohttp web app
-    :param url: url for swagger spec in JSON format
-    :param kwargs: any APISpec kwargs
-    """
-
-    def __init__(self, url='/api/docs/api-docs', app=None, **kwargs):
+    def __init__(
+        self, url='/api/docs/api-docs', app=None, request_data_name='data', **kwargs
+    ):
+        warnings.warn(
+            "'AiohttpApiSpec' will be removed in future versions"
+            " of 'aiohttp-apispec', use 'setup_aiohttp_apispec' instead",
+            PendingDeprecationWarning,
+        )
         self.spec = APISpec(**kwargs)
         if 'apispec.ext.marshmallow' not in self.spec.plugins:
             self.spec.setup_plugin('apispec.ext.marshmallow')
         self.url = url
         self._registered = False
+        self._request_data_name = request_data_name
         if app is not None:
             self.register(app)
 
@@ -66,23 +32,9 @@ class AiohttpApiSpec:
         return self.spec.to_dict()
 
     def register(self, app: web.Application):
-        """
-        Register all aiohttp app views
-
-        Usage:
-
-        .. code-block:: python
-
-            doc = AiohttpApiSpec(title='My Documentation',
-                                 version='v1',
-                                 url='/api/docs/api-docs')
-            # we should do it only after all routes are added to router!
-            doc.register(app)
-
-        :param Application app: aiohttp web app
-        """
         if self._registered is True:
             return None
+        app['_apispec_request_data_name'] = self._request_data_name
 
         async def doc_routes(app_):
             self._register(app_)
@@ -137,3 +89,57 @@ class AiohttpApiSpec:
 
         if method in PATHS:
             self.spec.add_path(Path(path=url_path, operations={method: operations}))
+
+
+def setup_aiohttp_apispec(
+    app: web.Application,
+    *,
+    url: str = '/api/docs/api-docs',
+    request_data_name: str = 'data',
+    **kwargs
+) -> None:
+    """
+    aiohttp-apispec extension.
+
+    Usage:
+
+    .. code-block:: python
+
+        from aiohttp_apispec import docs, use_kwargs, setup_aiohttp_apispec
+        from aiohttp import web
+        from marshmallow import Schema, fields
+
+
+        class RequestSchema(Schema):
+            id = fields.Int()
+            name = fields.Str(description='name')
+            bool_field = fields.Bool()
+
+
+        @docs(tags=['mytag'],
+              summary='Test method summary',
+              description='Test method description')
+        @use_kwargs(RequestSchema)
+        async def index(request):
+            return web.json_response({'msg': 'done', 'data': {}})
+
+
+        app = web.Application()
+        app.router.add_post('/v1/test', index)
+
+        # init docs with all parameters, usual for ApiSpec
+        setup_aiohttp_apispec(app=app,
+                              title='My Documentation',
+                              version='v1',
+                              url='/api/docs/api-docs')
+
+        # now we can find it on 'http://localhost:8080/api/docs/api-docs'
+        web.run_app(app)
+
+    :param Application app: aiohttp web app
+    :param str url: url for swagger spec in JSON format
+    :param str request_data_name: name of the key in Request object
+    where validated data will be placed by validation_middleware ('data' by default)
+    :param kwargs: any apispec.APISpec kwargs
+    """
+    AiohttpApiSpec(url, app, request_data_name, **kwargs)
