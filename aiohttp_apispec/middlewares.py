@@ -5,6 +5,43 @@ from .utils import issubclass_py37fix
 
 
 @web.middleware
+async def validation_middleware(request: web.Request, handler) -> web.Response:
+    """
+    Validation middleware for aiohttp web app
+
+    Usage:
+
+    .. code-block:: python
+
+        app.middlewares.append(validation_middleware)
+
+
+    """
+    if not hasattr(handler, '__schemas__'):
+        if not issubclass_py37fix(handler, web.View):
+            return await handler(request)
+        method = request.method.lower()
+        if not hasattr(handler, method):
+            return await handler(request)
+        sub_handler = getattr(handler, method)
+        if not hasattr(sub_handler, '__schemas__'):
+            return await handler(request)
+        schemas = sub_handler.__schemas__
+    else:
+        schemas = handler.__schemas__
+    kwargs = {}
+    for schema in schemas:
+        data = await parser.parse(
+            schema['schema'], request, locations=schema['locations']
+        )
+        if data:
+            kwargs.update(data)
+    kwargs.update(request.match_info)
+    request['data'] = request.data = kwargs  # request.data will be removed since 1.0.0
+    return await handler(request)
+
+
+@web.middleware
 async def aiohttp_apispec_middleware(
     request: web.Request, handler, error_handler=None
 ) -> web.Response:
@@ -19,6 +56,13 @@ async def aiohttp_apispec_middleware(
 
 
     """
+    import warnings
+    warnings.warn(
+        "'aiohttp_apispec_middleware' will be removed in future versions of 'aiohttp-apispec', "
+        "use 'validation_middleware'",
+        PendingDeprecationWarning
+    )
+
     if not hasattr(handler, '__schemas__'):
         if not issubclass_py37fix(handler, web.View):
             return await handler(request)
