@@ -12,7 +12,7 @@ copyright = 'Maksim Danilchenko and contributors {0:%Y}'.format(dt.datetime.utcn
 version = '0.3.2'
 source_suffix = '.rst'
 master_doc = 'index'
-pygments_style = 'sphinx'
+pygments_style = 'default'
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
