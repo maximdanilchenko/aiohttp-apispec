@@ -10,7 +10,7 @@ def readme(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.7.0',
+    version='0.7.1',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=readme('README.md'),
     long_description_content_type="text/markdown",
@@ -19,7 +19,7 @@ setup(
     packages=find_packages(exclude=('test*',)),
     package_dir={'aiohttp_apispec': 'aiohttp_apispec'},
     include_package_data=True,
-    install_requires=['aiohttp', 'apispec<=0.38.0', 'webargs'],
+    install_requires=['aiohttp', 'apispec', 'webargs'],
     license='MIT',
     url='https://github.com/maximdanilchenko/aiohttp-apispec',
     zip_safe=False,

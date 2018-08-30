@@ -1,5 +1,5 @@
 aiohttp
-apispec<=0.38.0
+apispec
 marshmallow
 webargs
 pytest
