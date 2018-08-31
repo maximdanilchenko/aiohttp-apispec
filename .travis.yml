@@ -1,17 +1,19 @@
+sudo: false
+
 language: python
-matrix:
-  include:
-    - python: 3.5
-    - python: 3.6
-    - python: 3.7
-      dist: xenial
-      sudo: true
+
+python:
+  - 3.5
+  - &mainstream_python 3.6
+  - 3.7-dev
+  - nightly
+  - &pypy3 pypy3.5
 env:
   - APISPEC_VERSION=0.38.0
   - APISPEC_VERSION=latest
 install:
-  - pip install -r dev-requirements.txt
   - pip install -q apispec==$APISPEC_VERSION
+  - pip install -q -r dev-requirements.txt
 script:
   - pytest tests
 after_success: codecov
