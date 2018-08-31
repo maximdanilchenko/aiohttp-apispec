@@ -4,10 +4,10 @@ language: python
 
 python:
   - 3.5
-  - &mainstream_python 3.6
+  - 3.6
   - 3.7-dev
   - nightly
-  - &pypy3 pypy3.5
+  - pypy3.5
 env:
   - APISPEC_VERSION=0.38.0
   - APISPEC_VERSION=0.39.0
