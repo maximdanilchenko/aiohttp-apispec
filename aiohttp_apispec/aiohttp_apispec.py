@@ -15,7 +15,7 @@ class AiohttpApiSpec:
         self, url='/api/docs/api-docs', app=None, request_data_name='data', **kwargs
     ):
         warnings.warn(
-            "'AiohttpApiSpec' will be removed in future versions"
+            "'AiohttpApiSpec' will be removed since '1.0.0' version"
             " of 'aiohttp-apispec', use 'setup_aiohttp_apispec' instead",
             PendingDeprecationWarning,
         )

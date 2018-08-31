@@ -167,17 +167,3 @@ async def swagger(app):
 app.on_startup.append(swagger)
 # now we can access swagger client on /api/doc url
 ```
-
-<p>
-
-## TODO List before 1.0.0 can be released:
-
-- [x] Generating json spec from marshmallow data schemas
-- [x] Kwargs/marshal_with decorators for request/response schemas and docs decorator for connecting schemas to swagger spec with additional params through aiohttp routes
-- [x] Data validation through additional middleware (built using [webargs](https://github.com/sloria/webargs))
-- [ ] 97% more cov with tests
-- [x] Documentation on [readthedocs](http://aiohttp-apispec.readthedocs.io/en/latest/)
-- [x] More simple initialisation - register method is not needed. Instead of it we can use some middleware to register all routs on app start
-- [x] Class based views support
-- [x] Nested apps support
-- [x] Flexible settings for  ```aiohttp_apispec_middleware``` middleware (like request param name and error handling)

@@ -6,8 +6,12 @@ matrix:
     - python: 3.7
       dist: xenial
       sudo: true
+env:
+  - APISPEC_VERSION=0.38.0
+  - APISPEC_VERSION=latest
 install:
   - pip install -r dev-requirements.txt
+  - pip install -q apispec==$APISPEC_VERSION
 script:
   - pytest tests
 after_success: codecov

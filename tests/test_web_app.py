@@ -109,6 +109,11 @@ async def test_response_data_class_get(aiohttp_app):
     }
 
 
+async def test_response_data_class_without_spec(aiohttp_app):
+    res = await aiohttp_app.delete('/v1/class_echo')
+    assert (await res.json()) == {'hello': 'world'}
+
+
 async def test_swagger_handler_200(aiohttp_app):
     res = await aiohttp_app.get('/v1/api/docs/api-docs')
     assert res.status == 200

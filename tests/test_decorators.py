@@ -41,7 +41,7 @@ class TestViewDecorators:
 
     @pytest.fixture
     def aiohttp_view_marshal(self, response_schema):
-        @marshal_with(response_schema, 200)
+        @marshal_with(response_schema, 200, description='Method description')
         def index(request, **data):
             return web.json_response({'msg': 'done', 'data': {}})
 
@@ -104,6 +104,7 @@ class TestViewDecorators:
                 'type': 'object',
                 'properties': {'data': {'type': 'object'}, 'msg': {'type': 'string'}},
             },
+            'description': 'Method description',
         }
 
     def test_all(self, aiohttp_view_all):

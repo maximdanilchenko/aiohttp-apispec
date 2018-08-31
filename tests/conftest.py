@@ -102,6 +102,9 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
         async def get(self):
             return web.json_response(self.request['data'])
 
+        async def delete(self):
+            return web.json_response({'hello': 'world'})
+
     @use_kwargs(request_schema, **locations)
     def handler_get_echo_old_data(request):
         print(request.data)
