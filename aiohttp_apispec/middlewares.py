@@ -19,15 +19,16 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
 
 
     """
-    if not hasattr(handler, '__schemas__'):
-        if not issubclass_py37fix(handler, web.View):
+    orig_handler = request.match_info.handler
+    if not hasattr(orig_handler, '__schemas__'):
+        if not issubclass_py37fix(orig_handler, web.View):
             return await handler(request)
-        sub_handler = getattr(handler, request.method.lower())
+        sub_handler = getattr(orig_handler, request.method.lower())
         if not hasattr(sub_handler, '__schemas__'):
             return await handler(request)
         schemas = sub_handler.__schemas__
     else:
-        schemas = handler.__schemas__
+        schemas = orig_handler.__schemas__
     kwargs = {}
     for schema in schemas:
         data = await parser.parse(
