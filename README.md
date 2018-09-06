@@ -28,6 +28,14 @@ with marshmallow schemas from those decorators
 
 ```aiohttp-apispec``` api is fully inspired by ```flask-apispec``` library
 
+## Contents
+
+- [Install](#install)
+- [Quickstart](#quickstart)
+- [Adding validation middleware](#adding-validation-middleware)
+- [Build swagger web client](#build-swagger-web-client)
+
+
 ## Install
 
 ```
@@ -44,8 +52,7 @@ from marshmallow import Schema, fields
 
 class RequestSchema(Schema):
     id = fields.Int()
-    name = fields.Str(description='name')
-    bool_field = fields.Bool()
+    name = fields.Str(description="name")
 
 
 class ResponseSchema(Schema):
@@ -53,42 +60,45 @@ class ResponseSchema(Schema):
     data = fields.Dict()
 
 
-@docs(
-    tags=['mytag'],
-    summary='Test method summary',
-    description='Test method description',
-)
+@docs(tags=["mytag"], 
+      summary="Test method summary", 
+      description="Test method description")
 @use_kwargs(RequestSchema(strict=True))
 @marshal_with(ResponseSchema(), 200)
 async def index(request):
-    return web.json_response({'msg': 'done', 'data': {}})
-
-
-# Class based views are also supported:
-class TheView(web.View):
-    @docs(
-        tags=['mytag'],
-        summary='View method summary',
-        description='View method description',
-    )
-    @use_kwargs(RequestSchema(strict=True))
-    def delete(self):
-        return web.json_response({'msg': 'done', 
-                                  'data': {'name': self.request['data']['name']}})
+    return web.json_response({"msg": "done", "data": {}})
 
 
 app = web.Application()
-app.router.add_post('/v1/test', index)
-app.router.add_view('/v1/view', TheView)
+app.router.add_post("/v1/test", index)
 
 # init docs with all parameters, usual for ApiSpec
 setup_aiohttp_apispec(
-    app=app, title='My Documentation', version='v1', url='/api/docs/api-docs'
+    app=app, title="My Documentation", version="v1", url="/api/docs/api-docs"
 )
 
 # now we can find it on 'http://localhost:8080/api/docs/api-docs'
 web.run_app(app)
 ```
+Class based views are also supported:
+```python
+class TheView(web.View):
+    @docs(
+        tags=["mytag"],
+        summary="View method summary",
+        description="View method description",
+    )
+    @use_kwargs(RequestSchema(strict=True))
+    @marshal_with(ResponseSchema(), 200)
+    def delete(self):
+        return web.json_response(
+            {"msg": "done", "data": {"name": self.request["data"]["name"]}}
+        )
+
+
+app.router.add_view("/v1/view", TheView)
+```
+
 ## Adding validation middleware
 
 ```Python
