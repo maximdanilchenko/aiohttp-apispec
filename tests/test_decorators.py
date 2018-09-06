@@ -52,9 +52,8 @@ class TestViewDecorators:
         assert aiohttp_view_docs.__apispec__['tags'] == ['mytag']
         assert aiohttp_view_docs.__apispec__['summary'] == 'Test method summary'
         assert aiohttp_view_docs.__apispec__['description'] == 'Test method description'
-        for param in ('parameters', 'responses', 'docked'):
+        for param in ('parameters', 'responses'):
             assert param in aiohttp_view_docs.__apispec__
-        assert aiohttp_view_docs.__apispec__['docked'] == {'route': False}
 
     def test_use_kwargs_view(self, aiohttp_view_kwargs, request_schema):
         assert hasattr(aiohttp_view_kwargs, '__apispec__')
@@ -62,7 +61,7 @@ class TestViewDecorators:
         assert aiohttp_view_kwargs.__schemas__ == [
             {'schema': request_schema, 'locations': ['query']}
         ]
-        for param in ('parameters', 'responses', 'docked'):
+        for param in ('parameters', 'responses'):
             assert param in aiohttp_view_kwargs.__apispec__
 
     def test_use_kwargs_parameters(self, aiohttp_view_kwargs):
@@ -96,7 +95,7 @@ class TestViewDecorators:
 
     def test_marshalling(self, aiohttp_view_marshal):
         assert hasattr(aiohttp_view_marshal, '__apispec__')
-        for param in ('parameters', 'responses', 'docked'):
+        for param in ('parameters', 'responses'):
             assert param in aiohttp_view_marshal.__apispec__
         assert '200' in aiohttp_view_marshal.__apispec__['responses']
         assert aiohttp_view_marshal.__apispec__['responses']['200'] == {
@@ -110,7 +109,7 @@ class TestViewDecorators:
     def test_all(self, aiohttp_view_all):
         assert hasattr(aiohttp_view_all, '__apispec__')
         assert hasattr(aiohttp_view_all, '__schemas__')
-        for param in ('parameters', 'responses', 'docked'):
+        for param in ('parameters', 'responses'):
             assert param in aiohttp_view_all.__apispec__
         assert aiohttp_view_all.__apispec__['tags'] == ['mytag']
         assert aiohttp_view_all.__apispec__['summary'] == 'Test method summary'

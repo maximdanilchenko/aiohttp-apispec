@@ -41,7 +41,6 @@ def docs(**kwargs):
         extra_parameters = kwargs.pop('parameters', [])
         func.__apispec__['parameters'].extend(extra_parameters)
         func.__apispec__.update(kwargs)
-        func.__apispec__['docked'] = {'route': False}
         return func
 
     return wrapper
@@ -94,7 +93,7 @@ def use_kwargs(schema, locations=None, **kwargs):
     def wrapper(func):
         parameters = schema2parameters(schema, **options)
         if not hasattr(func, '__apispec__'):
-            func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
+            func.__apispec__ = {'parameters': [], 'responses': {}}
         func.__apispec__['parameters'].extend(parameters)
         if not hasattr(func, '__schemas__'):
             func.__schemas__ = []
@@ -135,7 +134,7 @@ def marshal_with(schema, code=200, required=False, description=None):
 
     def wrapper(func):
         if not hasattr(func, '__apispec__'):
-            func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
+            func.__apispec__ = {'parameters': [], 'responses': {}}
         raw_parameters = schema2parameters(schema, required=required)[0]
         # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
         parameters = {

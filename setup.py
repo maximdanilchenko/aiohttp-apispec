@@ -1,6 +1,8 @@
 from setuptools import find_packages
 from setuptools import setup
 
+REQUIRES = ['aiohttp<=3.4.4', 'apispec<=0.38.0', 'webargs<=4.0.0']
+
 
 def readme(fname):
     with open(fname) as fp:
@@ -19,7 +21,7 @@ setup(
     packages=find_packages(exclude=('test*',)),
     package_dir={'aiohttp_apispec': 'aiohttp_apispec'},
     include_package_data=True,
-    install_requires=['aiohttp', 'apispec', 'webargs'],
+    install_requires=REQUIRES,
     license='MIT',
     url='https://github.com/maximdanilchenko/aiohttp-apispec',
     zip_safe=False,
