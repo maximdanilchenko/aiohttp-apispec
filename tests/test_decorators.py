@@ -114,3 +114,13 @@ class TestViewDecorators:
         assert aiohttp_view_all.__apispec__['tags'] == ['mytag']
         assert aiohttp_view_all.__apispec__['summary'] == 'Test method summary'
         assert aiohttp_view_all.__apispec__['description'] == 'Test method description'
+
+    def test_view_multiple_body_parameters(self, request_schema):
+        with pytest.raises(RuntimeError) as ex:
+            @use_kwargs(request_schema, locations=['body'])
+            @use_kwargs(request_schema, locations=['body'])
+            def index(request, **data):
+                return web.json_response({'msg': 'done', 'data': {}})
+
+        assert isinstance(ex.value, RuntimeError)
+        assert str(ex.value) == 'Multiple body parameters are not allowed'
