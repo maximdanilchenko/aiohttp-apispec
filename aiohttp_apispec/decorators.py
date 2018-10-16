@@ -97,6 +97,13 @@ def use_kwargs(schema, locations=None, **kwargs):
         func.__apispec__['parameters'].extend(parameters)
         if not hasattr(func, '__schemas__'):
             func.__schemas__ = []
+        if locations and 'body' in locations:
+            body_schema_exists = (
+                'body' in func_schema['locations']
+                for func_schema in func.__schemas__
+            )
+            if any(body_schema_exists):
+                raise RuntimeError('Multiple body parameters are not allowed')
         func.__schemas__.append({'schema': schema, 'locations': locations})
 
         return func
