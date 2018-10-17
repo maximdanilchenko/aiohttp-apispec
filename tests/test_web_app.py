@@ -109,6 +109,11 @@ async def test_response_data_class_get(aiohttp_app):
     }
 
 
+async def test_response_data_class_post(aiohttp_app):
+    res = await aiohttp_app.post('/v1/class_echo')
+    assert res.status == 405
+
+
 async def test_response_data_class_without_spec(aiohttp_app):
     res = await aiohttp_app.delete('/v1/class_echo')
     assert (await res.json()) == {'hello': 'world'}
