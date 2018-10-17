@@ -1,4 +1,5 @@
 <h1 align="center">aiohttp-apispec</h1>
+<p align="center">Build and document REST APIs with <a href="https://github.com/aio-libs/aiohttp">aiohttp</a> and <a href="https://github.com/marshmallow-code/apispec">apispec</a></p>
 
 <p align="center">
   <a href="https://pypi.python.org/pypi/aiohttp-apispec"><img src="https://badge.fury.io/py/aiohttp-apispec.svg" alt="Pypi"></a>
@@ -16,7 +17,6 @@
    <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.7-blue.svg" alt="Python 3.7"></a>
 </p>
 
-<p align="center">Build and document REST APIs with <a href="https://github.com/aio-libs/aiohttp">aiohttp</a> and <a href="https://github.com/marshmallow-code/apispec">apispec</a></p>
 
 ![img](https://user-images.githubusercontent.com/10708076/40740929-bd141942-6452-11e8-911c-d9032f8d625f.png)
 
