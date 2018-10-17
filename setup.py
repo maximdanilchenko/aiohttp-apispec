@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRES = ['aiohttp<=3.4.4', 'apispec<=0.38.0', 'webargs<=4.0.0']
+REQUIRES = ['aiohttp<=3.4.4', 'apispec<=0.39.0', 'webargs<=4.1.0']
 
 
 def readme(fname):
@@ -12,7 +12,7 @@ def readme(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.7.2',
+    version='0.7.3',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=readme('README.md'),
     long_description_content_type="text/markdown",
