@@ -7,12 +7,12 @@ from apispec import APISpec, Path
 
 from .utils import get_path, get_path_keys, issubclass_py37fix
 
-PATHS = {'get', 'put', 'post', 'delete', 'patch'}
+PATHS = {"get", "put", "post", "delete", "patch"}
 
 
 class AiohttpApiSpec:
     def __init__(
-        self, url='/api/docs/api-docs', app=None, request_data_name='data', **kwargs
+        self, url="/api/docs/api-docs", app=None, request_data_name="data", **kwargs
     ):
         warnings.warn(
             "'AiohttpApiSpec' will be removed since '1.0.0' version"
@@ -20,8 +20,8 @@ class AiohttpApiSpec:
             PendingDeprecationWarning,
         )
         self.spec = APISpec(**kwargs)
-        if 'apispec.ext.marshmallow' not in self.spec.plugins:
-            self.spec.setup_plugin('apispec.ext.marshmallow')
+        if "apispec.ext.marshmallow" not in self.spec.plugins:
+            self.spec.setup_plugin("apispec.ext.marshmallow")
         self.url = url
         self._registered = False
         self._request_data_name = request_data_name
@@ -34,7 +34,7 @@ class AiohttpApiSpec:
     def register(self, app: web.Application):
         if self._registered is True:
             return None
-        app['_apispec_request_data_name'] = self._request_data_name
+        app["_apispec_request_data_name"] = self._request_data_name
 
         async def doc_routes(app_):
             self._register(app_)
@@ -43,7 +43,7 @@ class AiohttpApiSpec:
         self._registered = True
 
         def swagger_handler(request):
-            return web.json_response(request.app['swagger_dict'])
+            return web.json_response(request.app["swagger_dict"])
 
         app.router.add_routes([web.get(self.url, swagger_handler)])
 
@@ -59,18 +59,18 @@ class AiohttpApiSpec:
                 method = route.method.lower()
                 view = route.handler
                 self._register_route(route, method, view)
-        app['swagger_dict'] = self.swagger_dict()
+        app["swagger_dict"] = self.swagger_dict()
 
     def _register_route(self, route: web.RouteDef, method, view):
 
-        if not hasattr(view, '__apispec__'):
+        if not hasattr(view, "__apispec__"):
             return None
 
         url_path = get_path(route)
         if not url_path:
             return None
 
-        view.__apispec__['parameters'].extend(
+        view.__apispec__["parameters"].extend(
             {"in": "path", "name": path_key, "required": True, "type": "string"}
             for path_key in get_path_keys(url_path)
         )
@@ -86,8 +86,10 @@ class AiohttpApiSpec:
 def setup_aiohttp_apispec(
     app: web.Application,
     *,
-    url: str = '/api/docs/api-docs',
-    request_data_name: str = 'data',
+    title: str = "API documentation",
+    version: str = "0.0.1",
+    url: str = "/api/docs/api-docs",
+    request_data_name: str = "data",
     **kwargs
 ) -> None:
     """
@@ -129,9 +131,11 @@ def setup_aiohttp_apispec(
         web.run_app(app)
 
     :param Application app: aiohttp web app
+    :param str title: API title
+    :param str version: API version
     :param str url: url for swagger spec in JSON format
     :param str request_data_name: name of the key in Request object
     where validated data will be placed by validation_middleware ('data' by default)
     :param kwargs: any apispec.APISpec kwargs
     """
-    AiohttpApiSpec(url, app, request_data_name, **kwargs)
+    AiohttpApiSpec(url, app, request_data_name, title=title, version=version, **kwargs)

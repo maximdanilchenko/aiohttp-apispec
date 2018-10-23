@@ -10,8 +10,8 @@ def test_app_swagger_url(aiohttp_app):
 async def test_app_swagger_json(aiohttp_app):
     resp = await aiohttp_app.get('/v1/api/docs/api-docs')
     docs = await resp.json()
-    assert docs['info']['title'] == 'My Documentation'
-    assert docs['info']['version'] == 'v1'
+    assert docs['info']['title'] == 'API documentation'
+    assert docs['info']['version'] == '0.0.1'
     docs['paths']['/v1/test']['get']['parameters'] = sorted(
         docs['paths']['/v1/test']['get']['parameters'], key=lambda x: x['name']
     )

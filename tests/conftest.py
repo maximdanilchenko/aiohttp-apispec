@@ -117,7 +117,7 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
     if nested:
         v1 = web.Application()
         setup_aiohttp_apispec(
-            app=v1, title='My Documentation', version='v1', url='/api/docs/api-docs'
+            app=v1, title='API documentation', version='0.0.1', url='/api/docs/api-docs'
         )
         v1.router.add_routes(
             [
@@ -135,7 +135,7 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
         app.add_subapp('/v1/', v1)
     else:
         setup_aiohttp_apispec(
-            app=app, title='My Documentation', version='v1', url='/v1/api/docs/api-docs'
+            app=app, url='/v1/api/docs/api-docs'
         )
         app.router.add_routes(
             [

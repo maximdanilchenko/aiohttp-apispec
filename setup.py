@@ -12,7 +12,7 @@ def readme(fname):
 
 setup(
     name='aiohttp-apispec',
-    version='0.7.3',
+    version='0.7.4',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=readme('README.md'),
     long_description_content_type="text/markdown",
