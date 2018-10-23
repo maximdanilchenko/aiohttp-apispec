@@ -1,4 +1,4 @@
-aiohttp==3.4.4
+aiohttp<=3.4.4
 webargs==4.1.0
 apispec
 marshmallow
