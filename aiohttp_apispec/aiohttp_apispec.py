@@ -70,16 +70,15 @@ class AiohttpApiSpec:
         if not url_path:
             return None
 
-        view.__apispec__["parameters"].extend(
-            {"in": "path", "name": path_key, "required": True, "type": "string"}
-            for path_key in get_path_keys(url_path)
-        )
         self._update_paths(view.__apispec__, method, url_path)
 
     def _update_paths(self, data: dict, method: str, url_path: str):
-        operations = copy.deepcopy(data)
-
         if method in PATHS:
+            data["parameters"].extend(
+                {"in": "path", "name": path_key, "required": True, "type": "string"}
+                for path_key in get_path_keys(url_path)
+            )
+            operations = copy.deepcopy(data)
             self.spec.add_path(Path(path=url_path, operations={method: operations}))
 
 
