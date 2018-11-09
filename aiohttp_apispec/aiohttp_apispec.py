@@ -74,9 +74,10 @@ class AiohttpApiSpec:
 
     def _update_paths(self, data: dict, method: str, url_path: str):
         if method in PATHS:
+            existing = [p['name'] for p in data['parameters'] if p['in'] == 'path']
             data["parameters"].extend(
                 {"in": "path", "name": path_key, "required": True, "type": "string"}
-                for path_key in get_path_keys(url_path)
+                for path_key in get_path_keys(url_path) if path_key not in existing
             )
             operations = copy.deepcopy(data)
             self.spec.add_path(Path(path=url_path, operations={method: operations}))
