@@ -92,6 +92,11 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
         print(request.data)
         return web.json_response(request['data'])
 
+    @docs(parameters=[{'in': 'path', 'name': 'var', 'schema': {'type':'string', 'format':'uuid'}}])
+    def handler_get_variable(request):
+        print(request.data)
+        return web.json_response(request['data'])
+
     class ViewClass(web.View):
         @docs(
             tags=['mytag'],
@@ -129,6 +134,7 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
                 web.view('/class_echo', ViewClass),
                 web.get('/echo_old', handler_get_echo_old_data),
                 web.post('/echo', handler_post_echo),
+                web.get('/variable/{var}', handler_get_variable),
             ]
         )
         v1.middlewares.append(validation_middleware)
@@ -147,6 +153,7 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
                 web.view('/v1/class_echo', ViewClass),
                 web.get('/v1/echo_old', handler_get_echo_old_data),
                 web.post('/v1/echo', handler_post_echo),
+                web.get('/v1/variable/{var}', handler_get_variable),
             ]
         )
         app.middlewares.append(validation_middleware)

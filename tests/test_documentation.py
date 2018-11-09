@@ -3,7 +3,13 @@ from yarl import URL
 
 
 def test_app_swagger_url(aiohttp_app):
-    urls = [route.url_for() for route in aiohttp_app.app.router.routes()]
+    def safe_url_for(route):
+        try:
+            return route.url_for()
+        except KeyError:
+            return None
+
+    urls = [safe_url_for(route) for route in aiohttp_app.app.router.routes()]
     assert URL('/v1/api/docs/api-docs') in urls
 
 

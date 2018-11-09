@@ -114,6 +114,16 @@ async def test_response_data_class_post(aiohttp_app):
     assert res.status == 405
 
 
+async def test_path_variable_described_correctly(aiohttp_app):
+    if aiohttp_app.app._subapps:
+        swag = aiohttp_app.app._subapps[0]["swagger_dict"]["paths"]["/v1/variable/{var}"]
+    else:
+        swag = aiohttp_app.app["swagger_dict"]["paths"]["/v1/variable/{var}"]
+    assert len(swag['get']['parameters']) == 1, "There should only be one"
+    assert swag['get']['parameters'][0]['name'] == 'var'
+    assert swag['get']['parameters'][0]['schema']['format'] == 'uuid'
+
+
 async def test_response_data_class_without_spec(aiohttp_app):
     res = await aiohttp_app.delete('/v1/class_echo')
     assert (await res.json()) == {'hello': 'world'}
