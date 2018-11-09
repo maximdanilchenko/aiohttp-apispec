@@ -39,7 +39,9 @@ def docs(**kwargs):
         if not hasattr(func, '__apispec__'):
             func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
         extra_parameters = kwargs.pop('parameters', [])
+        extra_responses = kwargs.pop('responses', {})
         func.__apispec__['parameters'].extend(extra_parameters)
+        func.__apispec__['responses'].update(extra_responses)
         func.__apispec__.update(kwargs)
         return func
 
