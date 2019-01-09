@@ -1,7 +1,7 @@
 from setuptools import find_packages
 from setuptools import setup
 
-REQUIRES = ['aiohttp<=3.4.4', 'apispec<=0.39.0', 'webargs<=4.1.0']
+REQUIRES = ['aiohttp>=3.0.1', 'apispec', 'webargs']
 
 
 def readme(fname):
