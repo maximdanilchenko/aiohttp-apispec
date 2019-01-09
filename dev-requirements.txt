@@ -2,7 +2,7 @@ aiohttp>=3.0.1
 webargs
 apispec
 marshmallow
-pytest
+pytest>=3.6
 pytest-cov
 pytest-sugar
 pytest-aiohttp
