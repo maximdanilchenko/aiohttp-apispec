@@ -11,6 +11,9 @@ python:
 env:
   - APISPEC_VERSION=0.38.0
   - APISPEC_VERSION=0.39.0
+matrix:
+  allow_failures:
+    - nightly
 install:
   - pip install -q -r dev-requirements.txt --no-cache-dir --upgrade
   - pip install -q apispec==$APISPEC_VERSION
