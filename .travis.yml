@@ -16,7 +16,7 @@ env:
   - APISPEC_VERSION=0.38.0
   - APISPEC_VERSION=0.39.0
 install:
-  - pip install -q -r dev-requirements.txt
+  - pip install -q -r dev-requirements.txt --no-cache-dir
   - pip install -q apispec==$APISPEC_VERSION
 script:
   - pytest tests
