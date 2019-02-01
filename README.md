@@ -75,9 +75,7 @@ app = web.Application()
 app.router.add_post("/v1/test", index)
 
 # init docs with all parameters, usual for ApiSpec
-setup_aiohttp_apispec(
-    app=app, title="My Documentation", version="v1", url="/api/docs/api-docs"
-)
+setup_aiohttp_apispec(app=app, title="My Documentation", version="v1")
 
 # now we can find it on 'http://localhost:8080/api/docs/api-docs'
 web.run_app(app)
@@ -164,18 +162,23 @@ app.middlewares.extend([
 ```
 
 ## Build swagger web client
-```aiohttp-apispec``` adds ```swagger_dict``` parameter to aiohttp web application after initialization. 
+`aiohttp-apispec` adds `swagger_dict` parameter to aiohttp web application after initialization (with `setup_aiohttp_apispec` function). 
 So you can use it easily with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library:
 
 ```Python
+from aiohttp_apispec import setup_aiohttp_apispec
 from aiohttp_swagger import setup_swagger
 
-...
 
-async def swagger(app):
-    setup_swagger(
-        app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
-    )
-app.on_startup.append(swagger)
-# now we can access swagger client on /api/doc url
+def create_app(app):
+    setup_aiohttp_apispec(app)
+    
+    async def swagger(app):
+        setup_swagger(
+            app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
+        )
+    app.on_startup.append(swagger)
+    # now we can access swagger client on '/api/doc' url
+    ...
+    return app
 ```
