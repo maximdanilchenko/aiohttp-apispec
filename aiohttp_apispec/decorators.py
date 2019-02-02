@@ -1,11 +1,13 @@
 import apispec
-if tuple(int(i) for i in apispec.__version__.split('.')) <= (0, 38, 0):
+
+if tuple(int(i) for i in apispec.__version__.split(".")) <= (0, 38, 0):
     from apispec.ext.marshmallow.swagger import schema2parameters
 else:
     from apispec.ext.marshmallow.openapi import OpenAPIConverter
-    schema2parameters = OpenAPIConverter('2.0').schema2parameters
 
-VALID_RESPONSE_FIELDS = {'schema', 'description', 'headers', 'examples'}
+    schema2parameters = OpenAPIConverter("2.0").schema2parameters
+
+VALID_RESPONSE_FIELDS = {"schema", "description", "headers", "examples"}
 
 
 def docs(**kwargs):
@@ -35,13 +37,13 @@ def docs(**kwargs):
     """
 
     def wrapper(func):
-        kwargs['produces'] = ['application/json']
-        if not hasattr(func, '__apispec__'):
-            func.__apispec__ = {'parameters': [], 'responses': {}, 'docked': {}}
-        extra_parameters = kwargs.pop('parameters', [])
-        extra_responses = kwargs.pop('responses', {})
-        func.__apispec__['parameters'].extend(extra_parameters)
-        func.__apispec__['responses'].update(extra_responses)
+        kwargs["produces"] = ["application/json"]
+        if not hasattr(func, "__apispec__"):
+            func.__apispec__ = {"parameters": [], "responses": {}, "docked": {}}
+        extra_parameters = kwargs.pop("parameters", [])
+        extra_responses = kwargs.pop("responses", {})
+        func.__apispec__["parameters"].extend(extra_parameters)
+        func.__apispec__["responses"].update(extra_responses)
         func.__apispec__.update(kwargs)
         return func
 
@@ -82,31 +84,30 @@ def use_kwargs(schema, locations=None, **kwargs):
     # location kwarg added for compatibility with old versions
     locations = locations or []
     if not locations:
-        locations = kwargs.get('location')
+        locations = kwargs.get("location")
         if locations:
             locations = [locations]
         else:
             locations = None
 
-    options = {'required': kwargs.get('required', False)}
+    options = {"required": kwargs.get("required", False)}
     if locations:
-        options['default_in'] = locations[0]
+        options["default_in"] = locations[0]
 
     def wrapper(func):
         parameters = schema2parameters(schema, **options)
-        if not hasattr(func, '__apispec__'):
-            func.__apispec__ = {'parameters': [], 'responses': {}}
-        func.__apispec__['parameters'].extend(parameters)
-        if not hasattr(func, '__schemas__'):
+        if not hasattr(func, "__apispec__"):
+            func.__apispec__ = {"parameters": [], "responses": {}}
+        func.__apispec__["parameters"].extend(parameters)
+        if not hasattr(func, "__schemas__"):
             func.__schemas__ = []
-        if locations and 'body' in locations:
+        if locations and "body" in locations:
             body_schema_exists = (
-                'body' in func_schema['locations']
-                for func_schema in func.__schemas__
+                "body" in func_schema["locations"] for func_schema in func.__schemas__
             )
             if any(body_schema_exists):
-                raise RuntimeError('Multiple body parameters are not allowed')
-        func.__schemas__.append({'schema': schema, 'locations': locations})
+                raise RuntimeError("Multiple body parameters are not allowed")
+        func.__schemas__.append({"schema": schema, "locations": locations})
 
         return func
 
@@ -142,16 +143,16 @@ def marshal_with(schema, code=200, required=False, description=None):
         schema = schema()
 
     def wrapper(func):
-        if not hasattr(func, '__apispec__'):
-            func.__apispec__ = {'parameters': [], 'responses': {}}
+        if not hasattr(func, "__apispec__"):
+            func.__apispec__ = {"parameters": [], "responses": {}}
         raw_parameters = schema2parameters(schema, required=required)[0]
         # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
         parameters = {
             k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS
         }
         if description:
-            parameters['description'] = description
-        func.__apispec__['responses']['%s' % code] = parameters
+            parameters["description"] = description
+        func.__apispec__["responses"]["%s" % code] = parameters
         return func
 
     return wrapper
