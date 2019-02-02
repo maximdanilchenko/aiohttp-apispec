@@ -11,3 +11,4 @@ t.py
 /build
 *.egg-info
 /dist
+/venv
