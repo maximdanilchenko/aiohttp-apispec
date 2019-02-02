@@ -1,5 +1,4 @@
 import copy
-import warnings
 
 from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
@@ -14,11 +13,6 @@ class AiohttpApiSpec:
     def __init__(
         self, url="/api/docs/api-docs", app=None, request_data_name="data", **kwargs
     ):
-        warnings.warn(
-            "'AiohttpApiSpec' will be removed since '1.0.0' version"
-            " of 'aiohttp-apispec', use 'setup_aiohttp_apispec' instead",
-            PendingDeprecationWarning,
-        )
         self.spec = APISpec(**kwargs)
         if "apispec.ext.marshmallow" not in self.spec.plugins:
             self.spec.setup_plugin("apispec.ext.marshmallow")
