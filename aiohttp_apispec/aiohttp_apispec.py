@@ -1,4 +1,5 @@
 import copy
+from typing import Callable, Awaitable
 
 from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
@@ -8,6 +9,8 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 from .utils import get_path, get_path_keys, issubclass_py37fix
 
 PATHS = {"get", "put", "post", "delete", "patch"}
+
+_AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 
 class AiohttpApiSpec:
@@ -38,7 +41,7 @@ class AiohttpApiSpec:
         app.on_startup.append(doc_routes)
         self._registered = True
 
-        def swagger_handler(request):
+        async def swagger_handler(request):
             return web.json_response(request.app["swagger_dict"])
 
         app.router.add_routes([web.get(self.url, swagger_handler)])
@@ -57,7 +60,9 @@ class AiohttpApiSpec:
                 self._register_route(route, method, view)
         app["swagger_dict"] = self.swagger_dict()
 
-    def _register_route(self, route: web.RouteDef, method, view):
+    def _register_route(
+        self, route: web.AbstractRoute, method: str, view: _AiohttpView
+    ):
 
         if not hasattr(view, "__apispec__"):
             return None
