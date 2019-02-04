@@ -3,6 +3,7 @@ import copy
 from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
 from apispec import APISpec, Path
+from apispec.ext.marshmallow import MarshmallowPlugin
 
 from .utils import get_path, get_path_keys, issubclass_py37fix
 
@@ -13,9 +14,10 @@ class AiohttpApiSpec:
     def __init__(
         self, url="/api/docs/api-docs", app=None, request_data_name="data", **kwargs
     ):
-        self.spec = APISpec(**kwargs)
-        if "apispec.ext.marshmallow" not in self.spec.plugins:
-            self.spec.setup_plugin("apispec.ext.marshmallow")
+
+        plugin = MarshmallowPlugin()
+        self.spec = APISpec(plugins=(plugin,), **kwargs)
+
         self.url = url
         self._registered = False
         self._request_data_name = request_data_name
