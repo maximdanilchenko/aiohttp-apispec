@@ -4,7 +4,6 @@
 /lib
 /__pycache__
 .coverage
-t.py
 .pypirc
 .pytest_cache
 /docs/build
@@ -12,3 +11,5 @@ t.py
 *.egg-info
 /dist
 /venv
+.mypy_cache/
+.DS_Store
