@@ -50,7 +50,7 @@ def use_kwargs(schema, locations=None, **kwargs):
     Add request info into the swagger spec and
     prepare injection keyword arguments from the specified
     webargs arguments into the decorated view function in
-    request['data'] for aiohttp_apispec_middleware validation middleware.
+    request['data'] for validation_middleware validation middleware.
 
     Usage:
 
