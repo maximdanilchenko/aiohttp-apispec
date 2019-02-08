@@ -1,11 +1,6 @@
-import apispec
+from apispec.ext.marshmallow.openapi import OpenAPIConverter
 
-if tuple(int(i) for i in apispec.__version__.split(".")) <= (0, 38, 0):
-    from apispec.ext.marshmallow.swagger import schema2parameters
-else:
-    from apispec.ext.marshmallow.openapi import OpenAPIConverter
-
-    schema2parameters = OpenAPIConverter("2.0").schema2parameters
+schema2parameters = OpenAPIConverter("2.0").schema2parameters
 
 VALID_RESPONSE_FIELDS = {"schema", "description", "headers", "examples"}
 

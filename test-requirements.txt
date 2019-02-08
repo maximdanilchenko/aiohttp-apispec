@@ -1,6 +1,4 @@
-aiohttp>=3.0.1
-webargs
-apispec
+-r requirements.txt
 marshmallow
 pytest
 pytest-cov
@@ -10,4 +8,3 @@ codecov
 sphinx
 sphinx_issues
 sphinx_rtd_theme
-black
