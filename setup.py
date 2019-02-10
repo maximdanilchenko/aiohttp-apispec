@@ -10,7 +10,7 @@ def read(file_name):
 
 setup(
     name='aiohttp-apispec',
-    version='0.8.1',
+    version='0.9.0',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
