@@ -1,10 +1,3 @@
-from apispec.ext.marshmallow.openapi import OpenAPIConverter
-
-schema2parameters = OpenAPIConverter("2.0").schema2parameters
-
-VALID_RESPONSE_FIELDS = {"schema", "description", "headers", "examples"}
-
-
 def docs(**kwargs):
     """
     Annotate the decorated view function with the specified Swagger
@@ -90,10 +83,10 @@ def use_kwargs(schema, locations=None, **kwargs):
         options["default_in"] = locations[0]
 
     def wrapper(func):
-        parameters = schema2parameters(schema, **options)
         if not hasattr(func, "__apispec__"):
             func.__apispec__ = {"parameters": [], "responses": {}}
-        func.__apispec__["parameters"].extend(parameters)
+        func.__apispec__["options"] = options
+        func.__apispec__["schema"] = schema
         if not hasattr(func, "__schemas__"):
             func.__schemas__ = []
         if locations and "body" in locations:
@@ -140,14 +133,11 @@ def marshal_with(schema, code=200, required=False, description=None):
     def wrapper(func):
         if not hasattr(func, "__apispec__"):
             func.__apispec__ = {"parameters": [], "responses": {}}
-        raw_parameters = schema2parameters(schema, required=required)[0]
-        # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
-        parameters = {
-            k: v for k, v in raw_parameters.items() if k in VALID_RESPONSE_FIELDS
+        func.__apispec__["responses"]["%s" % code] = {
+            "schema": schema,
+            "required": required,
+            "description": description,
         }
-        if description:
-            parameters["description"] = description
-        func.__apispec__["responses"]["%s" % code] = parameters
         return func
 
     return wrapper

@@ -12,14 +12,16 @@ PATHS = {"get", "put", "post", "delete", "patch"}
 
 _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
+VALID_RESPONSE_FIELDS = {"schema", "description", "headers", "examples"}
+
 
 class AiohttpApiSpec:
     def __init__(
         self, url="/api/docs/api-docs", app=None, request_data_name="data", **kwargs
     ):
 
-        plugin = MarshmallowPlugin()
-        self.spec = APISpec(plugins=(plugin,), **kwargs)
+        self.plugin = MarshmallowPlugin()
+        self.spec = APISpec(plugins=(self.plugin,), openapi_version="2.0", **kwargs)
 
         self.url = url
         self._registered = False
@@ -75,12 +77,33 @@ class AiohttpApiSpec:
 
     def _update_paths(self, data: dict, method: str, url_path: str):
         if method in PATHS:
+            if "schema" in data:
+                parameters = self.plugin.openapi.schema2parameters(
+                    data.pop("schema"), **data.pop("options")
+                )
+                data["parameters"].extend(parameters)
+
             existing = [p["name"] for p in data["parameters"] if p["in"] == "path"]
             data["parameters"].extend(
                 {"in": "path", "name": path_key, "required": True, "type": "string"}
                 for path_key in get_path_keys(url_path)
                 if path_key not in existing
             )
+
+            if "responses" in data:
+                for code, params in data["responses"].items():
+                    raw_parameters = self.plugin.openapi.schema2parameters(
+                        params["schema"], required=params["required"]
+                    )[0]
+                    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
+                    parameters = {
+                        k: v
+                        for k, v in raw_parameters.items()
+                        if k in VALID_RESPONSE_FIELDS
+                    }
+                    if params["description"]:
+                        parameters["description"] = params["description"]
+
             operations = copy.deepcopy(data)
             self.spec.path(path=url_path, operations={method: operations})
 
