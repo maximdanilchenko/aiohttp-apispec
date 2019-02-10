@@ -3,7 +3,7 @@ from typing import Callable, Awaitable
 
 from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
-from apispec import APISpec, Path
+from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 
 from .utils import get_path, get_path_keys, issubclass_py37fix
@@ -82,7 +82,7 @@ class AiohttpApiSpec:
                 if path_key not in existing
             )
             operations = copy.deepcopy(data)
-            self.spec.add_path(Path(path=url_path, operations={method: operations}))
+            self.spec.path(path=url_path, operations={method: operations})
 
 
 def setup_aiohttp_apispec(
