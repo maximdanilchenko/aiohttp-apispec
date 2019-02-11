@@ -60,7 +60,7 @@ def response_schema():
         ({"location": "query"}, False),
     ]
 )
-def aiohttp_app(request_schema, request_callable_schema, loop, test_client, request):
+def aiohttp_app(request_schema, request_callable_schema, loop, aiohttp_client, request):
     locations, nested = request.param
 
     @docs(
@@ -69,26 +69,26 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
         description="Test method description",
     )
     @use_kwargs(request_schema, **locations)
-    def handler_get(request):
+    async def handler_get(request):
         print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
     @use_kwargs(request_schema)
-    def handler_post(request):
+    async def handler_post(request):
         print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
     @use_kwargs(request_callable_schema)
-    def handler_post_callable_schema(request):
+    async def handler_post_callable_schema(request):
         print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
     @use_kwargs(request_schema)
-    def handler_post_echo(request):
+    async def handler_post_echo(request):
         return web.json_response(request["data"])
 
     @use_kwargs(request_schema, **locations)
-    def handler_get_echo(request):
+    async def handler_get_echo(request):
         print(request.data)
         return web.json_response(request["data"])
 
@@ -101,7 +101,7 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
             }
         ]
     )
-    def handler_get_variable(request):
+    async def handler_get_variable(request):
         print(request.data)
         return web.json_response(request["data"])
 
@@ -119,11 +119,11 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
             return web.json_response({"hello": "world"})
 
     @use_kwargs(request_schema, **locations)
-    def handler_get_echo_old_data(request):
+    async def handler_get_echo_old_data(request):
         print(request.data)
         return web.json_response(request.data)
 
-    def other(request):
+    async def other(request):
         return web.Response()
 
     app = web.Application()
@@ -164,4 +164,4 @@ def aiohttp_app(request_schema, request_callable_schema, loop, test_client, requ
         )
         app.middlewares.append(validation_middleware)
 
-    return loop.run_until_complete(test_client(app))
+    return loop.run_until_complete(aiohttp_client(app))

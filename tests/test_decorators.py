@@ -14,7 +14,7 @@ class TestViewDecorators:
         )
         @use_kwargs(request_schema, locations=["query"])
         @marshal_with(response_schema, 200)
-        def index(request, **data):
+        async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
         return index
@@ -26,7 +26,7 @@ class TestViewDecorators:
             summary="Test method summary",
             description="Test method description",
         )
-        def index(request, **data):
+        async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
         return index
@@ -34,7 +34,7 @@ class TestViewDecorators:
     @pytest.fixture
     def aiohttp_view_kwargs(self, request_schema):
         @use_kwargs(request_schema, locations=["query"])
-        def index(request, **data):
+        async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
         return index
@@ -42,7 +42,7 @@ class TestViewDecorators:
     @pytest.fixture
     def aiohttp_view_marshal(self, response_schema):
         @marshal_with(response_schema, 200, description="Method description")
-        def index(request, **data):
+        async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
         return index
@@ -114,7 +114,7 @@ class TestViewDecorators:
 
             @use_kwargs(request_schema, locations=["body"])
             @use_kwargs(request_schema, locations=["body"])
-            def index(request, **data):
+            async def index(request, **data):
                 return web.json_response({"msg": "done", "data": {}})
 
         assert isinstance(ex.value, RuntimeError)
