@@ -3,7 +3,7 @@ from aiohttp import web
 from marshmallow import Schema, fields
 
 from aiohttp_apispec import (
-    use_kwargs,
+    request_schema,
     docs,
     validation_middleware,
     setup_aiohttp_apispec,
@@ -22,7 +22,7 @@ def pytest_report_header(config):
 
 
 @pytest.fixture
-def request_schema():
+def request_schema_fixture():
     class RequestSchema(Schema):
         id = fields.Int()
         name = fields.Str(description="name")
@@ -33,7 +33,7 @@ def request_schema():
 
 
 @pytest.fixture
-def request_callable_schema():
+def request_callable_schema_fixture():
     class RequestSchema(Schema):
         id = fields.Int()
         name = fields.Str(description="name")
@@ -44,7 +44,7 @@ def request_callable_schema():
 
 
 @pytest.fixture
-def response_schema():
+def response_schema_fixture():
     class ResponseSchema(Schema):
         msg = fields.Str()
         data = fields.Dict()
@@ -60,7 +60,7 @@ def response_schema():
         ({"location": "query"}, False),
     ]
 )
-def aiohttp_app(request_schema, request_callable_schema, loop, aiohttp_client, request):
+def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, aiohttp_client, request):
     locations, nested = request.param
 
     @docs(
@@ -68,26 +68,26 @@ def aiohttp_app(request_schema, request_callable_schema, loop, aiohttp_client, r
         summary="Test method summary",
         description="Test method description",
     )
-    @use_kwargs(request_schema, **locations)
+    @request_schema(request_schema_fixture, **locations)
     async def handler_get(request):
         print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
-    @use_kwargs(request_schema)
+    @request_schema(request_schema_fixture)
     async def handler_post(request):
         print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
-    @use_kwargs(request_callable_schema)
+    @request_schema(request_callable_schema_fixture)
     async def handler_post_callable_schema(request):
         print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
-    @use_kwargs(request_schema)
+    @request_schema(request_schema_fixture)
     async def handler_post_echo(request):
         return web.json_response(request["data"])
 
-    @use_kwargs(request_schema, **locations)
+    @request_schema(request_schema_fixture, **locations)
     async def handler_get_echo(request):
         print(request.data)
         return web.json_response(request["data"])
@@ -111,14 +111,14 @@ def aiohttp_app(request_schema, request_callable_schema, loop, aiohttp_client, r
             summary="View method summary",
             description="View method description",
         )
-        @use_kwargs(request_schema, **locations)
+        @request_schema(request_schema_fixture, **locations)
         async def get(self):
             return web.json_response(self.request["data"])
 
         async def delete(self):
             return web.json_response({"hello": "world"})
 
-    @use_kwargs(request_schema, **locations)
+    @request_schema(request_schema_fixture, **locations)
     async def handler_get_echo_old_data(request):
         print(request.data)
         return web.json_response(request.data)

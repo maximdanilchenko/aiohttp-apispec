@@ -124,7 +124,7 @@ def setup_aiohttp_apispec(
 
     .. code-block:: python
 
-        from aiohttp_apispec import docs, use_kwargs, setup_aiohttp_apispec
+        from aiohttp_apispec import docs, request_schema, setup_aiohttp_apispec
         from aiohttp import web
         from marshmallow import Schema, fields
 
@@ -138,7 +138,7 @@ def setup_aiohttp_apispec(
         @docs(tags=['mytag'],
               summary='Test method summary',
               description='Test method description')
-        @use_kwargs(RequestSchema)
+        @request_schema(RequestSchema)
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
