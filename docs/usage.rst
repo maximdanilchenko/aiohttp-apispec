@@ -9,8 +9,8 @@ Quickstart
 .. code-block:: python
 
     from aiohttp_apispec import (docs,
-                                 use_kwargs,
-                                 marshal_with,
+                                 request_schema,
+                                 response_schema,
                                  setup_aiohttp_apispec)
     from aiohttp import web
     from marshmallow import Schema, fields
@@ -30,8 +30,8 @@ Quickstart
     @docs(tags=['mytag'],
           summary='Test method summary',
           description='Test method description')
-    @use_kwargs(RequestSchema(strict=True))
-    @marshal_with(ResponseSchema(), 200)
+    @request_schema(RequestSchema(strict=True))
+    @response_schema(ResponseSchema(), 200)
     async def index(request):
         return web.json_response({'msg': 'done',
                                   'data': {}})
@@ -43,7 +43,7 @@ Quickstart
             summary='View method summary',
             description='View method description',
         )
-        @use_kwargs(RequestSchema(strict=True))
+        @request_schema(RequestSchema(strict=True))
         def delete(self):
             return web.json_response({
                 'msg': 'done',
@@ -80,8 +80,8 @@ Now you can access all validated data in route from ``request['data']`` like so:
     @docs(tags=['mytag'],
           summary='Test method summary',
           description='Test method description')
-    @use_kwargs(RequestSchema(strict=True))
-    @marshal_with(ResponseSchema(), 200)
+    @request_schema(RequestSchema(strict=True))
+    @response_schema(ResponseSchema(), 200)
     async def index(request):
         uid = request['data']['id']
         name = request['data']['name']
@@ -103,7 +103,7 @@ with ``request_data_name`` argument of ``setup_aiohttp_apispec`` function:
 
     ...
 
-    @use_kwargs(RequestSchema(strict=True))
+    @request_schema(RequestSchema(strict=True))
     async def index(request):
         uid = request['validated_data']['id']
         ...

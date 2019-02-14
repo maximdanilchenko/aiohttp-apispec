@@ -38,7 +38,7 @@ def docs(**kwargs):
     return wrapper
 
 
-def use_kwargs(schema, locations=None, **kwargs):
+def request_schema(schema, locations=None, **kwargs):
     """
     Add request info into the swagger spec and
     prepare injection keyword arguments from the specified
@@ -57,7 +57,7 @@ def use_kwargs(schema, locations=None, **kwargs):
             id = fields.Int()
             name = fields.Str(description='name')
 
-        @use_kwargs(RequestSchema(strict=True))
+        @request_schema(RequestSchema(strict=True))
         async def index(request):
             # aiohttp_apispec_middleware should be used for it
             data = request['data']
@@ -102,7 +102,10 @@ def use_kwargs(schema, locations=None, **kwargs):
     return wrapper
 
 
-def marshal_with(schema, code=200, required=False, description=None):
+use_kwargs = request_schema
+
+
+def response_schema(schema, code=200, required=False, description=None):
     """
     Add response info into the swagger spec
 
@@ -118,7 +121,7 @@ def marshal_with(schema, code=200, required=False, description=None):
             msg = fields.Str()
             data = fields.Dict()
 
-        @marshal_with(ResponseSchema(), 200)
+        @response_schema(ResponseSchema(), 200)
         async def index(request):
             return web.json_response({'msg': 'done', 'data': {}})
 
@@ -141,3 +144,6 @@ def marshal_with(schema, code=200, required=False, description=None):
         return func
 
     return wrapper
+
+
+marshal_with = response_schema

@@ -23,8 +23,10 @@
 <p>
 
 ```aiohttp-apispec``` key features:
-- ```docs```, ```use_kwargs``` and ```marshal_with``` decorators 
-to add swagger spec support out of the box
+- ```docs```, ```request_schema``` and ```response_schema``` decorators 
+to add swagger spec support out of the box. You can also use 
+the ```use_kwags``` and ```marshal_with``` decorators 
+instead of ```request_schema``` and ```response_schema``` respectively.
 - ```validation_middleware``` middleware to enable validating 
 with marshmallow schemas from those decorators
 
@@ -47,7 +49,7 @@ pip install aiohttp-apispec
 ## Quickstart
 
 ```Python
-from aiohttp_apispec import docs, use_kwargs, marshal_with, setup_aiohttp_apispec
+from aiohttp_apispec import docs, request_schema, response_schema, setup_aiohttp_apispec
 from aiohttp import web
 from marshmallow import Schema, fields
 
@@ -65,8 +67,8 @@ class ResponseSchema(Schema):
 @docs(tags=["mytag"], 
       summary="Test method summary", 
       description="Test method description")
-@use_kwargs(RequestSchema(strict=True))
-@marshal_with(ResponseSchema(), 200)
+@request_schema(RequestSchema(strict=True))
+@response_schema(ResponseSchema(), 200)
 async def index(request):
     return web.json_response({"msg": "done", "data": {}})
 
@@ -88,8 +90,8 @@ class TheView(web.View):
         summary="View method summary",
         description="View method description",
     )
-    @use_kwargs(RequestSchema(strict=True))
-    @marshal_with(ResponseSchema(), 200)
+    @request_schema(RequestSchema(strict=True))
+    @response_schema(ResponseSchema(), 200)
     def delete(self):
         return web.json_response(
             {"msg": "done", "data": {"name": self.request["data"]["name"]}}
@@ -116,8 +118,8 @@ Now you can access all validated data in route from ```request['data']``` like s
     summary='Test method summary',
     description='Test method description',
 )
-@use_kwargs(RequestSchema(strict=True))
-@marshal_with(ResponseSchema(), 200)
+@request_schema(RequestSchema(strict=True))
+@response_schema(ResponseSchema(), 200)
 async def index(request):
     uid = request['data']['id']
     name = request['data']['name']
@@ -139,7 +141,7 @@ setup_aiohttp_apispec(app=app,
                       
 ...                  
 
-@use_kwargs(RequestSchema(strict=True))
+@request_schema(RequestSchema(strict=True))
 async def index(request):
     uid = request['validated_data']['id']
         ...
