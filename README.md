@@ -101,6 +101,23 @@ class TheView(web.View):
 app.router.add_view("/v1/view", TheView)
 ```
 
+As alternative you can add responses info to `docs` decorator, which is more compact way. 
+And it allows you not to use schemas for responses documentation:
+
+```python
+
+@docs(tags=["mytag"], 
+      summary="Test method summary", 
+      description="Test method description",
+      responses={200: {"schema": ResponseSchema(), "description": "Success response"}, # regular response
+                 404: {"description": "Not found"},  # responses without schema
+                 422: {"description": "Validation error"},
+      })
+@request_schema(RequestSchema(strict=True))
+async def index(request):
+    return web.json_response({"msg": "done", "data": {}})
+```
+
 ## Adding validation middleware
 
 ```Python
