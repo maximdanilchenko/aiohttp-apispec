@@ -76,22 +76,25 @@ class AiohttpApiSpec:
         self._update_paths(view.__apispec__, method, url_path)
 
     def _update_paths(self, data: dict, method: str, url_path: str):
-        if method in PATHS:
-            if "schema" in data:
-                parameters = self.plugin.openapi.schema2parameters(
-                    data.pop("schema"), **data.pop("options")
-                )
-                data["parameters"].extend(parameters)
-
-            existing = [p["name"] for p in data["parameters"] if p["in"] == "path"]
-            data["parameters"].extend(
-                {"in": "path", "name": path_key, "required": True, "type": "string"}
-                for path_key in get_path_keys(url_path)
-                if path_key not in existing
+        if method not in PATHS:
+            return None
+        if "schema" in data:
+            parameters = self.plugin.openapi.schema2parameters(
+                data.pop("schema"), **data.pop("options")
             )
+            data["parameters"].extend(parameters)
 
-            if "responses" in data:
-                for code, params in data["responses"].items():
+        existing = [p["name"] for p in data["parameters"] if p["in"] == "path"]
+        data["parameters"].extend(
+            {"in": "path", "name": path_key, "required": True, "type": "string"}
+            for path_key in get_path_keys(url_path)
+            if path_key not in existing
+        )
+
+        if "responses" in data:
+            responses = {}
+            for code, params in data["responses"].items():
+                if "schema" in params:
                     raw_parameters = self.plugin.openapi.schema2parameters(
                         params["schema"], required=params["required"]
                     )[0]
@@ -103,9 +106,13 @@ class AiohttpApiSpec:
                     }
                     if params["description"]:
                         parameters["description"] = params["description"]
+                    responses[code] = parameters
+                else:
+                    responses[code] = params
+            data["responses"] = responses
 
-            operations = copy.deepcopy(data)
-            self.spec.path(path=url_path, operations={method: operations})
+        operations = copy.deepcopy(data)
+        self.spec.path(path=url_path, operations={method: operations})
 
 
 def setup_aiohttp_apispec(
