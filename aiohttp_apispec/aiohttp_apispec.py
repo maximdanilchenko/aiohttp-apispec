@@ -96,7 +96,7 @@ class AiohttpApiSpec:
             for code, params in data["responses"].items():
                 if "schema" in params:
                     raw_parameters = self.plugin.openapi.schema2parameters(
-                        params["schema"], required=params["required"]
+                        params["schema"], required=params.get("required", False)
                     )[0]
                     # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
                     parameters = {
@@ -104,7 +104,7 @@ class AiohttpApiSpec:
                         for k, v in raw_parameters.items()
                         if k in VALID_RESPONSE_FIELDS
                     }
-                    if params["description"]:
+                    if "description" in params:
                         parameters["description"] = params["description"]
                     responses[code] = parameters
                 else:
