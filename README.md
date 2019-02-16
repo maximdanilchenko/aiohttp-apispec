@@ -49,7 +49,12 @@ pip install aiohttp-apispec
 ## Quickstart
 
 ```Python
-from aiohttp_apispec import docs, request_schema, response_schema, setup_aiohttp_apispec
+from aiohttp_apispec import (
+    docs,
+    request_schema,
+    response_schema,
+    setup_aiohttp_apispec,
+)
 from aiohttp import web
 from marshmallow import Schema, fields
 
@@ -64,9 +69,11 @@ class ResponseSchema(Schema):
     data = fields.Dict()
 
 
-@docs(tags=["mytag"], 
-      summary="Test method summary", 
-      description="Test method description")
+@docs(
+    tags=["mytag"],
+    summary="Test method summary",
+    description="Test method description",
+)
 @request_schema(RequestSchema(strict=True))
 @response_schema(ResponseSchema(), 200)
 async def index(request):
@@ -105,14 +112,19 @@ As alternative you can add responses info to `docs` decorator, which is more com
 And it allows you not to use schemas for responses documentation:
 
 ```python
-
-@docs(tags=["mytag"], 
-      summary="Test method summary", 
-      description="Test method description",
-      responses={200: {"schema": ResponseSchema(), "description": "Success response"}, # regular response
-                 404: {"description": "Not found"},  # responses without schema
-                 422: {"description": "Validation error"},
-      })
+@docs(
+    tags=["mytag"],
+    summary="Test method summary",
+    description="Test method description",
+    responses={
+        200: {
+            "schema": ResponseSchema(),
+            "description": "Success response",
+        },  # regular response
+        404: {"description": "Not found"},  # responses without schema
+        422: {"description": "Validation error"},
+    },
+)
 @request_schema(RequestSchema(strict=True))
 async def index(request):
     return web.json_response({"msg": "done", "data": {}})
@@ -131,17 +143,17 @@ Now you can access all validated data in route from ```request['data']``` like s
 
 ```Python
 @docs(
-    tags=['mytag'],
-    summary='Test method summary',
-    description='Test method description',
+    tags=["mytag"],
+    summary="Test method summary",
+    description="Test method description",
 )
 @request_schema(RequestSchema(strict=True))
 @response_schema(ResponseSchema(), 200)
 async def index(request):
-    uid = request['data']['id']
-    name = request['data']['name']
+    uid = request["data"]["id"]
+    name = request["data"]["name"]
     return web.json_response(
-        {'msg': 'done', 'data': {'info': f'name - {name}, id - {uid}'}}
+        {"msg": "done", "data": {"info": f"name - {name}, id - {uid}"}}
     )
 ```
 
@@ -150,18 +162,21 @@ You can change ``Request``'s ``'data'`` param to another with ``request_data_nam
 ``setup_aiohttp_apispec`` function:
 
 ```python
-setup_aiohttp_apispec(app=app,
-                      request_data_name='validated_data',
-                      title='My Documentation',
-                      version='v1',
-                      url='/api/docs/api-docs')
-                      
-...                  
+setup_aiohttp_apispec(
+    app=app,
+    request_data_name="validated_data",
+    title="My Documentation",
+    version="v1",
+    url="/api/docs/api-docs",
+)
+
+...
+
 
 @request_schema(RequestSchema(strict=True))
 async def index(request):
-    uid = request['validated_data']['id']
-        ...
+    uid = request["validated_data"]["id"]
+    ...
 ```
 
 If you want to catch validation errors you should write your own middleware and catch 
@@ -173,11 +188,15 @@ async def my_middleware(request, handler):
         return await handler(request)
     except web.HTTPClientError:
         return web.json_response(status=400)
-        
-app.middlewares.extend([
-    my_middleware,  # Catch exception by your own, format it and respond to client
-    validation_middleware,
-])
+
+
+app.middlewares.extend(
+    [
+        my_middleware,  # Catch exception by your own, format it and respond to client
+        validation_middleware,
+    ]
+)
+
 ```
 
 ## Build swagger web client
@@ -191,11 +210,12 @@ from aiohttp_swagger import setup_swagger
 
 def create_app(app):
     setup_aiohttp_apispec(app)
-    
+
     async def swagger(app):
         setup_swagger(
-            app=app, swagger_url='/api/doc', swagger_info=app['swagger_dict']
+            app=app, swagger_url="/api/doc", swagger_info=app["swagger_dict"]
         )
+
     app.on_startup.append(swagger)
     # now we can access swagger client on '/api/doc' url
     ...
