@@ -104,8 +104,9 @@ class AiohttpApiSpec:
                         for k, v in raw_parameters.items()
                         if k in VALID_RESPONSE_FIELDS
                     }
-                    if "description" in params:
-                        parameters["description"] = params["description"]
+                    for extra_info in ("description", "headers", "examples"):
+                        if extra_info in params:
+                            parameters[extra_info] = params[extra_info]
                     responses[code] = parameters
                 else:
                     responses[code] = params
