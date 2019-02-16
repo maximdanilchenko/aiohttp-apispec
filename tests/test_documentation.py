@@ -53,7 +53,13 @@ async def test_app_swagger_json(aiohttp_app):
                     "type": "string",
                 },
             ],
-            "responses": {"404": {"description": "Not Found"}},
+            "responses": {
+                "200": {
+                    "description": "Success response",
+                    "schema": {"$ref": "#/definitions/Response"},
+                },
+                "404": {"description": "Not Found"},
+            },
             "tags": ["mytag"],
             "summary": "Test method summary",
             "description": "Test method description",
@@ -103,6 +109,40 @@ async def test_app_swagger_json(aiohttp_app):
             "summary": "View method summary",
             "description": "View method description",
             "produces": ["application/json"],
+        },
+        sort_keys=True,
+    )
+
+    assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
+        {
+            "Response": {
+                "type": "object",
+                "properties": {"msg": {"type": "string"}, "data": {"type": "object"}},
+            },
+            "Request": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "name"},
+                    "bool_field": {"type": "boolean"},
+                    "list_field": {
+                        "type": "array",
+                        "items": {"type": "integer", "format": "int32"},
+                    },
+                    "id": {"type": "integer", "format": "int32"},
+                },
+            },
+            "Request1": {
+                "type": "object",
+                "properties": {
+                    "name": {"type": "string", "description": "name"},
+                    "bool_field": {"type": "boolean"},
+                    "list_field": {
+                        "type": "array",
+                        "items": {"type": "integer", "format": "int32"},
+                    },
+                    "id": {"type": "integer", "format": "int32"},
+                },
+            },
         },
         sort_keys=True,
     )

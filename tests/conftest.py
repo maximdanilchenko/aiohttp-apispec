@@ -4,6 +4,7 @@ from marshmallow import Schema, fields
 
 from aiohttp_apispec import (
     request_schema,
+    response_schema,
     docs,
     validation_middleware,
     setup_aiohttp_apispec,
@@ -60,16 +61,24 @@ def response_schema_fixture():
         ({"location": "query"}, False),
     ]
 )
-def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, aiohttp_client, request):
+def aiohttp_app(
+    request_schema_fixture,
+    request_callable_schema_fixture,
+    response_schema_fixture,
+    loop,
+    aiohttp_client,
+    request,
+):
     locations, nested = request.param
 
     @docs(
         tags=["mytag"],
         summary="Test method summary",
         description="Test method description",
-        responses={404: {"description": "Not Found"}}
+        responses={404: {"description": "Not Found"}},
     )
     @request_schema(request_schema_fixture, **locations)
+    @response_schema(response_schema_fixture, 200, description="Success response")
     async def handler_get(request):
         return web.json_response({"msg": "done", "data": {}})
 
@@ -99,7 +108,6 @@ def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, a
         ]
     )
     async def handler_get_variable(request):
-        print(request.data)
         return web.json_response(request["data"])
 
     class ViewClass(web.View):
