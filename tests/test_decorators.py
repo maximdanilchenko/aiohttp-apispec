@@ -67,7 +67,6 @@ class TestViewDecorators:
     @pytest.mark.skip
     def test_request_schema_parameters(self, aiohttp_view_kwargs):
         parameters = aiohttp_view_kwargs.__apispec__["parameters"]
-        print(sorted(parameters, key=lambda x: x["name"]))
         assert sorted(parameters, key=lambda x: x["name"]) == [
             {"in": "query", "name": "bool_field", "required": False, "type": "boolean"},
             {

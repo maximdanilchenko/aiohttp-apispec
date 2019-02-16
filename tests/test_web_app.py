@@ -35,27 +35,6 @@ async def test_response_data_post(aiohttp_app):
     assert (await res.json()) == {"id": 1, "name": "max", "list_field": [1, 2, 3, 4]}
 
 
-async def test_response_data_get_old_data(aiohttp_app):
-    res = await aiohttp_app.get(
-        "/v1/echo_old",
-        params=[
-            ("id", "1"),
-            ("name", "max"),
-            ("bool_field", "0"),
-            ("list_field", "1"),
-            ("list_field", "2"),
-            ("list_field", "3"),
-            ("list_field", "4"),
-        ],
-    )
-    assert (await res.json()) == {
-        "id": 1,
-        "name": "max",
-        "bool_field": False,
-        "list_field": [1, 2, 3, 4],
-    }
-
-
 async def test_response_data_get(aiohttp_app):
     res = await aiohttp_app.get(
         "/v1/echo",

@@ -53,7 +53,7 @@ async def test_app_swagger_json(aiohttp_app):
                     "type": "string",
                 },
             ],
-            "responses": {},
+            "responses": {"404": {"description": "Not Found"}},
             "tags": ["mytag"],
             "summary": "Test method summary",
             "description": "Test method description",

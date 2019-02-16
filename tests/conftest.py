@@ -67,20 +67,18 @@ def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, a
         tags=["mytag"],
         summary="Test method summary",
         description="Test method description",
+        responses={404: {"description": "Not Found"}}
     )
     @request_schema(request_schema_fixture, **locations)
     async def handler_get(request):
-        print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
     @request_schema(request_schema_fixture)
     async def handler_post(request):
-        print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
     @request_schema(request_callable_schema_fixture)
     async def handler_post_callable_schema(request):
-        print(request.data)
         return web.json_response({"msg": "done", "data": {}})
 
     @request_schema(request_schema_fixture)
@@ -89,7 +87,6 @@ def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, a
 
     @request_schema(request_schema_fixture, **locations)
     async def handler_get_echo(request):
-        print(request.data)
         return web.json_response(request["data"])
 
     @docs(
@@ -118,11 +115,6 @@ def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, a
         async def delete(self):
             return web.json_response({"hello": "world"})
 
-    @request_schema(request_schema_fixture, **locations)
-    async def handler_get_echo_old_data(request):
-        print(request.data)
-        return web.json_response(request.data)
-
     async def other(request):
         return web.Response()
 
@@ -140,7 +132,6 @@ def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, a
                 web.get("/other", other),
                 web.get("/echo", handler_get_echo),
                 web.view("/class_echo", ViewClass),
-                web.get("/echo_old", handler_get_echo_old_data),
                 web.post("/echo", handler_post_echo),
                 web.get("/variable/{var}", handler_get_variable),
             ]
@@ -157,7 +148,6 @@ def aiohttp_app(request_schema_fixture, request_callable_schema_fixture, loop, a
                 web.get("/v1/other", other),
                 web.get("/v1/echo", handler_get_echo),
                 web.view("/v1/class_echo", ViewClass),
-                web.get("/v1/echo_old", handler_get_echo_old_data),
                 web.post("/v1/echo", handler_post_echo),
                 web.get("/v1/variable/{var}", handler_get_variable),
             ]
