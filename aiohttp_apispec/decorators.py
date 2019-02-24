@@ -27,7 +27,7 @@ def docs(**kwargs):
     def wrapper(func):
         kwargs["produces"] = ["application/json"]
         if not hasattr(func, "__apispec__"):
-            func.__apispec__ = {"parameters": [], "responses": {}, "docked": {}}
+            func.__apispec__ = {"parameters": [], "responses": {}}
         extra_parameters = kwargs.pop("parameters", [])
         extra_responses = kwargs.pop("responses", {})
         func.__apispec__["parameters"].extend(extra_parameters)
