@@ -1,10 +1,12 @@
 import copy
+from pathlib import Path
 from typing import Callable, Awaitable
 
 from aiohttp import web
 from aiohttp.hdrs import METH_ANY, METH_ALL
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
+from jinja2 import Template
 
 from .utils import get_path, get_path_keys, issubclass_py37fix
 
@@ -17,13 +19,19 @@ VALID_RESPONSE_FIELDS = {"schema", "description", "headers", "examples"}
 
 class AiohttpApiSpec:
     def __init__(
-        self, url="/api/docs/api-docs", app=None, request_data_name="data", **kwargs
+        self,
+        url="/api/docs/swagger.json",
+        app=None,
+        request_data_name="data",
+        swagger_path=None,
+        **kwargs
     ):
 
         self.plugin = MarshmallowPlugin()
         self.spec = APISpec(plugins=(self.plugin,), openapi_version="2.0", **kwargs)
 
         self.url = url
+        self.swagger_path = swagger_path
         self._registered = False
         self._request_data_name = request_data_name
         if app is not None:
@@ -47,6 +55,23 @@ class AiohttpApiSpec:
             return web.json_response(request.app["swagger_dict"])
 
         app.router.add_routes([web.get(self.url, swagger_handler)])
+
+        if self.swagger_path is not None:
+            self.add_swagger_web_page(app, self.swagger_path)
+
+    def add_swagger_web_page(self, app: web.Application, path: str):
+        static_path = Path(__file__).parent / "static"
+        app.router.add_static("/swagger_ui", static_path)
+
+        with open(static_path / "index.html") as swg_tmp:
+            tmp = Template(swg_tmp.read())
+
+        async def swagger(request):
+            return web.Response(
+                text=tmp.render(path=self.url), content_type="text/html"
+            )
+
+        app.router.add_route("GET", path, swagger)
 
     def _register(self, app: web.Application):
         for route in app.router.routes():
@@ -121,8 +146,9 @@ def setup_aiohttp_apispec(
     *,
     title: str = "API documentation",
     version: str = "0.0.1",
-    url: str = "/api/docs/api-docs",
+    url: str = "/api/docs/swagger.json",
     request_data_name: str = "data",
+    swagger_path: str = None,
     **kwargs
 ) -> None:
     """
@@ -169,6 +195,15 @@ def setup_aiohttp_apispec(
     :param str url: url for swagger spec in JSON format
     :param str request_data_name: name of the key in Request object
     where validated data will be placed by validation_middleware ('data' by default)
+    :param str swagger_path: experimental SwaggerUI support (starting from v1.1.0)
     :param kwargs: any apispec.APISpec kwargs
     """
-    AiohttpApiSpec(url, app, request_data_name, title=title, version=version, **kwargs)
+    AiohttpApiSpec(
+        url,
+        app,
+        request_data_name,
+        title=title,
+        version=version,
+        swagger_path=swagger_path,
+        **kwargs
+    )
