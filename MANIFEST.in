@@ -1,6 +1,7 @@
 include LICENSE
 include README.md
 include requirements.txt
+recursive-include aiohttp_apispec/static *
 graft aiohttp_apispec
 graft docs
 global-exclude *.pyc
