@@ -24,6 +24,7 @@ class AiohttpApiSpec:
         app=None,
         request_data_name="data",
         swagger_path=None,
+        static_path='/static/swagger',
         **kwargs
     ):
 
@@ -32,6 +33,7 @@ class AiohttpApiSpec:
 
         self.url = url
         self.swagger_path = swagger_path
+        self.static_path = static_path
         self._registered = False
         self._request_data_name = request_data_name
         if app is not None:
@@ -57,21 +59,21 @@ class AiohttpApiSpec:
         app.router.add_routes([web.get(self.url, swagger_handler)])
 
         if self.swagger_path is not None:
-            self.add_swagger_web_page(app, self.swagger_path)
+            self.add_swagger_web_page(app, self.static_path, self.swagger_path)
 
-    def add_swagger_web_page(self, app: web.Application, path: str):
-        static_path = Path(__file__).parent / "static"
-        app.router.add_static("/swagger_ui", static_path)
+    def add_swagger_web_page(self, app: web.Application, static_path: str, view_path: str):
+        static_files = Path(__file__).parent / "static"
+        app.router.add_static(static_path, static_files)
 
-        with open(static_path / "index.html") as swg_tmp:
-            tmp = Template(swg_tmp.read())
+        with open(static_files / "index.html") as swg_tmp:
+            tmp = Template(swg_tmp.read()).render(path=self.url, static=static_path)
 
-        async def swagger(request):
+        async def swagger_view(_):
             return web.Response(
-                text=tmp.render(path=self.url), content_type="text/html"
+                text=tmp, content_type="text/html"
             )
 
-        app.router.add_route("GET", path, swagger)
+        app.router.add_route("GET", view_path, swagger_view)
 
     def _register(self, app: web.Application):
         for route in app.router.routes():
@@ -149,6 +151,7 @@ def setup_aiohttp_apispec(
     url: str = "/api/docs/swagger.json",
     request_data_name: str = "data",
     swagger_path: str = None,
+    static_path: str = '/static/swagger',
     **kwargs
 ) -> None:
     """
@@ -205,5 +208,6 @@ def setup_aiohttp_apispec(
         title=title,
         version=version,
         swagger_path=swagger_path,
+        static_path=static_path,
         **kwargs
     )
