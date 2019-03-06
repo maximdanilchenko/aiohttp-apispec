@@ -197,11 +197,12 @@ def setup_aiohttp_apispec(
     :param str version: API version
     :param str url: url for swagger spec in JSON format
     :param str request_data_name: name of the key in Request object
-    where validated data will be placed by validation_middleware (``'data'`` by default)
+                                  where validated data will be placed by
+                                  validation_middleware (``'data'`` by default)
     :param str swagger_path: experimental SwaggerUI support (starting from v1.1.0).
-    By default it is None (disabled)
+                             By default it is None (disabled)
     :param str static_path: path for static files used by SwaggerUI
-    (if it is enabled with ``swagger_path``)
+                            (if it is enabled with ``swagger_path``)
     :param kwargs: any apispec.APISpec kwargs
     """
     AiohttpApiSpec(
