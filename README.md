@@ -17,9 +17,6 @@
    <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.7-blue.svg" alt="Python 3.7"></a>
 </p>
 
-
-![img](https://user-images.githubusercontent.com/10708076/40740929-bd141942-6452-11e8-911c-d9032f8d625f.png)
-
 <p>
 
 ```aiohttp-apispec``` key features:
@@ -52,7 +49,6 @@ pip install aiohttp-apispec
 from aiohttp_apispec import (
     docs,
     request_schema,
-    response_schema,
     setup_aiohttp_apispec,
 )
 from aiohttp import web
@@ -63,19 +59,12 @@ class RequestSchema(Schema):
     id = fields.Int()
     name = fields.Str(description="name")
 
-
-class ResponseSchema(Schema):
-    msg = fields.Str()
-    data = fields.Dict()
-
-
 @docs(
     tags=["mytag"],
     summary="Test method summary",
     description="Test method description",
 )
 @request_schema(RequestSchema(strict=True))
-@response_schema(ResponseSchema(), 200)
 async def index(request):
     return web.json_response({"msg": "done", "data": {}})
 
@@ -84,9 +73,16 @@ app = web.Application()
 app.router.add_post("/v1/test", index)
 
 # init docs with all parameters, usual for ApiSpec
-setup_aiohttp_apispec(app=app, title="My Documentation", version="v1")
+setup_aiohttp_apispec(
+    app=app, 
+    title="My Documentation", 
+    version="v1",
+    url="/api/docs/swagger.json",
+    swagger_path="/api/docs",
+)
 
-# now we can find it on 'http://localhost:8080/api/docs/api-docs'
+# Now we can find spec on 'http://localhost:8080/api/docs/swagger.json'
+# and docs on 'http://localhost:8080/api/docs'
 web.run_app(app)
 ```
 Class based views are also supported:
@@ -118,7 +114,7 @@ And it allows you not to use schemas for responses documentation:
     description="Test method description",
     responses={
         200: {
-            "schema": ResponseSchema(),
+            "schema": ResponseSchema,
             "description": "Success response",
         },  # regular response
         404: {"description": "Not found"},  # responses without schema
@@ -165,9 +161,6 @@ You can change ``Request``'s ``'data'`` param to another with ``request_data_nam
 setup_aiohttp_apispec(
     app=app,
     request_data_name="validated_data",
-    title="My Documentation",
-    version="v1",
-    url="/api/docs/api-docs",
 )
 
 ...
@@ -200,8 +193,25 @@ app.middlewares.extend(
 ```
 
 ## Build swagger web client
+
+#### 3.X SwaggerUI version
+
+Just add `swagger_path` parameter to `setup_aiohttp_apispec` function.
+
+For example:
+
+```python
+setup_aiohttp_apispec(app, swagger_path="/docs")
+```
+
+Then go to `/docs` and see awesome SwaggerUI
+
+#### 2.X SwaggerUI version
+
+If you prefer older version you can use 
+[aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library.
 `aiohttp-apispec` adds `swagger_dict` parameter to aiohttp web application after initialization (with `setup_aiohttp_apispec` function). 
-So you can use it easily with [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library:
+So you can use it easily like:
 
 ```Python
 from aiohttp_apispec import setup_aiohttp_apispec
