@@ -20,13 +20,11 @@
 <p>
 
 ```aiohttp-apispec``` key features:
-- ```docs```, ```request_schema``` and ```response_schema``` decorators 
-to add swagger spec support out of the box. *If you have < 1.0.0 version you should use 
-```use_kwags``` and ```marshal_with``` decorators 
-instead of ```request_schema``` and ```response_schema``` respectively.*
+- ```docs``` and ```request_schema``` decorators 
+to add swagger spec support out of the box;
 - ```validation_middleware``` middleware to enable validating 
-with marshmallow schemas from those decorators
-- **SwaggerUI** support
+with marshmallow schemas from those decorators;
+- **SwaggerUI** support.
 
 ```aiohttp-apispec``` api is fully inspired by ```flask-apispec``` library
 
