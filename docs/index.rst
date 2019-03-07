@@ -19,6 +19,8 @@ Build and document REST APIs with aiohttp and apispec
 
 - ``validation_middleware`` middleware to enable validating with marshmallow schemas from those decorators
 
+- **SwaggerUI** support
+
 ``aiohttp-apispec`` api is fully inspired by ``flask-apispec`` library
 
 Guide
