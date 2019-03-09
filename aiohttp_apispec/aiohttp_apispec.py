@@ -65,7 +65,7 @@ class AiohttpApiSpec:
         static_files = Path(__file__).parent / "static"
         app.router.add_static(static_path, static_files)
 
-        with open(static_files / "index.html") as swg_tmp:
+        with open(str(static_files / "index.html")) as swg_tmp:
             tmp = Template(swg_tmp.read()).render(path=self.url, static=static_path)
 
         async def swagger_view(_):
