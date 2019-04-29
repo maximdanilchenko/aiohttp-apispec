@@ -25,6 +25,7 @@ class AiohttpApiSpec:
         request_data_name="data",
         swagger_path=None,
         static_path='/static/swagger',
+        paths=tuple(PATHS),
         **kwargs
     ):
 
@@ -34,6 +35,7 @@ class AiohttpApiSpec:
         self.url = url
         self.swagger_path = swagger_path
         self.static_path = static_path
+        self.paths = paths
         self._registered = False
         self._request_data_name = request_data_name
         if app is not None:
@@ -103,7 +105,7 @@ class AiohttpApiSpec:
         self._update_paths(view.__apispec__, method, url_path)
 
     def _update_paths(self, data: dict, method: str, url_path: str):
-        if method not in PATHS:
+        if method not in self.paths:
             return None
         if "schema" in data:
             parameters = self.plugin.openapi.schema2parameters(
@@ -152,6 +154,7 @@ def setup_aiohttp_apispec(
     request_data_name: str = "data",
     swagger_path: str = None,
     static_path: str = '/static/swagger',
+    paths=tuple(PATHS),
     **kwargs
 ) -> None:
     """
@@ -203,6 +206,7 @@ def setup_aiohttp_apispec(
                              By default it is None (disabled)
     :param str static_path: path for static files used by SwaggerUI
                             (if it is enabled with ``swagger_path``)
+    :param list of str paths: paths to generate doc for
     :param kwargs: any apispec.APISpec kwargs
     """
     AiohttpApiSpec(
@@ -213,5 +217,6 @@ def setup_aiohttp_apispec(
         version=version,
         swagger_path=swagger_path,
         static_path=static_path,
+        paths=paths,
         **kwargs
     )
