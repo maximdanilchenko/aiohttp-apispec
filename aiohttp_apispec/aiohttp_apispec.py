@@ -24,12 +24,12 @@ class AiohttpApiSpec:
         app=None,
         request_data_name="data",
         swagger_path=None,
-        static_path='/static/swagger',
+        static_path="/static/swagger",
         **kwargs
     ):
 
         self.plugin = MarshmallowPlugin()
-        self.spec = APISpec(plugins=(self.plugin,), openapi_version="2.0", **kwargs)
+        self.spec = APISpec(plugins=(self.plugin,), **kwargs)
 
         self.url = url
         self.swagger_path = swagger_path
@@ -61,7 +61,9 @@ class AiohttpApiSpec:
         if self.swagger_path is not None:
             self.add_swagger_web_page(app, self.static_path, self.swagger_path)
 
-    def add_swagger_web_page(self, app: web.Application, static_path: str, view_path: str):
+    def add_swagger_web_page(
+        self, app: web.Application, static_path: str, view_path: str
+    ):
         static_files = Path(__file__).parent / "static"
         app.router.add_static(static_path, static_files)
 
@@ -69,9 +71,7 @@ class AiohttpApiSpec:
             tmp = Template(swg_tmp.read()).render(path=self.url, static=static_path)
 
         async def swagger_view(_):
-            return web.Response(
-                text=tmp, content_type="text/html"
-            )
+            return web.Response(text=tmp, content_type="text/html")
 
         app.router.add_route("GET", view_path, swagger_view)
 
@@ -148,10 +148,11 @@ def setup_aiohttp_apispec(
     *,
     title: str = "API documentation",
     version: str = "0.0.1",
+    openapi_version: str = "2.0",
     url: str = "/api/docs/swagger.json",
     request_data_name: str = "data",
     swagger_path: str = None,
-    static_path: str = '/static/swagger',
+    static_path: str = "/static/swagger",
     **kwargs
 ) -> None:
     """
@@ -195,6 +196,7 @@ def setup_aiohttp_apispec(
     :param Application app: aiohttp web app
     :param str title: API title
     :param str version: API version
+    :param str openapi_version: OpenAPI version to use. By default: ``'2.0'``
     :param str url: url for swagger spec in JSON format
     :param str request_data_name: name of the key in Request object
                                   where validated data will be placed by
@@ -211,6 +213,7 @@ def setup_aiohttp_apispec(
         request_data_name,
         title=title,
         version=version,
+        openapi_version=openapi_version,
         swagger_path=swagger_path,
         static_path=static_path,
         **kwargs
