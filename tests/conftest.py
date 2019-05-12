@@ -13,12 +13,12 @@ from aiohttp_apispec import (
 
 def pytest_report_header(config):
     return """
-          .   .  .                                   
-,-. . ,-. |-. |- |- ,-.    ,-. ,-. . ,-. ,-. ,-. ,-. 
-,-| | | | | | |  |  | | -- ,-| | | | `-. | | |-' |   
-`-^ ' `-' ' ' `' `' |-'    `-^ |-' ' `-' |-' `-' `-' 
-                    |          |         |           
-                    '          '         '           
+          .   .  .
+,-. . ,-. |-. |- |- ,-.    ,-. ,-. . ,-. ,-. ,-. ,-.
+,-| | | | | | |  |  | | -- ,-| | | | `-. | | |-' |
+`-^ ' `-' ' ' `' `' |-'    `-^ |-' ' `-' |-' `-' `-'
+                    |          |         |
+                    '          '         '
     """
 
 
@@ -55,10 +55,22 @@ def response_schema_fixture():
 
 @pytest.fixture(
     params=[
-        ({"locations": ["query"]}, True),
-        ({"location": "query"}, True),
-        ({"locations": ["query"]}, False),
-        ({"location": "query"}, False),
+        (None, {"locations": ["query"]}, True),
+        (None, {"location": "query"}, True),
+        (None, {"locations": ["query"]}, False),
+        (None, {"location": "query"}, False),
+        ("2.0", {"locations": ["query"]}, True),
+        ("2.0", {"location": "query"}, True),
+        ("2.0", {"locations": ["query"]}, False),
+        ("2.0", {"location": "query"}, False),
+        ("2.1", {"locations": ["query"]}, True),
+        ("2.1", {"location": "query"}, True),
+        ("2.1", {"locations": ["query"]}, False),
+        ("2.1", {"location": "query"}, False),
+        ("3.0", {"locations": ["query"]}, True),
+        ("3.0", {"location": "query"}, True),
+        ("3.0.2", {"locations": ["query"]}, True),
+        ("3.0.2", {"location": "query"}, True),
     ]
 )
 def aiohttp_app(
@@ -69,7 +81,7 @@ def aiohttp_app(
     aiohttp_client,
     request,
 ):
-    locations, nested = request.param
+    openapi_version, locations, nested = request.param
 
     @docs(
         tags=["mytag"],
@@ -127,10 +139,18 @@ def aiohttp_app(
         return web.Response()
 
     app = web.Application()
+    kwargs = {}
+    if openapi_version:
+        kwargs["openapi_version"] = openapi_version
+
     if nested:
         v1 = web.Application()
         setup_aiohttp_apispec(
-            app=v1, title="API documentation", version="0.0.1", url="/api/docs/api-docs"
+            app=v1,
+            title="API documentation",
+            version="0.0.1",
+            url="/api/docs/api-docs",
+            **kwargs,
         )
         v1.router.add_routes(
             [
@@ -147,7 +167,7 @@ def aiohttp_app(
         v1.middlewares.append(validation_middleware)
         app.add_subapp("/v1/", v1)
     else:
-        setup_aiohttp_apispec(app=app, url="/v1/api/docs/api-docs")
+        setup_aiohttp_apispec(app=app, url="/v1/api/docs/api-docs", **kwargs)
         app.router.add_routes(
             [
                 web.get("/v1/test", handler_get),
