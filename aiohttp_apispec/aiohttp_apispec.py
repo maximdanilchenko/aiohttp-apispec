@@ -27,7 +27,7 @@ class AiohttpApiSpec:
         swagger_path=None,
         static_path='/static/swagger',
         error_callback=None,
-        **kwargs,
+        **kwargs
     ):
 
         self.plugin = MarshmallowPlugin()
@@ -160,7 +160,7 @@ def setup_aiohttp_apispec(
     swagger_path: str = None,
     static_path: str = '/static/swagger',
     error_callback=None,
-    **kwargs,
+    **kwargs
 ) -> None:
     """
     aiohttp-apispec extension.
@@ -223,5 +223,5 @@ def setup_aiohttp_apispec(
         swagger_path=swagger_path,
         static_path=static_path,
         error_callback=error_callback,
-        **kwargs,
+        **kwargs
     )

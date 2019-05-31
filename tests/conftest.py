@@ -74,7 +74,7 @@ def aiohttp_app(
     response_schema_fixture,
     loop,
     aiohttp_client,
-    request,
+    request
 ):
     locations, nested = request.param
 
@@ -138,7 +138,7 @@ def aiohttp_app(
         req: web.Request,
         schema: Schema,
         error_status_code: Union[int, None] = None,
-        error_headers: Union[Mapping[str, str], None] = None,
+        error_headers: Union[Mapping[str, str], None] = None
     ) -> NoReturn:
         raise MyException({"errors": error.messages, "text": "Oops"})
 
