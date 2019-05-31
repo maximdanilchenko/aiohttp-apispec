@@ -1,3 +1,12 @@
--r test-requirements.txt
+-r requirements.txt
+marshmallow
+pytest
+pytest-cov
+pytest-sugar
+pytest-aiohttp
+codecov
+sphinx
+sphinx_issues
+sphinx_rtd_theme
 black
 isort

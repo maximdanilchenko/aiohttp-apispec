@@ -12,7 +12,8 @@ matrix:
   allow_failures:
     - python: nightly
 install:
-  - pip install -q -r test-requirements.txt --no-cache-dir --upgrade
+  - pip install -q -r dev-requirements.txt --no-cache-dir --upgrade
 script:
-  - pytest tests
+  - make check_format
+  - make test
 after_success: codecov
