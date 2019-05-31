@@ -9,7 +9,7 @@ def read(file_name):
 
 setup(
     name='aiohttp-apispec',
-    version='1.1.2',
+    version='1.2.0',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=read('README.md'),
     long_description_content_type="text/markdown",
@@ -24,7 +24,7 @@ setup(
     zip_safe=False,
     keywords='aiohttp marshmallow apispec swagger',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
