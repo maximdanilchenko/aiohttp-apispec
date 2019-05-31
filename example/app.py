@@ -1,9 +1,7 @@
 # app.py
 from aiohttp import web
-from aiohttp_apispec import (
-    setup_aiohttp_apispec,
-    validation_middleware,
-)
+
+from aiohttp_apispec import setup_aiohttp_apispec, validation_middleware
 
 from .routes import setup_routes
 

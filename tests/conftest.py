@@ -1,15 +1,15 @@
-from typing import Union, Mapping, NoReturn
+from typing import Mapping, NoReturn, Union
 
 import pytest
 from aiohttp import web
-from marshmallow import Schema, fields, ValidationError
+from marshmallow import Schema, ValidationError, fields
 
 from aiohttp_apispec import (
+    docs,
     request_schema,
     response_schema,
-    docs,
-    validation_middleware,
     setup_aiohttp_apispec,
+    validation_middleware,
 )
 
 
@@ -153,7 +153,11 @@ def aiohttp_app(
     if nested:
         v1 = web.Application()
         setup_aiohttp_apispec(
-            app=v1, title="API documentation", version="0.0.1", url="/api/docs/api-docs", error_handler=my_error_handler
+            app=v1,
+            title="API documentation",
+            version="0.0.1",
+            url="/api/docs/api-docs",
+            error_handler=my_error_handler,
         )
         v1.router.add_routes(
             [

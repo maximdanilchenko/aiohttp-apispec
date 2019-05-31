@@ -1,7 +1,7 @@
 # routes.py
 from aiohttp import web
 
-from .views import get_users, create_user
+from .views import create_user, get_users
 
 
 def setup_routes(app: web.Application):

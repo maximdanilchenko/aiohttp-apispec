@@ -6,7 +6,10 @@ async def test_response_200_get(aiohttp_app):
 async def test_response_400_get(aiohttp_app):
     res = await aiohttp_app.get("/v1/test", params={"id": "string", "name": "max"})
     assert res.status == 400
-    assert await res.json() == {'errors': {'id': ['Not a valid integer.']}, 'text': 'Oops'}
+    assert await res.json() == {
+        'errors': {'id': ['Not a valid integer.']},
+        'text': 'Oops',
+    }
 
 
 async def test_response_200_post(aiohttp_app):
@@ -22,7 +25,10 @@ async def test_response_200_post_callable_schema(aiohttp_app):
 async def test_response_400_post(aiohttp_app):
     res = await aiohttp_app.post("/v1/test", json={"id": "string", "name": "max"})
     assert res.status == 400
-    assert await res.json() == {'errors': {'id': ['Not a valid integer.']}, 'text': 'Oops'}
+    assert await res.json() == {
+        'errors': {'id': ['Not a valid integer.']},
+        'text': 'Oops',
+    }
 
 
 async def test_response_not_docked(aiohttp_app):

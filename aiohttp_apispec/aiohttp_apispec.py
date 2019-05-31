@@ -1,9 +1,9 @@
 import copy
 from pathlib import Path
-from typing import Callable, Awaitable
+from typing import Awaitable, Callable
 
 from aiohttp import web
-from aiohttp.hdrs import METH_ANY, METH_ALL
+from aiohttp.hdrs import METH_ALL, METH_ANY
 from apispec import APISpec
 from apispec.ext.marshmallow import MarshmallowPlugin
 from jinja2 import Template
@@ -27,7 +27,7 @@ class AiohttpApiSpec:
         swagger_path=None,
         static_path='/static/swagger',
         error_handler=None,
-        **kwargs
+        **kwargs,
     ):
 
         self.plugin = MarshmallowPlugin()
@@ -68,7 +68,9 @@ class AiohttpApiSpec:
         if self.swagger_path is not None:
             self.add_swagger_web_page(app, self.static_path, self.swagger_path)
 
-    def add_swagger_web_page(self, app: web.Application, static_path: str, view_path: str):
+    def add_swagger_web_page(
+        self, app: web.Application, static_path: str, view_path: str
+    ):
         static_files = Path(__file__).parent / "static"
         app.router.add_static(static_path, static_files)
 
@@ -76,9 +78,7 @@ class AiohttpApiSpec:
             tmp = Template(swg_tmp.read()).render(path=self.url, static=static_path)
 
         async def swagger_view(_):
-            return web.Response(
-                text=tmp, content_type="text/html"
-            )
+            return web.Response(text=tmp, content_type="text/html")
 
         app.router.add_route("GET", view_path, swagger_view)
 
@@ -159,8 +159,8 @@ def setup_aiohttp_apispec(
     request_data_name: str = "data",
     swagger_path: str = None,
     static_path: str = '/static/swagger',
-    error_handler = None,
-    **kwargs
+    error_handler=None,
+    **kwargs,
 ) -> None:
     """
     aiohttp-apispec extension.
@@ -223,5 +223,5 @@ def setup_aiohttp_apispec(
         swagger_path=swagger_path,
         static_path=static_path,
         error_handler=error_handler,
-        **kwargs
+        **kwargs,
     )
