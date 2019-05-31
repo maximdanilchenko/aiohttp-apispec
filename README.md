@@ -33,6 +33,7 @@ with marshmallow schemas from those decorators;
 - [Install](#install)
 - [Quickstart](#quickstart)
 - [Adding validation middleware](#adding-validation-middleware)
+- [Custom error handling](#custom-error-handling)
 - [Build swagger web client](#build-swagger-web-client)
 
 
@@ -209,12 +210,8 @@ class MyException(Exception):
 
 # It can be coroutine as well:
 async def my_error_handler(
-    error: ValidationError,
-    req: web.Request,
-    schema: Schema,
-    error_status_code: Optional[int] = None,
-    error_headers: Optional[Mapping[str, str]] = None,
-) -> NoReturn:
+    error, req, schema, error_status_code, error_headers
+):
     await req.app["db"].do_smth()  # So you can use some async stuff
     raise MyException({"errors": error.messages, "text": "Oops"})
 
