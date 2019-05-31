@@ -1,7 +1,7 @@
 test:
 	pytest tests -x -v
 
-upload: build
+upload:
 	if [ -d dist ]; then rm -Rf dist; fi
 	python setup.py sdist
 	twine upload dist/*
