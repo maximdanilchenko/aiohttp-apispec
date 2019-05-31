@@ -26,7 +26,7 @@ class AiohttpApiSpec:
         request_data_name="data",
         swagger_path=None,
         static_path='/static/swagger',
-        error_handler=None,
+        error_callback=None,
         **kwargs,
     ):
 
@@ -38,7 +38,7 @@ class AiohttpApiSpec:
         self.static_path = static_path
         self._registered = False
         self._request_data_name = request_data_name
-        self.error_handler = error_handler
+        self.error_callback = error_callback
         if app is not None:
             self.register(app)
 
@@ -50,8 +50,8 @@ class AiohttpApiSpec:
             return None
         app["_apispec_request_data_name"] = self._request_data_name
 
-        if self.error_handler:
-            parser.error_callback = self.error_handler
+        if self.error_callback:
+            parser.error_callback = self.error_callback
         app["_apispec_parser"] = parser
 
         async def doc_routes(app_):
@@ -159,7 +159,7 @@ def setup_aiohttp_apispec(
     request_data_name: str = "data",
     swagger_path: str = None,
     static_path: str = '/static/swagger',
-    error_handler=None,
+    error_callback=None,
     **kwargs,
 ) -> None:
     """
@@ -211,7 +211,7 @@ def setup_aiohttp_apispec(
                              By default it is None (disabled)
     :param str static_path: path for static files used by SwaggerUI
                             (if it is enabled with ``swagger_path``)
-    :param error_handler: awaitable for error handling
+    :param error_callback: custom error handler
     :param kwargs: any apispec.APISpec kwargs
     """
     AiohttpApiSpec(
@@ -222,6 +222,6 @@ def setup_aiohttp_apispec(
         version=version,
         swagger_path=swagger_path,
         static_path=static_path,
-        error_handler=error_handler,
+        error_callback=error_callback,
         **kwargs,
     )

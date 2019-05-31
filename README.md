@@ -171,24 +171,66 @@ async def index(request):
     ...
 ```
 
-If you want to catch validation errors you should write your own middleware and catch 
-```web.HTTPClientError```, ```json.JSONDecodeError``` and so on. Like this:
+## Custom error handling
+
+If you want to catch validation errors by yourself you 
+could use `error_callback` parameter and create your custom error handler. Note that
+it can be one of coroutine or callable and it should 
+have interface exactly like in examples below:
+
 ```python
+from marshmallow import ValidationError, Schema
+from aiohttp import web
+from typing import Optional, Mapping, NoReturn
+
+
+def my_error_handler(
+    error: ValidationError,
+    req: web.Request,
+    schema: Schema,
+    error_status_code: Optional[int] = None,
+    error_headers: Optional[Mapping[str, str]] = None,
+) -> NoReturn:
+    raise web.HTTPBadRequest(
+            body=json.dumps(error.messages),
+            headers=error_headers,
+            content_type="application/json",
+        )
+
+setup_aiohttp_apispec(app, error_callback=my_error_handler)
+```
+Also you can create your own exceptions and create 
+regular Request in middleware like so:
+
+```python
+class MyException(Exception):
+    def __init__(self, message):
+        self.message = message
+
+# It can be coroutine as well:
+async def my_error_handler(
+    error: ValidationError,
+    req: web.Request,
+    schema: Schema,
+    error_status_code: Optional[int] = None,
+    error_headers: Optional[Mapping[str, str]] = None,
+) -> NoReturn:
+    await req.app["db"].do_smth()  # So you can use some async stuff
+    raise MyException({"errors": error.messages, "text": "Oops"})
+
+# This middleware will handle your own exceptions:
 @web.middleware
-async def my_middleware(request, handler):
+async def intercept_error(request, handler):
     try:
         return await handler(request)
-    except web.HTTPClientError:
-        return web.json_response(status=400)
+    except MyException as e:
+        return web.json_response(e.message, status=400)
 
 
-app.middlewares.extend(
-    [
-        my_middleware,  # Catch exception by your own, format it and respond to client
-        validation_middleware,
-    ]
-)
+setup_aiohttp_apispec(app, error_callback=my_error_handler)
 
+# Do not forget to add your own middleware before validation_middleware
+app.middlewares.extend([intercept_error, validation_middleware])
 ```
 
 ## Build swagger web client
