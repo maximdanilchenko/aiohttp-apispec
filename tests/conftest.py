@@ -1,5 +1,3 @@
-from typing import Mapping, NoReturn, Union
-
 import pytest
 from aiohttp import web
 from marshmallow import Schema, ValidationError, fields
@@ -133,13 +131,7 @@ def aiohttp_app(
     async def other(request):
         return web.Response()
 
-    def my_error_handler(
-        error: ValidationError,
-        req: web.Request,
-        schema: Schema,
-        error_status_code: Union[int, None] = None,
-        error_headers: Union[Mapping[str, str], None] = None
-    ) -> NoReturn:
+    def my_error_handler(error, req, schema, error_status_code, error_headers):
         raise MyException({"errors": error.messages, "text": "Oops"})
 
     @web.middleware
