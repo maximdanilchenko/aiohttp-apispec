@@ -1,5 +1,4 @@
 from aiohttp import web
-from webargs.aiohttpparser import parser
 
 from .utils import issubclass_py37fix
 
@@ -31,7 +30,7 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         schemas = orig_handler.__schemas__
     kwargs = {}
     for schema in schemas:
-        data = await parser.parse(
+        data = await request.app["_apispec_parser"].parse(
             schema["schema"], request, locations=schema["locations"]
         )
         if data:
