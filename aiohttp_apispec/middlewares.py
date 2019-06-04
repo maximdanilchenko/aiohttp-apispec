@@ -35,6 +35,13 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         )
         if data:
             kwargs.update(data)
-    kwargs.update(request.match_info)
+            if issubclass_py37fix(data, dict):
+                kwargs.update(data)
+            elif kwargs == {}:
+                kwargs = data
+            else:
+                raise NotImplementedError
+    if issubclass_py37fix(data, dict):
+        kwargs.update(request.match_info)
     request[request.app["_apispec_request_data_name"]] = kwargs
     return await handler(request)
