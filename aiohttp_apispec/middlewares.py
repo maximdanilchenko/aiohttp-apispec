@@ -34,7 +34,6 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
             schema["schema"], request, locations=schema["locations"]
         )
         if data:
-            kwargs.update(data)
             if issubclass_py37fix(data, dict):
                 kwargs.update(data)
             elif kwargs == {}:
