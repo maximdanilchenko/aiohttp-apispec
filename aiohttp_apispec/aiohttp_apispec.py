@@ -5,13 +5,12 @@ from typing import Awaitable, Callable
 from aiohttp import web
 from aiohttp.hdrs import METH_ALL, METH_ANY
 from apispec import APISpec
+from apispec.core import VALID_METHODS_OPENAPI_V2
 from apispec.ext.marshmallow import MarshmallowPlugin
 from jinja2 import Template
 from webargs.aiohttpparser import parser
 
 from .utils import get_path, get_path_keys, issubclass_py37fix
-
-PATHS = {"get", "put", "post", "delete", "patch"}
 
 _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
@@ -110,7 +109,7 @@ class AiohttpApiSpec:
         self._update_paths(view.__apispec__, method, url_path)
 
     def _update_paths(self, data: dict, method: str, url_path: str):
-        if method not in PATHS:
+        if method not in VALID_METHODS_OPENAPI_V2:
             return None
         if "schema" in data:
             parameters = self.plugin.openapi.schema2parameters(
