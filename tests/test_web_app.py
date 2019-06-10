@@ -110,3 +110,9 @@ async def test_response_data_class_without_spec(aiohttp_app):
 async def test_swagger_handler_200(aiohttp_app):
     res = await aiohttp_app.get("/v1/api/docs/api-docs")
     assert res.status == 200
+
+
+async def test_match_info(aiohttp_app):
+    res = await aiohttp_app.get("/v1/variable/hello")
+    assert res.status == 200
+    assert await res.json() == {'var': 'hello'}

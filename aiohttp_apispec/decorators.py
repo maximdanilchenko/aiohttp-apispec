@@ -33,6 +33,8 @@ def docs(**kwargs):
         func.__apispec__["parameters"].extend(extra_parameters)
         func.__apispec__["responses"].update(extra_responses)
         func.__apispec__.update(kwargs)
+        if not hasattr(func, "__schemas__"):
+            func.__schemas__ = []
         return func
 
     return wrapper
