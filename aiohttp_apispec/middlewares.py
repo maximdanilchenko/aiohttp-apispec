@@ -28,13 +28,18 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         schemas = sub_handler.__schemas__
     else:
         schemas = orig_handler.__schemas__
-    kwargs = {}
+    result = {}
     for schema in schemas:
         data = await request.app["_apispec_parser"].parse(
             schema["schema"], request, locations=schema["locations"]
         )
         if data:
-            kwargs.update(data)
-    kwargs.update(request.match_info)
-    request[request.app["_apispec_request_data_name"]] = kwargs
+            try:
+                result.update(data)
+            except (ValueError, TypeError):
+                result = data
+                break
+    else:
+        result.update(request.match_info)
+    request[request.app["_apispec_request_data_name"]] = result
     return await handler(request)
