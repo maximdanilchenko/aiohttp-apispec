@@ -269,3 +269,7 @@ def create_app(app):
     ...
     return app
 ```
+
+------
+
+Please ⭐️ this repository if this project helped you!
