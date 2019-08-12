@@ -26,6 +26,8 @@ class AiohttpApiSpec:
         swagger_path=None,
         static_path='/static/swagger',
         error_callback=None,
+        in_place=False,
+        prefix='',
         **kwargs
     ):
 
@@ -38,25 +40,30 @@ class AiohttpApiSpec:
         self._registered = False
         self._request_data_name = request_data_name
         self.error_callback = error_callback
+        self.prefix = prefix
         if app is not None:
-            self.register(app)
+            self.register(app, in_place)
 
     def swagger_dict(self):
         return self.spec.to_dict()
 
-    def register(self, app: web.Application):
+    def register(self, app: web.Application, in_place: bool = False):
         if self._registered is True:
             return None
+
         app["_apispec_request_data_name"] = self._request_data_name
 
         if self.error_callback:
             parser.error_callback = self.error_callback
         app["_apispec_parser"] = parser
 
-        async def doc_routes(app_):
-            self._register(app_)
+        if in_place:
+            self._register(app)
+        else:
+            async def doc_routes(app_):
+                self._register(app_)
+            app.on_startup.append(doc_routes)
 
-        app.on_startup.append(doc_routes)
         self._registered = True
 
         async def swagger_handler(request):
@@ -106,7 +113,7 @@ class AiohttpApiSpec:
         if not url_path:
             return None
 
-        self._update_paths(view.__apispec__, method, url_path)
+        self._update_paths(view.__apispec__, method, self.prefix + url_path)
 
     def _update_paths(self, data: dict, method: str, url_path: str):
         if method not in VALID_METHODS_OPENAPI_V2:
@@ -159,6 +166,8 @@ def setup_aiohttp_apispec(
     swagger_path: str = None,
     static_path: str = '/static/swagger',
     error_callback=None,
+    in_place: bool = False,
+    prefix: str = '',
     **kwargs
 ) -> None:
     """
@@ -211,6 +220,10 @@ def setup_aiohttp_apispec(
     :param str static_path: path for static files used by SwaggerUI
                             (if it is enabled with ``swagger_path``)
     :param error_callback: custom error handler
+    :param in_place: register all routes at the moment of calling this function
+                     instead of the moment of the on_startup signal.
+                     If True, be sure all routes are added to router
+    :param prefix: prefix to add to all registered routes
     :param kwargs: any apispec.APISpec kwargs
     """
     AiohttpApiSpec(
@@ -222,5 +235,7 @@ def setup_aiohttp_apispec(
         swagger_path=swagger_path,
         static_path=static_path,
         error_callback=error_callback,
+        in_place=in_place,
+        prefix=prefix,
         **kwargs
     )
