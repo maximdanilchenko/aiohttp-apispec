@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 
 def read(file_name):
-    with open(file_name) as fp:
+    with open(file_name, encoding="utf-8") as fp:
         content = fp.read()
     return content
 
