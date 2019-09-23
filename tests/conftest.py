@@ -72,7 +72,7 @@ def aiohttp_app(
     response_schema_fixture,
     loop,
     aiohttp_client,
-    request
+    request,
 ):
     locations, nested = request.param
 

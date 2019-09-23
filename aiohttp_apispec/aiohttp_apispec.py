@@ -62,8 +62,10 @@ class AiohttpApiSpec:
         if in_place:
             self._register(app)
         else:
+
             async def doc_routes(app_):
                 self._register(app_)
+
             app.on_startup.append(doc_routes)
 
         self._registered = True
@@ -135,23 +137,24 @@ class AiohttpApiSpec:
 
         if "responses" in data:
             responses = {}
-            for code, params in data["responses"].items():
-                if "schema" in params:
+            for code, actual_params in data["responses"].items():
+                if "schema" in actual_params:
                     raw_parameters = self.plugin.converter.schema2parameters(
-                        params["schema"], required=params.get("required", False)
+                        actual_params["schema"],
+                        required=actual_params.get("required", False),
                     )[0]
-                    parameters = {
+                    updated_params = {
                         k: v
                         for k, v in raw_parameters.items()
                         if k in VALID_RESPONSE_FIELDS
                     }
-                    parameters['schema'] = params["schema"]
+                    updated_params['schema'] = actual_params["schema"]
                     for extra_info in ("description", "headers", "examples"):
-                        if extra_info in params:
-                            parameters[extra_info] = params[extra_info]
-                    responses[code] = parameters
+                        if extra_info in actual_params:
+                            updated_params[extra_info] = actual_params[extra_info]
+                    responses[code] = updated_params
                 else:
-                    responses[code] = params
+                    responses[code] = actual_params
             data["responses"] = responses
 
         operations = copy.deepcopy(data)
