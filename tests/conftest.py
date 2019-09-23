@@ -1,6 +1,6 @@
 import pytest
 from aiohttp import web
-from marshmallow import Schema, ValidationError, fields
+from marshmallow import Schema, fields
 
 from aiohttp_apispec import (
     docs,
