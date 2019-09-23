@@ -30,7 +30,7 @@ def request_schema_fixture():
         bool_field = fields.Bool()
         list_field = fields.List(fields.Int())
 
-    return RequestSchema(strict=True)
+    return RequestSchema()
 
 
 @pytest.fixture
