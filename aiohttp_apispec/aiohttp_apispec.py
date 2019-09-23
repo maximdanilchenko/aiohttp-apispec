@@ -14,7 +14,7 @@ from .utils import get_path, get_path_keys, issubclass_py37fix
 
 _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
-VALID_RESPONSE_FIELDS = {"schema", "description", "headers", "examples"}
+VALID_RESPONSE_FIELDS = {"description", "headers", "examples"}
 
 
 class AiohttpApiSpec:
@@ -45,9 +45,11 @@ class AiohttpApiSpec:
             self.register(app, in_place)
 
     def swagger_dict(self):
+        """ Returns swagger spec representation in JSON format """
         return self.spec.to_dict()
 
     def register(self, app: web.Application, in_place: bool = False):
+        """ Creates spec based on registered app routes and registers needed view """
         if self._registered is True:
             return None
 
@@ -119,7 +121,7 @@ class AiohttpApiSpec:
         if method not in VALID_METHODS_OPENAPI_V2:
             return None
         if "schema" in data:
-            parameters = self.plugin.openapi.schema2parameters(
+            parameters = self.plugin.converter.schema2parameters(
                 data.pop("schema"), **data.pop("options")
             )
             data["parameters"].extend(parameters)
@@ -135,15 +137,15 @@ class AiohttpApiSpec:
             responses = {}
             for code, params in data["responses"].items():
                 if "schema" in params:
-                    raw_parameters = self.plugin.openapi.schema2parameters(
+                    raw_parameters = self.plugin.converter.schema2parameters(
                         params["schema"], required=params.get("required", False)
                     )[0]
-                    # https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#responseObject
                     parameters = {
                         k: v
                         for k, v in raw_parameters.items()
                         if k in VALID_RESPONSE_FIELDS
                     }
+                    parameters['schema'] = params["schema"]
                     for extra_info in ("description", "headers", "examples"):
                         if extra_info in params:
                             parameters[extra_info] = params[extra_info]
