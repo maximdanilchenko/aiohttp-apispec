@@ -71,3 +71,18 @@ def request_schema(schema, locations=None, put_into=None, **kwargs):
 
 # For backward compatibility
 use_kwargs = request_schema
+
+match_info_schema = partial(
+    request_schema,
+    locations=["match_info"],
+    put_into="match_info"
+)
+querystring_schema = partial(
+    request_schema,
+    locations=["querystring"],
+    put_into="querystring"
+)
+form_schema = partial(request_schema, locations=["form"], put_into="form")
+json_schema = partial(request_schema, locations=["json"], put_into="json")
+headers_schema = partial(request_schema, locations=["headers"], put_into="headers")
+cookies_schema = partial(request_schema, locations=["cookies"], put_into="cookies")
