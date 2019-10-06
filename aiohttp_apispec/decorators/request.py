@@ -1,0 +1,73 @@
+from functools import partial
+
+
+def request_schema(schema, locations=None, put_into=None, **kwargs):
+    """
+    Add request info into the swagger spec and
+    prepare injection keyword arguments from the specified
+    webargs arguments into the decorated view function in
+    request['data'] for validation_middleware validation middleware.
+
+    Usage:
+
+    .. code-block:: python
+
+        from aiohttp import web
+        from marshmallow import Schema, fields
+
+
+        class RequestSchema(Schema):
+            id = fields.Int()
+            name = fields.Str(description='name')
+
+        @request_schema(RequestSchema(strict=True))
+        async def index(request):
+            # aiohttp_apispec_middleware should be used for it
+            data = request['data']
+            return web.json_response({'name': data['name'],
+                                      'id': data['id']})
+
+    :param schema: :class:`Schema <marshmallow.Schema>` class or instance
+    :param locations: Default request locations to parse
+    :param put_into: name of the key in Request object
+                     where validated data will be placed.
+                     If None (by default) default key will be used
+    """
+    if callable(schema):
+        schema = schema()
+    # location kwarg added for compatibility with old versions
+    locations = locations or []
+    if not locations:
+        locations = kwargs.get("location")
+        if locations:
+            locations = [locations]
+        else:
+            locations = None
+
+    options = {"required": kwargs.get("required", False)}
+    if locations:
+        options["default_in"] = locations[0]
+
+    def wrapper(func):
+        if not hasattr(func, "__apispec__"):
+            func.__apispec__ = {"schemas": [], "responses": {}, "parameters": []}
+            func.__schemas__ = []
+        func.__apispec__["schemas"].append({"schema": schema, "options": options})
+
+        # TODO: Remove this block?
+        if locations and "body" in locations:
+            body_schema_exists = (
+                "body" in func_schema["locations"] for func_schema in func.__schemas__
+            )
+            if any(body_schema_exists):
+                raise RuntimeError("Multiple body parameters are not allowed")
+
+        func.__schemas__.append({"schema": schema, "locations": locations, "put_into": put_into})
+
+        return func
+
+    return wrapper
+
+
+# For backward compatibility
+use_kwargs = request_schema

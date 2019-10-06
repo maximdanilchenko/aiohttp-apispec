@@ -33,13 +33,13 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         data = await request.app["_apispec_parser"].parse(
             schema["schema"], request, locations=schema["locations"]
         )
-        if data:
+        if schema["put_into"]:
+            request[schema["put_into"]] = data
+        elif data:
             try:
                 result.update(data)
             except (ValueError, TypeError):
                 result = data
                 break
-    else:
-        result.update(request.match_info)
     request[request.app["_apispec_request_data_name"]] = result
     return await handler(request)

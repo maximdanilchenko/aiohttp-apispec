@@ -122,9 +122,9 @@ class AiohttpApiSpec:
     def _update_paths(self, data: dict, method: str, url_path: str):
         if method not in VALID_METHODS_OPENAPI_V2:
             return None
-        if "schema" in data:
+        for schema in data.pop("schemas", []):
             parameters = self.plugin.converter.schema2parameters(
-                data.pop("schema"), **data.pop("options")
+                schema["schema"], **schema["options"]
             )
             data["parameters"].extend(parameters)
 
