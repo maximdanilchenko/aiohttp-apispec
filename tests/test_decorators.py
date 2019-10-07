@@ -1,19 +1,32 @@
 import pytest
 from aiohttp import web
+from marshmallow import fields, Schema
 
 from aiohttp_apispec import docs, request_schema, response_schema
 
 
+class RequestSchema(Schema):
+    id = fields.Int()
+    name = fields.Str(description="name")
+    bool_field = fields.Bool()
+    list_field = fields.List(fields.Int())
+
+
+class ResponseSchema(Schema):
+    msg = fields.Str()
+    data = fields.Dict()
+
+
 class TestViewDecorators:
     @pytest.fixture
-    def aiohttp_view_all(self, request_schema_fixture, response_schema_fixture):
+    def aiohttp_view_all(self):
         @docs(
             tags=["mytag"],
             summary="Test method summary",
             description="Test method description",
         )
-        @request_schema(request_schema_fixture, locations=["query"])
-        @response_schema(response_schema_fixture, 200)
+        @request_schema(RequestSchema, locations=["query"])
+        @response_schema(ResponseSchema, 200)
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
@@ -32,16 +45,16 @@ class TestViewDecorators:
         return index
 
     @pytest.fixture
-    def aiohttp_view_kwargs(self, request_schema_fixture):
-        @request_schema(request_schema_fixture, locations=["query"])
+    def aiohttp_view_kwargs(self):
+        @request_schema(RequestSchema, locations=["query"])
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
         return index
 
     @pytest.fixture
-    def aiohttp_view_marshal(self, response_schema_fixture):
-        @response_schema(response_schema_fixture, 200, description="Method description")
+    def aiohttp_view_marshal(self):
+        @response_schema(ResponseSchema, 200, description="Method description")
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
@@ -55,11 +68,14 @@ class TestViewDecorators:
         for param in ("parameters", "responses"):
             assert param in aiohttp_view_docs.__apispec__
 
-    def test_request_schema_view(self, aiohttp_view_kwargs, request_schema_fixture):
+    def test_request_schema_view(self, aiohttp_view_kwargs):
         assert hasattr(aiohttp_view_kwargs, "__apispec__")
         assert hasattr(aiohttp_view_kwargs, "__schemas__")
+        assert isinstance(
+            aiohttp_view_kwargs.__schemas__[0].pop("schema"), RequestSchema
+        )
         assert aiohttp_view_kwargs.__schemas__ == [
-            {"schema": request_schema_fixture, "locations": ["query"]}
+            {"locations": ["query"], 'put_into': None}
         ]
         for param in ("parameters", "responses"):
             assert param in aiohttp_view_kwargs.__apispec__
@@ -108,11 +124,11 @@ class TestViewDecorators:
         assert aiohttp_view_all.__apispec__["summary"] == "Test method summary"
         assert aiohttp_view_all.__apispec__["description"] == "Test method description"
 
-    def test_view_multiple_body_parameters(self, request_schema_fixture):
+    def test_view_multiple_body_parameters(self):
         with pytest.raises(RuntimeError) as ex:
 
-            @request_schema(request_schema_fixture, locations=["body"])
-            @request_schema(request_schema_fixture, locations=["body"])
+            @request_schema(RequestSchema, locations=["body"])
+            @request_schema(RequestSchema, locations=["body"])
             async def index(request, **data):
                 return web.json_response({"msg": "done", "data": {}})
 

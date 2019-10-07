@@ -5,10 +5,27 @@ from marshmallow import Schema, fields
 from aiohttp_apispec import (
     docs,
     request_schema,
+    match_info_schema,
+    querystring_schema,
+    json_schema,
+    headers_schema,
+    cookies_schema,
     response_schema,
     setup_aiohttp_apispec,
     validation_middleware,
 )
+
+
+class HeaderSchema(Schema):
+    some_header = fields.String()
+
+
+class MatchInfoSchema(Schema):
+    uuid = fields.Integer()
+
+
+class CookiesSchema(Schema):
+    some_cookie = fields.String()
 
 
 def pytest_report_header(config):
@@ -22,35 +39,16 @@ def pytest_report_header(config):
     """
 
 
-@pytest.fixture
-def request_schema_fixture():
-    class RequestSchema(Schema):
-        id = fields.Int()
-        name = fields.Str(description="name")
-        bool_field = fields.Bool()
-        list_field = fields.List(fields.Int())
-
-    return RequestSchema()
+class RequestSchema(Schema):
+    id = fields.Int()
+    name = fields.Str(description="name")
+    bool_field = fields.Bool()
+    list_field = fields.List(fields.Int())
 
 
-@pytest.fixture
-def request_callable_schema_fixture():
-    class RequestSchema(Schema):
-        id = fields.Int()
-        name = fields.Str(description="name")
-        bool_field = fields.Bool()
-        list_field = fields.List(fields.Int())
-
-    return RequestSchema
-
-
-@pytest.fixture
-def response_schema_fixture():
-    class ResponseSchema(Schema):
-        msg = fields.Str()
-        data = fields.Dict()
-
-    return ResponseSchema
+class ResponseSchema(Schema):
+    msg = fields.Str()
+    data = fields.Dict()
 
 
 class MyException(Exception):
@@ -66,14 +64,7 @@ class MyException(Exception):
         ({"location": "query"}, False),
     ]
 )
-def aiohttp_app(
-    request_schema_fixture,
-    request_callable_schema_fixture,
-    response_schema_fixture,
-    loop,
-    aiohttp_client,
-    request,
-):
+def aiohttp_app(loop, aiohttp_client, request):
     locations, nested = request.param
 
     @docs(
@@ -82,24 +73,24 @@ def aiohttp_app(
         description="Test method description",
         responses={404: {"description": "Not Found"}},
     )
-    @request_schema(request_schema_fixture, **locations)
-    @response_schema(response_schema_fixture, 200, description="Success response")
+    @request_schema(RequestSchema, **locations)
+    @response_schema(ResponseSchema, 200, description="Success response")
     async def handler_get(request):
         return web.json_response({"msg": "done", "data": {}})
 
-    @request_schema(request_schema_fixture)
+    @request_schema(RequestSchema)
     async def handler_post(request):
         return web.json_response({"msg": "done", "data": {}})
 
-    @request_schema(request_callable_schema_fixture)
+    @request_schema(RequestSchema())
     async def handler_post_callable_schema(request):
         return web.json_response({"msg": "done", "data": {}})
 
-    @request_schema(request_schema_fixture)
+    @request_schema(RequestSchema)
     async def handler_post_echo(request):
         return web.json_response(request["data"])
 
-    @request_schema(request_schema_fixture, **locations)
+    @request_schema(RequestSchema, **locations)
     async def handler_get_echo(request):
         return web.json_response(request["data"])
 
@@ -121,7 +112,7 @@ def aiohttp_app(
             summary="View method summary",
             description="View method description",
         )
-        @request_schema(request_schema_fixture, **locations)
+        @request_schema(RequestSchema, **locations)
         async def get(self):
             return web.json_response(self.request["data"])
 
@@ -140,6 +131,22 @@ def aiohttp_app(
             return await handler(request)
         except MyException as e:
             return web.json_response(e.message, status=400)
+
+    @match_info_schema(MatchInfoSchema)
+    @querystring_schema(RequestSchema)
+    @json_schema(RequestSchema)
+    @headers_schema(HeaderSchema)
+    @cookies_schema(CookiesSchema)
+    async def validated_view(request: web.Request):
+        return web.json_response(
+            {
+                "json": request["json"],
+                "headers": request["headers"],
+                "cookies": request["cookies"],
+                "match_info": request["match_info"],
+                "querystring": request["querystring"],
+            }
+        )
 
     app = web.Application()
     if nested:
@@ -161,6 +168,7 @@ def aiohttp_app(
                 web.view("/class_echo", ViewClass),
                 web.post("/echo", handler_post_echo),
                 web.get("/variable/{var}", handler_get_variable),
+                web.post("/validate/{uuid}", validated_view),
             ]
         )
         v1.middlewares.extend([intercept_error, validation_middleware])
@@ -179,6 +187,7 @@ def aiohttp_app(
                 web.view("/v1/class_echo", ViewClass),
                 web.post("/v1/echo", handler_post_echo),
                 web.get("/v1/variable/{var}", handler_get_variable),
+                web.post("/v1/validate/{uuid}", validated_view),
             ]
         )
         app.middlewares.extend([intercept_error, validation_middleware])

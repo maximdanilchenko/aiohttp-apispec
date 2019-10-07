@@ -116,33 +116,21 @@ async def test_app_swagger_json(aiohttp_app):
 
     assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
         {
-            "Response": {
-                "type": "object",
-                "properties": {"msg": {"type": "string"}, "data": {"type": "object"}},
-            },
             "Request": {
-                "type": "object",
                 "properties": {
-                    "name": {"type": "string", "description": "name"},
                     "bool_field": {"type": "boolean"},
+                    "id": {"format": "int32", "type": "integer"},
                     "list_field": {
+                        "items": {"format": "int32", "type": "integer"},
                         "type": "array",
-                        "items": {"type": "integer", "format": "int32"},
                     },
-                    "id": {"type": "integer", "format": "int32"},
+                    "name": {"description": "name", "type": "string"},
                 },
+                "type": "object",
             },
-            "Request1": {
+            "Response": {
+                "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
                 "type": "object",
-                "properties": {
-                    "name": {"type": "string", "description": "name"},
-                    "bool_field": {"type": "boolean"},
-                    "list_field": {
-                        "type": "array",
-                        "items": {"type": "integer", "format": "int32"},
-                    },
-                    "id": {"type": "integer", "format": "int32"},
-                },
             },
         },
         sort_keys=True,

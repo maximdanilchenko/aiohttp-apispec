@@ -28,7 +28,8 @@ def response_schema(schema, code=200, required=False, description=None):
 
     def wrapper(func):
         if not hasattr(func, "__apispec__"):
-            func.__apispec__ = {"parameters": [], "responses": {}}
+            func.__apispec__ = {"schemas": [], "responses": {}, "parameters": []}
+            func.__schemas__ = []
         func.__apispec__["responses"]["%s" % code] = {
             "schema": schema,
             "required": required,

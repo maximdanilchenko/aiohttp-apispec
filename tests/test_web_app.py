@@ -115,4 +115,40 @@ async def test_swagger_handler_200(aiohttp_app):
 async def test_match_info(aiohttp_app):
     res = await aiohttp_app.get("/v1/variable/hello")
     assert res.status == 200
-    assert await res.json() == {'var': 'hello'}
+    assert await res.json() == {}
+
+
+async def test_validators(aiohttp_app):
+    res = await aiohttp_app.post(
+        "/v1/validate/123456",
+        json={"id": 1, "name": "max", "bool_field": False, "list_field": [1, 2, 3, 4]},
+        params=[
+            ("id", "1"),
+            ("name", "max"),
+            ("bool_field", "0"),
+            ("list_field", "1"),
+            ("list_field", "2"),
+            ("list_field", "3"),
+            ("list_field", "4"),
+        ],
+        cookies={"some_cookie": "test-cookie-value"},
+        headers={"some_header": "test-header-value"},
+    )
+    assert res.status == 200
+    assert await res.json() == {
+        "json": {
+            "id": 1,
+            "name": "max",
+            "bool_field": False,
+            "list_field": [1, 2, 3, 4],
+        },
+        "querystring": {
+            "id": 1,
+            "name": "max",
+            "bool_field": False,
+            "list_field": [1, 2, 3, 4],
+        },
+        "cookies": {"some_cookie": "test-cookie-value"},
+        "headers": {"some_header": "test-header-value"},
+        "match_info": {"uuid": 123456},
+    }

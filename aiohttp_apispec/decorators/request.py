@@ -72,6 +72,7 @@ def request_schema(schema, locations=None, put_into=None, **kwargs):
 # For backward compatibility
 use_kwargs = request_schema
 
+# Decorators for specific request data validations (shortenings)
 match_info_schema = partial(
     request_schema,
     locations=["match_info"],
