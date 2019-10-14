@@ -108,6 +108,47 @@ with ``request_data_name`` argument of ``setup_aiohttp_apispec`` function:
         uid = request['validated_data']['id']
         ...
 
+More decorators
+---------------
+
+Starting from version 2.0 you can use shortenings for documenting and validating
+specific request parts like cookies, headers etc using those decorators:
+
+================== =======================
+  Decorator name    Default put_into param
+================== =======================
+match_info_schema  match_info
+querystring_schema querystring
+form_schema        form
+json_schema        json
+headers_schema     headers
+cookies_schema     cookies
+================== =======================
+
+And example:
+
+.. code-block:: python
+
+    @docs(
+        tags=["users"],
+        summary="Create new user",
+        description="Add new user to our toy database",
+        responses={
+            200: {"description": "Ok. User created", "schema": OkResponse},
+            401: {"description": "Unauthorized"},
+            422: {"description": "Validation error"},
+            500: {"description": "Server error"},
+        },
+    )
+    @headers_schema(AuthHeaders)
+    @json_schema(UserMeta)
+    @querystring_schema(UserParams)
+    async def create_user(request: web.Request):
+        headers = request["headers"]  # <- validated headers!
+        json_data = request["json"]  # <- validated json!
+        query_params = request["querystring"]  # <- validated querystring!
+        ...
+
 
 Custom error handling
 ---------------------
@@ -175,6 +216,22 @@ regular Request in middleware like so:
 
 Build swagger web client
 ------------------------
+
+3.X SwaggerUI version
+*********************
+
+
+Just add ``swagger_path`` parameter to ``setup_aiohttp_apispec`` function.
+
+For example:
+
+.. code-block:: python
+    setup_aiohttp_apispec(app, swagger_path="/docs")
+
+Then go to ``/docs`` and see awesome SwaggerUI
+
+2.X SwaggerUI version
+*********************
 
 ``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp
 web application after initialization (with ``setup_aiohttp_apispec`` function).

@@ -15,7 +15,7 @@ Build and document REST APIs with aiohttp and apispec
 
 ``aiohttp-apispec`` key features:
 
-- ``docs``, ``request_schema`` and ``response_schema`` decorators to add swagger spec support out of the box;
+- ``docs``, ``request_schema``, ``match_info_schema``, ``querystring_schema``, ``form_schema``, ``json_schema``, ``headers_schema``, ``cookies_schema``, decorators to add swagger spec support out of the box;
 
 - ``validation_middleware`` middleware to enable validating with marshmallow schemas from those decorators;
 

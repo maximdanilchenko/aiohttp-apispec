@@ -1,7 +1,9 @@
 # views.py
 from aiohttp import web
 
-from aiohttp_apispec import docs, request_schema
+from aiohttp_apispec import docs
+
+from aiohttp_apispec.decorators import json_schema, headers_schema, querystring_schema
 
 from .schemas import Message, User, UsersList
 
@@ -31,8 +33,14 @@ async def get_users(request: web.Request):
         500: {"description": "Server error"},
     },
 )
-@request_schema(User, location='query')
+@headers_schema(Message)
+@json_schema(UsersList)
+@querystring_schema(User)
 async def create_user(request: web.Request):
-    new_user = request["data"]
+    print(request["headers"])
+    print(request["json"])
+    print(request["querystring"])
+    print(request["data"])
+    new_user = request["querystring"]
     request.app["users"].append(new_user)
     return web.json_response({"message": f"Hello {new_user['name']}!"})
