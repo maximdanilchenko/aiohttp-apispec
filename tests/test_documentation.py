@@ -114,20 +114,22 @@ async def test_app_swagger_json(aiohttp_app):
         sort_keys=True,
     )
 
+    _request_properties = {
+        "properties": {
+            "bool_field": {"type": "boolean"},
+            "id": {"format": "int32", "type": "integer"},
+            "list_field": {
+                "items": {"format": "int32", "type": "integer"},
+                "type": "array",
+            },
+            "name": {"description": "name", "type": "string"},
+        },
+        "type": "object",
+    }
     assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
         {
-            "Request": {
-                "properties": {
-                    "bool_field": {"type": "boolean"},
-                    "id": {"format": "int32", "type": "integer"},
-                    "list_field": {
-                        "items": {"format": "int32", "type": "integer"},
-                        "type": "array",
-                    },
-                    "name": {"description": "name", "type": "string"},
-                },
-                "type": "object",
-            },
+            "Request": _request_properties,
+            "Partial-Request": _request_properties,
             "Response": {
                 "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
                 "type": "object",
