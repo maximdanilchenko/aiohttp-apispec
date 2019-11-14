@@ -6,7 +6,7 @@ from aiohttp import web
 from aiohttp.hdrs import METH_ALL, METH_ANY
 from apispec import APISpec
 from apispec.core import VALID_METHODS_OPENAPI_V2
-from apispec.ext.marshmallow import MarshmallowPlugin
+from apispec.ext.marshmallow import MarshmallowPlugin, common
 from jinja2 import Template
 from webargs.aiohttpparser import parser
 
@@ -15,6 +15,16 @@ from .utils import get_path, get_path_keys, issubclass_py37fix
 _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 VALID_RESPONSE_FIELDS = {"description", "headers", "examples"}
+
+
+def resolver(schema):
+    schema_instance = common.resolve_schema_instance(schema)
+    prefix = "Partial-" if schema_instance.partial else ""
+    schema_cls = common.resolve_schema_cls(schema)
+    name = prefix + schema_cls.__name__
+    if name.endswith("Schema"):
+        return name[:-6] or name
+    return name
 
 
 class AiohttpApiSpec:
@@ -31,7 +41,7 @@ class AiohttpApiSpec:
         **kwargs
     ):
 
-        self.plugin = MarshmallowPlugin()
+        self.plugin = MarshmallowPlugin(schema_name_resolver=resolver)
         self.spec = APISpec(plugins=(self.plugin,), openapi_version="2.0", **kwargs)
 
         self.url = url

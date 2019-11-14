@@ -82,6 +82,10 @@ def aiohttp_app(loop, aiohttp_client, request):
     async def handler_post(request):
         return web.json_response({"msg": "done", "data": {}})
 
+    @request_schema(RequestSchema(partial=True))
+    async def handler_post_partial(request):
+        return web.json_response({"msg": "done", "data": {}})
+
     @request_schema(RequestSchema())
     async def handler_post_callable_schema(request):
         return web.json_response({"msg": "done", "data": {}})
@@ -162,6 +166,7 @@ def aiohttp_app(loop, aiohttp_client, request):
             [
                 web.get("/test", handler_get),
                 web.post("/test", handler_post),
+                web.post("/test_partial", handler_post_partial),
                 web.post("/test_call", handler_post_callable_schema),
                 web.get("/other", other),
                 web.get("/echo", handler_get_echo),
@@ -181,6 +186,7 @@ def aiohttp_app(loop, aiohttp_client, request):
             [
                 web.get("/v1/test", handler_get),
                 web.post("/v1/test", handler_post),
+                web.post("/v1/test_partial", handler_post_partial),
                 web.post("/v1/test_call", handler_post_callable_schema),
                 web.get("/v1/other", other),
                 web.get("/v1/echo", handler_get_echo),
