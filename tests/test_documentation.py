@@ -1,5 +1,7 @@
 import json
 
+from aiohttp import web
+from aiohttp_apispec import setup_aiohttp_apispec
 from yarl import URL
 
 
@@ -137,3 +139,11 @@ async def test_app_swagger_json(aiohttp_app):
         },
         sort_keys=True,
     )
+
+
+async def test_not_register_route_for_none_url():
+    app = web.Application()
+    routes_count = len(app.router.routes())
+    setup_aiohttp_apispec(app=app, url=None)
+    routes_count_after_setup_apispec = len(app.router.routes())
+    assert routes_count == routes_count_after_setup_apispec
