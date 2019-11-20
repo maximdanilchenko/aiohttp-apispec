@@ -80,13 +80,14 @@ class AiohttpApiSpec:
 
         self._registered = True
 
-        async def swagger_handler(request):
-            return web.json_response(request.app["swagger_dict"])
+        if self.url is not None:
+            async def swagger_handler(request):
+                return web.json_response(request.app["swagger_dict"])
 
-        app.router.add_routes([web.get(self.url, swagger_handler)])
+            app.router.add_routes([web.get(self.url, swagger_handler)])
 
-        if self.swagger_path is not None:
-            self._add_swagger_web_page(app, self.static_path, self.swagger_path)
+            if self.swagger_path is not None:
+                self._add_swagger_web_page(app, self.static_path, self.swagger_path)
 
     def _add_swagger_web_page(
         self, app: web.Application, static_path: str, view_path: str
