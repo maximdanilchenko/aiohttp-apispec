@@ -117,7 +117,7 @@ specific request parts like cookies, headers etc using those decorators:
 ================== =======================
   Decorator name    Default put_into param
 ================== =======================
-match_info_schema  match_info
+path_schema        path
 querystring_schema querystring
 form_schema        form
 json_schema        json

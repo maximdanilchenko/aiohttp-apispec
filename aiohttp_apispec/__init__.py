@@ -2,7 +2,7 @@ from .aiohttp_apispec import AiohttpApiSpec, setup_aiohttp_apispec
 from .decorators import (
     docs,
     request_schema,
-    match_info_schema,
+    path_schema,
     querystring_schema,
     form_schema,
     json_schema,
@@ -21,7 +21,7 @@ __all__ = [
     # decorators
     "docs",
     "request_schema",
-    "match_info_schema",
+    "path_schema",
     "querystring_schema",
     "form_schema",
     "json_schema",
