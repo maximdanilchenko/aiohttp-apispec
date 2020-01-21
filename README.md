@@ -47,6 +47,8 @@ pip install aiohttp-apispec
 
 ## Quickstart
 
+*Also you can read [blog post](https://dmax.blog/how_to_easily_build_modern_web_apis_with_python_and_aiohttp) about quickstart with aiohttp-apispec*
+
 ```Python
 from aiohttp_apispec import (
     docs,
