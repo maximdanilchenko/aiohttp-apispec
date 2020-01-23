@@ -6,7 +6,7 @@ from aiohttp import web
 from aiohttp.hdrs import METH_ALL, METH_ANY
 from apispec import APISpec
 from apispec.core import VALID_METHODS_OPENAPI_V2
-from apispec.ext.marshmallow import MarshmallowPlugin, common
+from apispec.ext.marshmallow import MarshmallowPlugin
 from jinja2 import Template
 from webargs.aiohttpparser import parser
 
@@ -15,16 +15,6 @@ from .utils import get_path, get_path_keys, issubclass_py37fix
 _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 VALID_RESPONSE_FIELDS = {"description", "headers", "examples"}
-
-
-def resolver(schema):
-    schema_instance = common.resolve_schema_instance(schema)
-    prefix = "Partial-" if schema_instance.partial else ""
-    schema_cls = common.resolve_schema_cls(schema)
-    name = prefix + schema_cls.__name__
-    if name.endswith("Schema"):
-        return name[:-6] or name
-    return name
 
 
 class AiohttpApiSpec:
@@ -41,7 +31,7 @@ class AiohttpApiSpec:
         **kwargs
     ):
 
-        self.plugin = MarshmallowPlugin(schema_name_resolver=resolver)
+        self.plugin = MarshmallowPlugin()
         self.spec = APISpec(plugins=(self.plugin,), openapi_version="2.0", **kwargs)
 
         self.url = url
@@ -80,14 +70,13 @@ class AiohttpApiSpec:
 
         self._registered = True
 
-        if self.url is not None:
-            async def swagger_handler(request):
-                return web.json_response(request.app["swagger_dict"])
+        async def swagger_handler(request):
+            return web.json_response(request.app["swagger_dict"])
 
-            app.router.add_routes([web.get(self.url, swagger_handler)])
+        app.router.add_routes([web.get(self.url, swagger_handler)])
 
-            if self.swagger_path is not None:
-                self._add_swagger_web_page(app, self.static_path, self.swagger_path)
+        if self.swagger_path is not None:
+            self._add_swagger_web_page(app, self.static_path, self.swagger_path)
 
     def _add_swagger_web_page(
         self, app: web.Application, static_path: str, view_path: str
@@ -143,7 +132,7 @@ class AiohttpApiSpec:
         data["parameters"].extend(
             {"in": "path", "name": path_key, "required": True, "type": "string"}
             for path_key in get_path_keys(url_path)
-            if path_key not in existing
+            if not filter(lambda parameter: path_key in parameter, existing)
         )
 
         if "responses" in data:

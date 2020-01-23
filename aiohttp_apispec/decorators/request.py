@@ -73,10 +73,10 @@ def request_schema(schema, locations=None, put_into=None, **kwargs):
 use_kwargs = request_schema
 
 # Decorators for specific request data validations (shortenings)
-match_info_schema = partial(
+path_schema = partial(
     request_schema,
-    locations=["match_info"],
-    put_into="match_info"
+    locations=["path"],
+    put_into="path"
 )
 querystring_schema = partial(
     request_schema,
