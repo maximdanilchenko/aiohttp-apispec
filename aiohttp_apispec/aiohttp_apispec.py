@@ -84,7 +84,7 @@ class AiohttpApiSpec:
             async def swagger_handler(request):
                 return web.json_response(request.app["swagger_dict"])
 
-            app.router.add_routes([web.get(self.url, swagger_handler)])
+            app.router.add_route("GET", self.url, swagger_handler, name="swagger.spec")
 
             if self.swagger_path is not None:
                 self._add_swagger_web_page(app, self.static_path, self.swagger_path)
@@ -101,7 +101,7 @@ class AiohttpApiSpec:
         async def swagger_view(_):
             return web.Response(text=tmp, content_type="text/html")
 
-        app.router.add_route("GET", view_path, swagger_view)
+        app.router.add_route("GET", view_path, swagger_view, name="swagger.docs")
 
     def _register(self, app: web.Application):
         for route in app.router.routes():
