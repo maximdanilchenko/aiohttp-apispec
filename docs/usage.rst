@@ -214,6 +214,16 @@ regular Request in middleware like so:
     # Do not forget to add your own middleware before validation_middleware
     app.middlewares.extend([intercept_error, validation_middleware])
 
+Named routes
+------------
+
+Routes for the Swagger UI and to the swagger specification file `swagger.json`
+are registered as `named resources <https://docs.aiohttp.org/en/stable/web_quickstart.html#reverse-url-constructing-using-named-resources`_
+with the `swagger.docs` and `swagger.spec` names respectively. The
+corresponding routes are therefore avaialble un the value returned by the
+application's router `named_resources()` call.
+
+
 Build swagger web client
 ------------------------
 
