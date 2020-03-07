@@ -37,6 +37,7 @@ Look [here](#more-decorators) for more info.
 - [More decorators](#more-decorators)
 - [Custom error handling](#custom-error-handling)
 - [Build swagger web client](#build-swagger-web-client)
+- [Versioning](#versioning)
 
 
 ## Install
@@ -322,6 +323,10 @@ def create_app(app):
     ...
     return app
 ```
+
+## Versioning
+
+This software follows [Semantic Versioning](http://semver.org/).
 
 ------
 
