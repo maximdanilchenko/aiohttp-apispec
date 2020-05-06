@@ -20,7 +20,7 @@ def test_app_swagger_url(aiohttp_app):
     assert URL("/v1/api/docs/api-docs") in urls
 
 
-async def test_app_swagger_json(aiohttp_app):
+async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
     resp = await aiohttp_app.get("/v1/api/docs/api-docs")
     docs = await resp.json()
     assert docs["info"]["title"] == "API documentation"
@@ -119,6 +119,19 @@ async def test_app_swagger_json(aiohttp_app):
         },
         sort_keys=True,
     )
+    assert docs["paths"]["/v1/example_endpoint"]["post"]["parameters"] == [
+        {
+            'in': 'body',
+            'required': False,
+            'name': 'body',
+            'schema': {
+                'allOf': [
+                    '#/definitions/Request'
+                ],
+                'example': example_for_request_schema
+            }
+        }
+    ]
 
     _request_properties = {
         "properties": {
@@ -132,9 +145,10 @@ async def test_app_swagger_json(aiohttp_app):
         },
         "type": "object",
     }
+
     assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
         {
-            "Request": _request_properties,
+            "Request": {**_request_properties, 'example': example_for_request_schema},
             "Partial-Request": _request_properties,
             "Response": {
                 "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
@@ -143,7 +157,6 @@ async def test_app_swagger_json(aiohttp_app):
         },
         sort_keys=True,
     )
-
 
 async def test_not_register_route_for_none_url():
     app = web.Application()

@@ -159,6 +159,7 @@ class AiohttpApiSpec:
             parameters = self.plugin.converter.schema2parameters(
                 schema["schema"], **schema["options"]
             )
+            self._add_examples(schema["schema"], parameters, schema["example"])
             data["parameters"].extend(parameters)
 
         existing = [p["name"] for p in data["parameters"] if p["in"] == "path"]
@@ -192,6 +193,24 @@ class AiohttpApiSpec:
 
         operations = copy.deepcopy(data)
         self.spec.path(path=url_path, operations={method: operations})
+
+    def _add_examples(self, ref_schema, endpoint_schema, example):
+        def add_to_endpoint_or_ref():
+            if add_to_refs:
+                self.spec.components._schemas[name]["example"] = example
+            else:
+                endpoint_schema[0]['schema']['allOf'] = [endpoint_schema[0]['schema'].pop('$ref')]
+                endpoint_schema[0]['schema']["example"] = example
+        if not example:
+            return
+        schema_instance = common.resolve_schema_instance(ref_schema)
+        name = self.plugin.converter.schema_name_resolver(schema_instance)
+        add_to_refs = example.pop('add_to_refs')
+        if self.spec.components.openapi_version.major < 3:
+            if name and name in self.spec.components._schemas:
+                add_to_endpoint_or_ref()
+        else:
+            add_to_endpoint_or_ref()
 
 
 def setup_aiohttp_apispec(
