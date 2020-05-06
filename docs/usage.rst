@@ -6,6 +6,9 @@ Usage
 Quickstart
 ----------
 
+.. note::
+    Using strict=True need only for marshmallow < 3.0.0
+
 .. code-block:: python
 
     from aiohttp_apispec import (docs,

@@ -1,7 +1,8 @@
 from functools import partial
+import copy
 
 
-def request_schema(schema, locations=None, put_into=None, **kwargs):
+def request_schema(schema, locations=None, put_into=None, example=None, add_to_refs=False, **kwargs):
     """
     Add request info into the swagger spec and
     prepare injection keyword arguments from the specified
@@ -32,19 +33,24 @@ def request_schema(schema, locations=None, put_into=None, **kwargs):
     :param put_into: name of the key in Request object
                      where validated data will be placed.
                      If None (by default) default key will be used
+    :param dict example: Adding example for current schema
+    :param bool add_to_refs: Working only if example not None,
+                             if True, add example for ref schema.
+                             Otherwise add example to endpoint.
+                             Default False
     """
     if callable(schema):
         schema = schema()
     # location kwarg added for compatibility with old versions
     locations = locations or []
     if not locations:
-        locations = kwargs.get("location")
+        locations = kwargs.pop("location", None)
         if locations:
             locations = [locations]
         else:
             locations = None
 
-    options = {"required": kwargs.get("required", False)}
+    options = {"required": kwargs.pop("required", False)}
     if locations:
         options["default_in"] = locations[0]
 
@@ -52,8 +58,11 @@ def request_schema(schema, locations=None, put_into=None, **kwargs):
         if not hasattr(func, "__apispec__"):
             func.__apispec__ = {"schemas": [], "responses": {}, "parameters": []}
             func.__schemas__ = []
-        func.__apispec__["schemas"].append({"schema": schema, "options": options})
 
+        _example = copy.copy(example) or {}
+        if _example:
+            _example['add_to_refs'] = add_to_refs
+        func.__apispec__["schemas"].append({"schema": schema, "options": options, "example": _example})
         # TODO: Remove this block?
         if locations and "body" in locations:
             body_schema_exists = (

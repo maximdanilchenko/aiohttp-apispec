@@ -56,6 +56,15 @@ class MyException(Exception):
         self.message = message
 
 
+@pytest.fixture
+def example_for_request_schema():
+    return {
+        'id': 1,
+        'name': 'test',
+        'bool_field': True,
+        'list_field': [1, 2, 3]
+    }
+
 @pytest.fixture(
     params=[
         ({"locations": ["query"]}, True),
@@ -64,7 +73,7 @@ class MyException(Exception):
         ({"location": "query"}, False),
     ]
 )
-def aiohttp_app(loop, aiohttp_client, request):
+def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
     locations, nested = request.param
 
     @docs(
@@ -80,6 +89,14 @@ def aiohttp_app(loop, aiohttp_client, request):
 
     @request_schema(RequestSchema)
     async def handler_post(request):
+        return web.json_response({"msg": "done", "data": {}})
+
+    @request_schema(RequestSchema, example=example_for_request_schema)
+    async def handler_post_with_example_to_endpoint(request):
+        return web.json_response({"msg": "done", "data": {}})
+
+    @request_schema(RequestSchema, example=example_for_request_schema, add_to_refs=True)
+    async def handler_post_with_example_to_ref(request):
         return web.json_response({"msg": "done", "data": {}})
 
     @request_schema(RequestSchema(partial=True))
@@ -166,6 +183,8 @@ def aiohttp_app(loop, aiohttp_client, request):
             [
                 web.get("/test", handler_get),
                 web.post("/test", handler_post),
+                web.post("/example_endpoint", handler_post_with_example_to_endpoint),
+                web.post("/example_ref", handler_post_with_example_to_ref),
                 web.post("/test_partial", handler_post_partial),
                 web.post("/test_call", handler_post_callable_schema),
                 web.get("/other", other),
@@ -186,6 +205,8 @@ def aiohttp_app(loop, aiohttp_client, request):
             [
                 web.get("/v1/test", handler_get),
                 web.post("/v1/test", handler_post),
+                web.post("/v1/example_endpoint", handler_post_with_example_to_endpoint),
+                web.post("/v1/example_ref", handler_post_with_example_to_ref),
                 web.post("/v1/test_partial", handler_post_partial),
                 web.post("/v1/test_call", handler_post_callable_schema),
                 web.get("/v1/other", other),

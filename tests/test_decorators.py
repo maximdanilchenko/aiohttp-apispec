@@ -60,6 +60,22 @@ class TestViewDecorators:
 
         return index
 
+    @pytest.fixture
+    def aiohttp_view_request_schema_with_example_without_refs(self, example_for_request_schema):
+        @request_schema(RequestSchema, example=example_for_request_schema)
+        async def index(request, **data):
+            return web.json_response({"msg": "done", "data": {}})
+
+        return index
+
+    @pytest.fixture
+    def aiohttp_view_request_schema_with_example(self, example_for_request_schema):
+        @request_schema(RequestSchema, example=example_for_request_schema, add_to_refs=True)
+        async def index(request, **data):
+            return web.json_response({"msg": "done", "data": {}})
+
+        return index
+
     def test_docs_view(self, aiohttp_view_docs):
         assert hasattr(aiohttp_view_docs, "__apispec__")
         assert aiohttp_view_docs.__apispec__["tags"] == ["mytag"]
@@ -114,6 +130,24 @@ class TestViewDecorators:
         for param in ("parameters", "responses"):
             assert param in aiohttp_view_marshal.__apispec__
         assert "200" in aiohttp_view_marshal.__apispec__["responses"]
+
+    def test_request_schema_with_example_without_refs(
+            self,
+            aiohttp_view_request_schema_with_example_without_refs,
+            example_for_request_schema):
+        schema = aiohttp_view_request_schema_with_example_without_refs.__apispec__["schemas"][0]
+        expacted_result = example_for_request_schema.copy()
+        expacted_result['add_to_refs'] = False
+        assert schema['example'] == expacted_result
+
+    def test_request_schema_with_example(
+            self,
+            aiohttp_view_request_schema_with_example,
+            example_for_request_schema):
+        schema = aiohttp_view_request_schema_with_example.__apispec__["schemas"][0]
+        expacted_result = example_for_request_schema.copy()
+        expacted_result['add_to_refs'] = True
+        assert schema['example'] == expacted_result
 
     def test_all(self, aiohttp_view_all):
         assert hasattr(aiohttp_view_all, "__apispec__")
