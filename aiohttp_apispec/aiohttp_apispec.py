@@ -38,10 +38,11 @@ class AiohttpApiSpec:
         error_callback=None,
         in_place=False,
         prefix='',
+        schema_name_resolver=resolver,
         **kwargs
     ):
 
-        self.plugin = MarshmallowPlugin(schema_name_resolver=resolver)
+        self.plugin = MarshmallowPlugin(schema_name_resolver=schema_name_resolver)
         self.spec = APISpec(plugins=(self.plugin,), openapi_version="2.0", **kwargs)
 
         self.url = url
@@ -184,6 +185,7 @@ def setup_aiohttp_apispec(
     error_callback=None,
     in_place: bool = False,
     prefix: str = '',
+    schema_name_resolver: Callable = resolver,
     **kwargs
 ) -> None:
     """
@@ -240,6 +242,7 @@ def setup_aiohttp_apispec(
                      instead of the moment of the on_startup signal.
                      If True, be sure all routes are added to router
     :param prefix: prefix to add to all registered routes
+    :param schema_name_resolver: custom schema_name_resolver for MarshmallowPlugin.
     :param kwargs: any apispec.APISpec kwargs
     """
     AiohttpApiSpec(
@@ -253,5 +256,6 @@ def setup_aiohttp_apispec(
         error_callback=error_callback,
         in_place=in_place,
         prefix=prefix,
+        schema_name_resolver=schema_name_resolver,
         **kwargs
     )
