@@ -16,6 +16,9 @@ _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 VALID_RESPONSE_FIELDS = {"description", "headers", "examples"}
 
+NAME_SWAGGER_SPEC = "swagger.spec"
+NAME_SWAGGER_DOCS = "swagger.docs"
+
 
 def resolver(schema):
     schema_instance = common.resolve_schema_instance(schema)
@@ -52,6 +55,7 @@ class AiohttpApiSpec:
         self._request_data_name = request_data_name
         self.error_callback = error_callback
         self.prefix = prefix
+        self._index_page = None
         if app is not None:
             self.register(app, in_place)
 
@@ -85,10 +89,18 @@ class AiohttpApiSpec:
             async def swagger_handler(request):
                 return web.json_response(request.app["swagger_dict"])
 
-            app.router.add_route("GET", self.url, swagger_handler, name="swagger.spec")
+            app.router.add_route("GET", self.url, swagger_handler, name=NAME_SWAGGER_SPEC)
 
             if self.swagger_path is not None:
                 self._add_swagger_web_page(app, self.static_path, self.swagger_path)
+
+    def _get_index_page(self, app, static_files, static_path):
+        if self._index_page is None:
+            with open(str(static_files / "index.html")) as swg_tmp:
+                url = self.url if app is None else app.router[NAME_SWAGGER_SPEC].url_for()
+                self._index_page = Template(swg_tmp.read()).render(path=url, static=static_path)
+
+        return self._index_page
 
     def _add_swagger_web_page(
         self, app: web.Application, static_path: str, view_path: str
@@ -96,13 +108,11 @@ class AiohttpApiSpec:
         static_files = Path(__file__).parent / "static"
         app.router.add_static(static_path, static_files)
 
-        with open(str(static_files / "index.html")) as swg_tmp:
-            tmp = Template(swg_tmp.read()).render(path=self.url, static=static_path)
-
         async def swagger_view(_):
-            return web.Response(text=tmp, content_type="text/html")
+            index_page = self._get_index_page(app, static_files, static_path)
+            return web.Response(text=index_page, content_type="text/html")
 
-        app.router.add_route("GET", view_path, swagger_view, name="swagger.docs")
+        app.router.add_route("GET", view_path, swagger_view, name=NAME_SWAGGER_DOCS)
 
     def _register(self, app: web.Application):
         for route in app.router.routes():
