@@ -95,10 +95,12 @@ class AiohttpApiSpec:
                 self._add_swagger_web_page(app, self.static_path, self.swagger_path)
 
     def _get_index_page(self, app, static_files, static_path):
-        if self._index_page is None:
-            with open(str(static_files / "index.html")) as swg_tmp:
-                url = self.url if app is None else app.router[NAME_SWAGGER_SPEC].url_for()
-                self._index_page = Template(swg_tmp.read()).render(path=url, static=static_path)
+        if self._index_page is not None:
+            return self._index_page
+
+        with open(str(static_files / "index.html")) as swg_tmp:
+            url = self.url if app is None else app.router[NAME_SWAGGER_SPEC].url_for()
+            self._index_page = Template(swg_tmp.read()).render(path=url, static=static_path)
 
         return self._index_page
 
