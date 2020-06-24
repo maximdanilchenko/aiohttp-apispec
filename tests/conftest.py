@@ -160,6 +160,7 @@ def aiohttp_app(loop, aiohttp_client, request):
             title="API documentation",
             version="0.0.1",
             url="/api/docs/api-docs",
+            swagger_path="/api/docs",
             error_callback=my_error_handler,
         )
         v1.router.add_routes(
@@ -180,7 +181,10 @@ def aiohttp_app(loop, aiohttp_client, request):
         app.add_subapp("/v1/", v1)
     else:
         setup_aiohttp_apispec(
-            app=app, url="/v1/api/docs/api-docs", error_callback=my_error_handler
+            app=app,
+            url="/v1/api/docs/api-docs",
+            swagger_path="/v1/api/docs",
+            error_callback=my_error_handler,
         )
         app.router.add_routes(
             [

@@ -152,3 +152,8 @@ async def test_validators(aiohttp_app):
         "headers": {"some_header": "test-header-value"},
         "match_info": {"uuid": 123456},
     }
+
+
+async def test_swagger_path(aiohttp_app):
+    res = await aiohttp_app.get("/v1/api/docs")
+    assert res.status == 200

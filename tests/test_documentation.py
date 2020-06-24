@@ -1,12 +1,16 @@
 import json
 
 from aiohttp import web
+from aiohttp.web_urldispatcher import StaticResource
 from aiohttp_apispec import setup_aiohttp_apispec
 from yarl import URL
 
 
 def test_app_swagger_url(aiohttp_app):
     def safe_url_for(route):
+        if isinstance(route._resource, StaticResource):
+            # url_for on StaticResource requires filename arg
+            return None
         try:
             return route.url_for()
         except KeyError:
