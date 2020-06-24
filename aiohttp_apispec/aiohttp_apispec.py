@@ -1,3 +1,4 @@
+import os
 import copy
 from pathlib import Path
 from typing import Awaitable, Callable
@@ -18,6 +19,9 @@ VALID_RESPONSE_FIELDS = {"description", "headers", "examples"}
 
 NAME_SWAGGER_SPEC = "swagger.spec"
 NAME_SWAGGER_DOCS = "swagger.docs"
+NAME_SWAGGER_STATIC = "swagger.static"
+
+INDEX_PAGE = "index.html"
 
 
 def resolver(schema):
@@ -98,8 +102,13 @@ class AiohttpApiSpec:
         if self._index_page is not None:
             return self._index_page
 
-        with open(str(static_files / "index.html")) as swg_tmp:
+        with open(str(static_files / INDEX_PAGE)) as swg_tmp:
             url = self.url if app is None else app.router[NAME_SWAGGER_SPEC].url_for()
+
+            if app is not None:
+                static_path = app.router[NAME_SWAGGER_STATIC].url_for(filename=INDEX_PAGE)
+                static_path = os.path.dirname(str(static_path))
+
             self._index_page = Template(swg_tmp.read()).render(path=url, static=static_path)
 
         return self._index_page
@@ -108,7 +117,7 @@ class AiohttpApiSpec:
         self, app: web.Application, static_path: str, view_path: str
     ):
         static_files = Path(__file__).parent / "static"
-        app.router.add_static(static_path, static_files)
+        app.router.add_static(static_path, static_files, name=NAME_SWAGGER_STATIC)
 
         async def swagger_view(_):
             index_page = self._get_index_page(app, static_files, static_path)

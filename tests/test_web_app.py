@@ -157,3 +157,8 @@ async def test_validators(aiohttp_app):
 async def test_swagger_path(aiohttp_app):
     res = await aiohttp_app.get("/v1/api/docs")
     assert res.status == 200
+
+
+async def test_swagger_static(aiohttp_app):
+    assert (await aiohttp_app.get("/static/swagger/swagger-ui.css")).status == 200 \
+        or (await aiohttp_app.get("/v1/static/swagger/swagger-ui.css")).status == 200
