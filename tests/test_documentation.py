@@ -154,6 +154,10 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                 "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
                 "type": "object",
             },
+            "ResponseSchemaIgnoreExtra": {
+                "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
+                "type": "object",
+            },
         },
         sort_keys=True,
     )
