@@ -93,7 +93,10 @@ class AiohttpApiSpec:
             async def swagger_handler(request):
                 return web.json_response(request.app["swagger_dict"])
 
-            app.router.add_route("GET", self.url, swagger_handler, name=NAME_SWAGGER_SPEC)
+            route_url = self.url
+            if not self.url.startswith("/"):
+                route_url = "/{}".format(route_url)
+            app.router.add_route("GET", route_url, swagger_handler, name=NAME_SWAGGER_SPEC)
 
             if self.swagger_path is not None:
                 self._add_swagger_web_page(app, self.static_path, self.swagger_path)
