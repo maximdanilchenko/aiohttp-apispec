@@ -28,7 +28,7 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         schemas = sub_handler.__schemas__
     else:
         schemas = orig_handler.__schemas__
-    result = {}
+    result = []
     for schema in schemas:
         data = await request.app["_apispec_parser"].parse(
             schema["schema"], request, locations=schema["locations"]
@@ -37,7 +37,10 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
             request[schema["put_into"]] = data
         elif data:
             try:
-                result.update(data)
+                if isinstance(data, list):
+                    result.extend(data)
+                else:
+                    result=data
             except (ValueError, TypeError):
                 result = data
                 break
