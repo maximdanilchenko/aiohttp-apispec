@@ -95,7 +95,7 @@ class AiohttpApiSpec:
 
             route_url = self.url
             if not self.url.startswith("/"):
-                route_url = "/{}".format(route_url)
+                route_url = "/{}".format(self.url)
             app.router.add_route("GET", route_url, swagger_handler, name=NAME_SWAGGER_SPEC)
 
             if self.swagger_path is not None:
