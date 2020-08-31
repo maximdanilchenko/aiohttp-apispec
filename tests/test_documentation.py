@@ -164,3 +164,11 @@ async def test_not_register_route_for_none_url():
     setup_aiohttp_apispec(app=app, url=None)
     routes_count_after_setup_apispec = len(app.router.routes())
     assert routes_count == routes_count_after_setup_apispec
+
+
+async def test_register_route_for_relative_url():
+    app = web.Application()
+    routes_count = len(app.router.routes())
+    setup_aiohttp_apispec(app=app, url="api/swagger")
+    routes_count_after_setup_apispec = len(app.router.routes())
+    assert routes_count == routes_count_after_setup_apispec
