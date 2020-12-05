@@ -33,7 +33,7 @@ def response_schema(schema, code=200, required=False, description=None):
         func.__apispec__["responses"]["%s" % code] = {
             "schema": schema,
             "required": required,
-            "description": description,
+            "description": description or "",
         }
         return func
 
