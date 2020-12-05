@@ -1,6 +1,6 @@
 import pytest
 from aiohttp import web
-from marshmallow import Schema, fields
+from marshmallow import EXCLUDE, Schema, fields
 
 from aiohttp_apispec import (
     docs,
@@ -49,6 +49,11 @@ class RequestSchema(Schema):
 class ResponseSchema(Schema):
     msg = fields.Str()
     data = fields.Dict()
+
+
+class ResponseSchemaIgnoreExtra(ResponseSchema):
+    class Meta:
+        unknown = EXCLUDE
 
 
 class MyException(Exception):
@@ -127,6 +132,16 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
     async def handler_get_variable(request):
         return web.json_response(request["data"])
 
+    @request_schema(RequestSchema)
+    @response_schema(ResponseSchema, 200)
+    async def handler_post_extra_field(request):
+        return web.json_response(request["data"])
+
+    @request_schema(RequestSchema)
+    @response_schema(ResponseSchemaIgnoreExtra, 200)
+    async def handler_post_ignore_extra_field(request):
+        return web.json_response(request["data"])
+
     class ViewClass(web.View):
         @docs(
             tags=["mytag"],
@@ -194,6 +209,8 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/echo", handler_post_echo),
                 web.get("/variable/{var}", handler_get_variable),
                 web.post("/validate/{uuid}", validated_view),
+                web.post("/extra_field", handler_post_extra_field),
+                web.post("/ignore_extra_field", handler_post_ignore_extra_field),
             ]
         )
         v1.middlewares.extend([intercept_error, validation_middleware])
@@ -219,6 +236,8 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/v1/echo", handler_post_echo),
                 web.get("/v1/variable/{var}", handler_get_variable),
                 web.post("/v1/validate/{uuid}", validated_view),
+                web.post("/v1/extra_field", handler_post_extra_field),
+                web.post("/v1/ignore_extra_field", handler_post_ignore_extra_field),
             ]
         )
         app.middlewares.extend([intercept_error, validation_middleware])

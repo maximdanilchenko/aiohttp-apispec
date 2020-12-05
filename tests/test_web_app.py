@@ -162,3 +162,14 @@ async def test_swagger_path(aiohttp_app):
 async def test_swagger_static(aiohttp_app):
     assert (await aiohttp_app.get("/static/swagger/swagger-ui.css")).status == 200 \
         or (await aiohttp_app.get("/v1/static/swagger/swagger-ui.css")).status == 200
+
+
+async def test_response_extra_fields(aiohttp_app):
+    res = await aiohttp_app.post("/v1/extra_field", json={"id": 1, "foo": 2})
+    assert res.status == 500
+
+
+async def test_response_ignore_extra_fields(aiohttp_app):
+    res = await aiohttp_app.post("/v1/ignore_extra_field", json={"id": 1, "foo": 2})
+    assert res.status == 200
+    assert (await res.json()) == {"id": 1}

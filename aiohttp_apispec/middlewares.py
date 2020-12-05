@@ -26,8 +26,10 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
         if not hasattr(sub_handler, "__schemas__"):
             return await handler(request)
         schemas = sub_handler.__schemas__
+        response_info = sub_handler.__apispec__["responses"]
     else:
         schemas = orig_handler.__schemas__
+        response_info = orig_handler.__apispec__["responses"]
     result = {}
     for schema in schemas:
         data = await request.app["_apispec_parser"].parse(
@@ -42,4 +44,8 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
                 result = data
                 break
     request[request.app["_apispec_request_data_name"]] = result
-    return await handler(request)
+    response = await handler(request)
+    response_schema = response_info.get(str(response.status))
+    if response_schema:
+        response_schema["schema"].loads(response.text)
+    return response
