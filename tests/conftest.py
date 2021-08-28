@@ -57,21 +57,9 @@ class MySchema(Schema):
     # default behaviour for unknown field is RAISE exception
     n = fields.Nested(MyNestedSchema)
 
-
 class MyException(Exception):
     def __init__(self, message):
         self.message = message
-
-
-@pytest.fixture
-def example_for_nested_unknown(name="nested_unknown"):
-    return {
-        'n': {
-            'i': 12,
-            #'j': 12,
-        },
-        'o': 12,
-    }
 
 @pytest.fixture
 def example_for_request_schema():
@@ -215,7 +203,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/echo", handler_post_echo),
                 web.get("/variable/{var}", handler_get_variable),
                 web.post("/validate/{uuid}", validated_view),
-                web.post("/test_unknown_field", validated_view)
+                web.post("/test_unknown_field", handler_unknown_fields)
             ]
         )
         v1.middlewares.extend([intercept_error, validation_middleware])
@@ -241,6 +229,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/v1/echo", handler_post_echo),
                 web.get("/v1/variable/{var}", handler_get_variable),
                 web.post("/v1/validate/{uuid}", validated_view),
+                web.post("/v1/test_unknown_field", handler_unknown_fields)
             ]
         )
         app.middlewares.extend([intercept_error, validation_middleware])
