@@ -30,6 +30,14 @@ async def test_response_400_post(aiohttp_app):
         'text': 'Oops',
     }
 
+async def test_response_422_post(aiohttp_app):
+    # unknown_field is not a field in RequestSchema, default behavior is RAISE exception
+    res = await aiohttp_app.post("/v1/test", json={"id": 1, "name": "max", "unknown_field": "string"})
+    assert res.status == 422
+    assert await res.json() == {
+        'errors': {'unknown_field': ['Unknown field.']},
+        'text': 'Oops',
+    }
 
 async def test_response_not_docked(aiohttp_app):
     res = await aiohttp_app.get("/v1/other", params={"id": 1, "name": "max"})
@@ -152,7 +160,6 @@ async def test_validators(aiohttp_app):
         "headers": {"some_header": "test-header-value"},
         "match_info": {"uuid": 123456},
     }
-
 
 async def test_swagger_path(aiohttp_app):
     res = await aiohttp_app.get("/v1/api/docs")
