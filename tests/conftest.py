@@ -54,6 +54,7 @@ class MyNestedSchema(Schema):
     i = fields.Int()
 
 class MySchema(Schema):
+    # default behaviour for unknown field is RAISE exception
     n = fields.Nested(MyNestedSchema)
 
 
@@ -132,7 +133,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
         return web.json_response(request["data"])
 
     @request_schema(MySchema)
-    async def handler_post_nested_unknowns(request):
+    async def handler_unknown_fields(request):
         return web.json_response(request["data"])
 
     @docs(
@@ -214,6 +215,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/echo", handler_post_echo),
                 web.get("/variable/{var}", handler_get_variable),
                 web.post("/validate/{uuid}", validated_view),
+                web.post("/test_unknown_field", validated_view)
             ]
         )
         v1.middlewares.extend([intercept_error, validation_middleware])

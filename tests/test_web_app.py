@@ -30,12 +30,26 @@ async def test_response_400_post(aiohttp_app):
         'text': 'Oops',
     }
 
-async def test_response_422_post(aiohttp_app):
-    # unknown_field is not a field in RequestSchema, default behavior is RAISE exception
-    res = await aiohttp_app.post("/v1/test", json={"id": 1, "name": "max", "unknown_field": "string"})
-    assert res.status == 422
+# async def test_response_400_post_unknown_toplevel_field(aiohttp_app):
+#     # unknown_field is not a field in RequestSchema, default behavior is RAISE exception
+#     res = await aiohttp_app.post("/v1/test", json={"id": 1, "name": "max", "unknown_field": "string"})
+#     assert res.status == 422
+#     assert await res.json() == {
+#         'errors': {'unknown_field': ['Unknown field.']},
+#         'text': 'Oops',
+#     }
+
+async def test_response_400_post_nested_fields(aiohttp_app):
+    payload = {
+                'n': {
+                    'i': 12,
+                    'j': 12, # unknown nested field
+                }
+            }
+    res = await aiohttp_app.post("/v1/test_unknown_field", json=payload)
+    assert res.status == 400
     assert await res.json() == {
-        'errors': {'unknown_field': ['Unknown field.']},
+        'errors': {'n': {'j': ['Unknown field.']}},
         'text': 'Oops',
     }
 
