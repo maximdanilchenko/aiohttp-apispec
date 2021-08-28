@@ -50,11 +50,27 @@ class ResponseSchema(Schema):
     msg = fields.Str()
     data = fields.Dict()
 
+class MyNestedSchema(Schema):
+    i = fields.Int()
+
+class MySchema(Schema):
+    n = fields.Nested(MyNestedSchema)
+
 
 class MyException(Exception):
     def __init__(self, message):
         self.message = message
 
+
+@pytest.fixture
+def example_for_nested_unknown(name="nested_unknown"):
+    return {
+        'n': {
+            'i': 12,
+            #'j': 12,
+        },
+        'o': 12,
+    }
 
 @pytest.fixture
 def example_for_request_schema():
@@ -113,6 +129,10 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
 
     @request_schema(RequestSchema, **locations)
     async def handler_get_echo(request):
+        return web.json_response(request["data"])
+
+    @request_schema(MySchema)
+    async def handler_post_nested_unknowns(request):
         return web.json_response(request["data"])
 
     @docs(
