@@ -41,15 +41,15 @@ async def test_response_400_post_unknown_toplevel_field(aiohttp_app):
 
 async def test_response_400_post_nested_fields(aiohttp_app):
     payload = {
-                'n': {
+                'nested_field': {
                     'i': 12,
                     'j': 12, # unknown nested field
                 }
             }
-    res = await aiohttp_app.post("/v1/test_unknown_field", json=payload)
+    res = await aiohttp_app.post("/v1/test", json=payload)
     assert res.status == 400
     assert await res.json() == {
-        'errors': {'json': {'n': {'j': ['Unknown field.']}}},
+        'errors': {'json': {'nested_field': {'j': ['Unknown field.']}}},
         'text': 'Oops',
     }
 
