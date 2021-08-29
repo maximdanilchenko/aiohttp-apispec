@@ -47,7 +47,7 @@ def request_schema(schema, location=None, put_into=None, example=None, add_to_re
     # so therefore **locations should never be used
 
     options = {"required": kwargs.pop("required", False)}
-    # TODO: to support apispec >=4 need to rename default_in
+    # to support apispec >=4 need to rename default_in
     if location:
         options["default_in"] = location
     elif "default_in" not in options:
