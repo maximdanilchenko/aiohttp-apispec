@@ -44,7 +44,7 @@ def request_schema(schema, location=None, put_into=None, example=None, add_to_re
     
     # Compatability with old versions should be dropped,
     # multiple locations are no longer supported by a single call
-    # so therefore **locations should never be used.
+    # so therefore converting location to locations is redundant
 
     options = {"required": kwargs.pop("required", False)}
     if location:
