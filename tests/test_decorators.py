@@ -25,7 +25,7 @@ class TestViewDecorators:
             summary="Test method summary",
             description="Test method description",
         )
-        @request_schema(RequestSchema, locations=["query"])
+        @request_schema(RequestSchema, location=["querystring"])
         @response_schema(ResponseSchema, 200)
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
@@ -46,7 +46,7 @@ class TestViewDecorators:
 
     @pytest.fixture
     def aiohttp_view_kwargs(self):
-        @request_schema(RequestSchema, locations=["query"])
+        @request_schema(RequestSchema, location=["querystring"])
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
@@ -91,7 +91,7 @@ class TestViewDecorators:
             aiohttp_view_kwargs.__schemas__[0].pop("schema"), RequestSchema
         )
         assert aiohttp_view_kwargs.__schemas__ == [
-            {"locations": ["query"], 'put_into': None}
+            {"location": ["querystring"], 'put_into': None}
         ]
         for param in ("parameters", "responses"):
             assert param in aiohttp_view_kwargs.__apispec__
@@ -161,8 +161,8 @@ class TestViewDecorators:
     def test_view_multiple_body_parameters(self):
         with pytest.raises(RuntimeError) as ex:
 
-            @request_schema(RequestSchema, locations=["body"])
-            @request_schema(RequestSchema, locations=["body"])
+            @request_schema(RequestSchema, location=["body"])
+            @request_schema(RequestSchema, location=["body"])
             async def index(request, **data):
                 return web.json_response({"msg": "done", "data": {}})
 
