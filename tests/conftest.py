@@ -64,7 +64,8 @@ def example_for_request_schema():
         'id': 1,
         'name': 'test',
         'bool_field': True,
-        'list_field': [1, 2, 3]
+        'list_field': [1, 2, 3],
+        'nested_field': {'i': 12}
     }
 
 @pytest.fixture(
