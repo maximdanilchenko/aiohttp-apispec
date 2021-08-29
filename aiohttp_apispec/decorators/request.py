@@ -44,11 +44,13 @@ def request_schema(schema, location=None, put_into=None, example=None, add_to_re
     
     # Compatability with old versions should be dropped,
     # multiple locations are no longer supported by a single call
-    # so therefore converting location to locations is redundant
+    # so therefore **locations should never be used
 
     options = {"required": kwargs.pop("required", False)}
     if location:
         options["default_in"] = location
+    elif "default_in" not in options:
+        options["default_in"] = "body"
 
     def wrapper(func):
         if not hasattr(func, "__apispec__"):
