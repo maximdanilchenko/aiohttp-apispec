@@ -40,24 +40,19 @@ def pytest_report_header(config):
                     '          '         '           
     """
 
+class MyNestedSchema(Schema):
+    i = fields.Int()
 
 class RequestSchema(Schema):
     id = fields.Int()
     name = fields.Str(description="name")
     bool_field = fields.Bool()
     list_field = fields.List(fields.Int())
-
+    nested_field = fields.Nested(MyNestedSchema)
 
 class ResponseSchema(Schema):
     msg = fields.Str()
     data = fields.Dict()
-
-class MyNestedSchema(Schema):
-    i = fields.Int()
-
-class MySchema(Schema):
-    # default behaviour for unknown field is RAISE exception
-    n = fields.Nested(MyNestedSchema)
 
 class MyException(Exception):
     def __init__(self, message):
@@ -122,10 +117,6 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
 
     @request_schema(RequestSchema, **location)
     async def handler_get_echo(request):
-        return web.json_response(request["data"])
-
-    @request_schema(MySchema)
-    async def handler_unknown_fields(request):
         return web.json_response(request["data"])
 
     @docs(
@@ -207,7 +198,6 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/echo", handler_post_echo),
                 web.get("/variable/{var}", handler_get_variable),
                 web.post("/validate/{uuid}", validated_view),
-                web.post("/test_unknown_field", handler_unknown_fields)
             ]
         )
         v1.middlewares.extend([intercept_error, validation_middleware])
@@ -233,7 +223,6 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
                 web.post("/v1/echo", handler_post_echo),
                 web.get("/v1/variable/{var}", handler_get_variable),
                 web.post("/v1/validate/{uuid}", validated_view),
-                web.post("/v1/test_unknown_field", handler_unknown_fields)
             ]
         )
         app.middlewares.extend([intercept_error, validation_middleware])
