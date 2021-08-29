@@ -1,6 +1,6 @@
 import pytest
 from aiohttp import web
-from marshmallow import Schema, fields, EXCLUDE
+from marshmallow import Schema, fields, EXCLUDE, INCLUDE
 
 from aiohttp_apispec import (
     docs,
@@ -17,6 +17,8 @@ from aiohttp_apispec import (
 
 
 class HeaderSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
     some_header = fields.String()
 
 
@@ -74,10 +76,10 @@ def example_for_request_schema():
     # since multiple locations are no longer supported
     # in a single call, location should always expect string
     params=[
-        ({"location": "query"}, True),
-        ({"location": "query"}, True),
-        ({"location": "query"}, False),
-        ({"location": "query"}, False),
+        ({"location": "querystring"}, True),
+        ({"location": "querystring"}, True),
+        ({"location": "querystring"}, False),
+        ({"location": "querystring"}, False),
     ]
 )
 def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
