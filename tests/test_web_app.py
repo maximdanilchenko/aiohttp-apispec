@@ -7,7 +7,7 @@ async def test_response_400_get(aiohttp_app):
     res = await aiohttp_app.get("/v1/test", params={"id": "string", "name": "max"})
     assert res.status == 400
     assert await res.json() == {
-        'errors': {'query': {'id': ['Not a valid integer.']}},
+        'errors': {'querystring': {'id': ['Not a valid integer.']}},
         'text': 'Oops',
     }
 
