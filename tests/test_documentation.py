@@ -1,5 +1,4 @@
 import json
-import pprint as pp
 
 from aiohttp import web
 from aiohttp.web_urldispatcher import StaticResource
@@ -7,18 +6,18 @@ from aiohttp_apispec import setup_aiohttp_apispec
 from yarl import URL
 
 
-# def test_app_swagger_url(aiohttp_app):
-#     def safe_url_for(route):
-#         if isinstance(route._resource, StaticResource):
-#             # url_for on StaticResource requires filename arg
-#             return None
-#         try:
-#             return route.url_for()
-#         except KeyError:
-#             return None
+def test_app_swagger_url(aiohttp_app):
+    def safe_url_for(route):
+        if isinstance(route._resource, StaticResource):
+            # url_for on StaticResource requires filename arg
+            return None
+        try:
+            return route.url_for()
+        except KeyError:
+            return None
 
-#     urls = [safe_url_for(route) for route in aiohttp_app.app.router.routes()]
-#     assert URL("/v1/api/docs/api-docs") in urls
+    urls = [safe_url_for(route) for route in aiohttp_app.app.router.routes()]
+    assert URL("/v1/api/docs/api-docs") in urls
 
 
 async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
@@ -61,6 +60,8 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                     "type": "string",
                 },
                 {
+                    # default schema_name_resolver, resolved based on schema __name__
+                    # drops trailing "Schema so, MyNestedSchema resolves to MyNested
                     "$ref": "#/definitions/MyNested",
                     "in": "query",
                     "name": "nested_field",
@@ -132,56 +133,63 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
         },
         sort_keys=True,
     )
-    # assert docs["paths"]["/v1/example_endpoint"]["post"]["parameters"] == [
-    #     {
-    #         'in': 'body',
-    #         'required': False,
-    #         'name': 'body',
-    #         'schema': {
-    #             'allOf': [
-    #                 '#/definitions/Request'
-    #             ],
-    #             'example': example_for_request_schema
-    #         }
-    #     }
-    # ]
+    assert docs["paths"]["/v1/example_endpoint"]["post"]["parameters"] == [
+        {
+            'in': 'body',
+            'required': False,
+            'name': 'body',
+            'schema': {
+                'allOf': [
+                    '#/definitions/Request'
+                ],
+                'example': example_for_request_schema
+            }
+        }
+    ]
 
-    # _request_properties = {
-    #     "properties": {
-    #         "bool_field": {"type": "boolean"},
-    #         "id": {"format": "int32", "type": "integer"},
-    #         "list_field": {
-    #             "items": {"format": "int32", "type": "integer"},
-    #             "type": "array",
-    #         },
-    #         "name": {"description": "name", "type": "string"},
-    #     },
-    #     "type": "object",
-    # }
-    pp.pprint(json.dumps(docs["definitions"], sort_keys=True))
-    # assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
-    #     {
-    #         "Request": {**_request_properties, 'example': example_for_request_schema},
-    #         "Partial-Request": _request_properties,
-    #         "Response": {
-    #             "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
-    #             "type": "object",
-    #         },
-    #     },
-    #     sort_keys=True,
-    # )
+    _request_properties = {
+        "properties": {
+            "bool_field": {"type": "boolean"},
+            "id": {"format": "int32", "type": "integer"},
+            "list_field": {
+                "items": {"format": "int32", "type": "integer"},
+                "type": "array",
+            },
+            "name": {"description": "name", "type": "string"},
+            "nested_field": {"$ref": "#/definitions/MyNested"}
+        },
+        "type": "object",
+    }
+    assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
+        {
+            "MyNested": {
+                "properties": {"i": {"format": "int32", "type": "integer"}},
+                "type": "object",
+            },
+            "Request": {**_request_properties, 'example': example_for_request_schema},
+            "Partial-Request": _request_properties,
+            "Response": {
+                "properties": {"data": {"type": "object"}, "msg": {"type": "string"}},
+                "type": "object",
+            },
+        },
+        sort_keys=True,
+    )
 
-# async def test_not_register_route_for_none_url():
-#     app = web.Application()
-#     routes_count = len(app.router.routes())
-#     setup_aiohttp_apispec(app=app, url=None)
-#     routes_count_after_setup_apispec = len(app.router.routes())
-#     assert routes_count == routes_count_after_setup_apispec
+async def test_not_register_route_for_none_url():
+    app = web.Application()
+    routes_count = len(app.router.routes())
+    setup_aiohttp_apispec(app=app, url=None)
+    routes_count_after_setup_apispec = len(app.router.routes())
+    assert routes_count == routes_count_after_setup_apispec
 
 
-# async def test_register_route_for_relative_url():
-#     app = web.Application()
-#     routes_count = len(app.router.routes())
-#     setup_aiohttp_apispec(app=app, url="api/swagger")
-#     routes_count_after_setup_apispec = len(app.router.routes())
-#     assert routes_count == routes_count_after_setup_apispec
+async def test_register_route_for_relative_url():
+    app = web.Application()
+    routes_count = len(app.router.routes())
+    assert routes_count == 0
+    setup_aiohttp_apispec(app=app, url="api/swagger")
+    # new route should be registered according to AiohttpApispec.register() method?
+    routes_count_after_setup_apispec = len(app.router.routes())
+    # not sure why there was a comparison between the old rount_count vs new_route_count
+    assert routes_count_after_setup_apispec == 1
