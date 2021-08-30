@@ -1,6 +1,6 @@
 import pytest
 from aiohttp import web
-from marshmallow import Schema, fields
+from marshmallow import Schema, fields, EXCLUDE, INCLUDE
 
 from aiohttp_apispec import (
     docs,
@@ -17,6 +17,8 @@ from aiohttp_apispec import (
 
 
 class HeaderSchema(Schema):
+    class Meta:
+        unknown = EXCLUDE
     some_header = fields.String()
 
 
@@ -38,23 +40,23 @@ def pytest_report_header(config):
                     '          '         '           
     """
 
+class MyNestedSchema(Schema):
+    i = fields.Int()
 
 class RequestSchema(Schema):
     id = fields.Int()
     name = fields.Str(description="name")
     bool_field = fields.Bool()
     list_field = fields.List(fields.Int())
-
+    nested_field = fields.Nested(MyNestedSchema)
 
 class ResponseSchema(Schema):
     msg = fields.Str()
     data = fields.Dict()
 
-
 class MyException(Exception):
     def __init__(self, message):
         self.message = message
-
 
 @pytest.fixture
 def example_for_request_schema():
@@ -62,19 +64,22 @@ def example_for_request_schema():
         'id': 1,
         'name': 'test',
         'bool_field': True,
-        'list_field': [1, 2, 3]
+        'list_field': [1, 2, 3],
+        'nested_field': {'i': 12}
     }
 
 @pytest.fixture(
+    # since multiple locations are no longer supported
+    # in a single call, location should always expect string
     params=[
-        ({"locations": ["query"]}, True),
-        ({"location": "query"}, True),
-        ({"locations": ["query"]}, False),
-        ({"location": "query"}, False),
+        ({"location": "querystring"}, True),
+        ({"location": "querystring"}, True),
+        ({"location": "querystring"}, False),
+        ({"location": "querystring"}, False),
     ]
 )
 def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
-    locations, nested = request.param
+    location, nested = request.param
 
     @docs(
         tags=["mytag"],
@@ -82,7 +87,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
         description="Test method description",
         responses={404: {"description": "Not Found"}},
     )
-    @request_schema(RequestSchema, **locations)
+    @request_schema(RequestSchema, **location)
     @response_schema(ResponseSchema, 200, description="Success response")
     async def handler_get(request):
         return web.json_response({"msg": "done", "data": {}})
@@ -111,7 +116,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
     async def handler_post_echo(request):
         return web.json_response(request["data"])
 
-    @request_schema(RequestSchema, **locations)
+    @request_schema(RequestSchema, **location)
     async def handler_get_echo(request):
         return web.json_response(request["data"])
 
@@ -133,7 +138,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
             summary="View method summary",
             description="View method description",
         )
-        @request_schema(RequestSchema, **locations)
+        @request_schema(RequestSchema, **location)
         async def get(self):
             return web.json_response(self.request["data"])
 
@@ -143,7 +148,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
     async def other(request):
         return web.Response()
 
-    def my_error_handler(error, req, schema, error_status_code, error_headers):
+    def my_error_handler(error, req, schema, *args, error_status_code, error_headers):
         raise MyException({"errors": error.messages, "text": "Oops"})
 
     @web.middleware

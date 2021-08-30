@@ -59,6 +59,14 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                     "required": False,
                     "type": "string",
                 },
+                {
+                    # default schema_name_resolver, resolved based on schema __name__
+                    # drops trailing "Schema so, MyNestedSchema resolves to MyNested
+                    "$ref": "#/definitions/MyNested",
+                    "in": "query",
+                    "name": "nested_field",
+                    "required": False,
+                },
             ],
             "responses": {
                 "200": {
@@ -110,6 +118,12 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                     "required": False,
                     "type": "string",
                 },
+                {
+                    "$ref": "#/definitions/MyNested",
+                    "in": "query",
+                    "name": "nested_field",
+                    "required": False,
+                },
             ],
             "responses": {},
             "tags": ["mytag"],
@@ -142,12 +156,16 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                 "type": "array",
             },
             "name": {"description": "name", "type": "string"},
+            "nested_field": {"$ref": "#/definitions/MyNested"}
         },
         "type": "object",
     }
-
     assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
         {
+            "MyNested": {
+                "properties": {"i": {"format": "int32", "type": "integer"}},
+                "type": "object",
+            },
             "Request": {**_request_properties, 'example': example_for_request_schema},
             "Partial-Request": _request_properties,
             "Response": {
@@ -169,6 +187,9 @@ async def test_not_register_route_for_none_url():
 async def test_register_route_for_relative_url():
     app = web.Application()
     routes_count = len(app.router.routes())
+    assert routes_count == 0
     setup_aiohttp_apispec(app=app, url="api/swagger")
+    # new route should be registered according to AiohttpApispec.register() method?
     routes_count_after_setup_apispec = len(app.router.routes())
-    assert routes_count == routes_count_after_setup_apispec
+    # not sure why there was a comparison between the old rount_count vs new_route_count
+    assert routes_count_after_setup_apispec == 1

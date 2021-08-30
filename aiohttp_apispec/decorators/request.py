@@ -2,7 +2,7 @@ from functools import partial
 import copy
 
 
-def request_schema(schema, locations=None, put_into=None, example=None, add_to_refs=False, **kwargs):
+def request_schema(schema, location=None, put_into=None, example=None, add_to_refs=False, **kwargs):
     """
     Add request info into the swagger spec and
     prepare injection keyword arguments from the specified
@@ -41,18 +41,17 @@ def request_schema(schema, locations=None, put_into=None, example=None, add_to_r
     """
     if callable(schema):
         schema = schema()
-    # location kwarg added for compatibility with old versions
-    locations = locations or []
-    if not locations:
-        locations = kwargs.pop("location", None)
-        if locations:
-            locations = [locations]
-        else:
-            locations = None
+    
+    # Compatability with old versions should be dropped,
+    # multiple locations are no longer supported by a single call
+    # so therefore **locations should never be used
 
     options = {"required": kwargs.pop("required", False)}
-    if locations:
-        options["default_in"] = locations[0]
+    # to support apispec >=4 need to rename default_in
+    if location:
+        options["default_in"] = location
+    elif "default_in" not in options:
+        options["default_in"] = "body"
 
     def wrapper(func):
         if not hasattr(func, "__apispec__"):
@@ -64,14 +63,14 @@ def request_schema(schema, locations=None, put_into=None, example=None, add_to_r
             _example['add_to_refs'] = add_to_refs
         func.__apispec__["schemas"].append({"schema": schema, "options": options, "example": _example})
         # TODO: Remove this block?
-        if locations and "body" in locations:
+        if location and "body" in location:
             body_schema_exists = (
-                "body" in func_schema["locations"] for func_schema in func.__schemas__
+                "body" in func_schema["location"] for func_schema in func.__schemas__
             )
             if any(body_schema_exists):
                 raise RuntimeError("Multiple body parameters are not allowed")
 
-        func.__schemas__.append({"schema": schema, "locations": locations, "put_into": put_into})
+        func.__schemas__.append({"schema": schema, "location": location, "put_into": put_into})
 
         return func
 
@@ -84,15 +83,15 @@ use_kwargs = request_schema
 # Decorators for specific request data validations (shortenings)
 match_info_schema = partial(
     request_schema,
-    locations=["match_info"],
+    location="match_info",
     put_into="match_info"
 )
 querystring_schema = partial(
     request_schema,
-    locations=["querystring"],
+    location="querystring",
     put_into="querystring"
 )
-form_schema = partial(request_schema, locations=["form"], put_into="form")
-json_schema = partial(request_schema, locations=["json"], put_into="json")
-headers_schema = partial(request_schema, locations=["headers"], put_into="headers")
-cookies_schema = partial(request_schema, locations=["cookies"], put_into="cookies")
+form_schema = partial(request_schema, location="form", put_into="form")
+json_schema = partial(request_schema, location="json", put_into="json")
+headers_schema = partial(request_schema, location="headers", put_into="headers")
+cookies_schema = partial(request_schema, location="cookies", put_into="cookies")
