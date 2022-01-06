@@ -7,7 +7,7 @@ from aiohttp_apispec import docs, request_schema, response_schema
 
 class RequestSchema(Schema):
     id = fields.Int()
-    name = fields.Str(description="name")
+    name = fields.Str(metadata={"description": "name"})
     bool_field = fields.Bool()
     list_field = fields.List(fields.Int())
 
