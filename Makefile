@@ -7,9 +7,9 @@ upload:
 	twine upload dist/*
 
 format:
-	isort -y
-	black --target-version py35 .
+	isort .
+	black --target-version py36 .
 
 check_format:
-	isort --check --diff
+	isort . --check --diff
 	black . --check --diff

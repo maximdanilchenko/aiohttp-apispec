@@ -1,5 +1,5 @@
-import os
 import copy
+import os
 from pathlib import Path
 from typing import Awaitable, Callable
 
@@ -48,7 +48,7 @@ class AiohttpApiSpec:
         in_place=False,
         prefix='',
         schema_name_resolver=resolver,
-        **kwargs
+        **kwargs,
     ):
 
         self.plugin = MarshmallowPlugin(schema_name_resolver=schema_name_resolver)
@@ -66,11 +66,11 @@ class AiohttpApiSpec:
             self.register(app, in_place)
 
     def swagger_dict(self):
-        """ Returns swagger spec representation in JSON format """
+        """Returns swagger spec representation in JSON format"""
         return self.spec.to_dict()
 
     def register(self, app: web.Application, in_place: bool = False):
-        """ Creates spec based on registered app routes and registers needed view """
+        """Creates spec based on registered app routes and registers needed view"""
         if self._registered is True:
             return None
 
@@ -92,13 +92,16 @@ class AiohttpApiSpec:
         self._registered = True
 
         if self.url is not None:
+
             async def swagger_handler(request):
                 return web.json_response(request.app["swagger_dict"])
 
             route_url = self.url
             if not self.url.startswith("/"):
                 route_url = "/{}".format(self.url)
-            app.router.add_route("GET", route_url, swagger_handler, name=NAME_SWAGGER_SPEC)
+            app.router.add_route(
+                "GET", route_url, swagger_handler, name=NAME_SWAGGER_SPEC
+            )
 
             if self.swagger_path is not None:
                 self._add_swagger_web_page(app, self.static_path, self.swagger_path)
@@ -111,10 +114,14 @@ class AiohttpApiSpec:
             url = self.url if app is None else app.router[NAME_SWAGGER_SPEC].url_for()
 
             if app is not None:
-                static_path = app.router[NAME_SWAGGER_STATIC].url_for(filename=INDEX_PAGE)
+                static_path = app.router[NAME_SWAGGER_STATIC].url_for(
+                    filename=INDEX_PAGE
+                )
                 static_path = os.path.dirname(str(static_path))
 
-            self._index_page = Template(swg_tmp.read()).render(path=url, static=static_path)
+            self._index_page = Template(swg_tmp.read()).render(
+                path=url, static=static_path
+            )
 
         return self._index_page
 
@@ -205,8 +212,11 @@ class AiohttpApiSpec:
             if add_to_refs:
                 self.spec.components.schemas[name]["example"] = example
             else:
-                endpoint_schema[0]['schema']['allOf'] = [endpoint_schema[0]['schema'].pop('$ref')]
+                endpoint_schema[0]['schema']['allOf'] = [
+                    endpoint_schema[0]['schema'].pop('$ref')
+                ]
                 endpoint_schema[0]['schema']["example"] = example
+
         if not example:
             return
         schema_instance = common.resolve_schema_instance(ref_schema)
@@ -232,7 +242,7 @@ def setup_aiohttp_apispec(
     in_place: bool = False,
     prefix: str = '',
     schema_name_resolver: Callable = resolver,
-    **kwargs
+    **kwargs,
 ) -> None:
     """
     aiohttp-apispec extension.
@@ -303,5 +313,5 @@ def setup_aiohttp_apispec(
         in_place=in_place,
         prefix=prefix,
         schema_name_resolver=schema_name_resolver,
-        **kwargs
+        **kwargs,
     )

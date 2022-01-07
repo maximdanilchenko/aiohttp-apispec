@@ -1,15 +1,15 @@
 import pytest
 from aiohttp import web
-from marshmallow import Schema, fields, EXCLUDE, INCLUDE
+from marshmallow import EXCLUDE, INCLUDE, Schema, fields
 
 from aiohttp_apispec import (
+    cookies_schema,
     docs,
-    request_schema,
+    headers_schema,
+    json_schema,
     match_info_schema,
     querystring_schema,
-    json_schema,
-    headers_schema,
-    cookies_schema,
+    request_schema,
     response_schema,
     setup_aiohttp_apispec,
     validation_middleware,
@@ -19,6 +19,7 @@ from aiohttp_apispec import (
 class HeaderSchema(Schema):
     class Meta:
         unknown = EXCLUDE
+
     some_header = fields.String()
 
 
@@ -70,7 +71,7 @@ def example_for_request_schema():
         'name': 'test',
         'bool_field': True,
         'list_field': [1, 2, 3],
-        'nested_field': {'i': 12}
+        'nested_field': {'i': 12},
     }
 
 

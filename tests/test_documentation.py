@@ -2,8 +2,9 @@ import json
 
 from aiohttp import web
 from aiohttp.web_urldispatcher import StaticResource
-from aiohttp_apispec import setup_aiohttp_apispec
 from yarl import URL
+
+from aiohttp_apispec import setup_aiohttp_apispec
 
 
 def test_app_swagger_url(aiohttp_app):
@@ -137,11 +138,9 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
             'required': False,
             'name': 'body',
             'schema': {
-                'allOf': [
-                    {'$ref': '#/definitions/#/definitions/Request'}
-                ],
-                'example': example_for_request_schema
-            }
+                'allOf': [{'$ref': '#/definitions/#/definitions/Request'}],
+                'example': example_for_request_schema,
+            },
         }
     ]
 
@@ -154,7 +153,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                 "type": "array",
             },
             "name": {"description": "name", "type": "string"},
-            "nested_field": {"$ref": "#/definitions/MyNested"}
+            "nested_field": {"$ref": "#/definitions/MyNested"},
         },
         "type": "object",
     }
