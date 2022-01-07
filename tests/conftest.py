@@ -40,23 +40,28 @@ def pytest_report_header(config):
                     '          '         '           
     """
 
+
 class MyNestedSchema(Schema):
     i = fields.Int()
 
+
 class RequestSchema(Schema):
     id = fields.Int()
-    name = fields.Str(description="name")
+    name = fields.Str(metadata={"description": "name"})
     bool_field = fields.Bool()
     list_field = fields.List(fields.Int())
     nested_field = fields.Nested(MyNestedSchema)
+
 
 class ResponseSchema(Schema):
     msg = fields.Str()
     data = fields.Dict()
 
+
 class MyException(Exception):
     def __init__(self, message):
         self.message = message
+
 
 @pytest.fixture
 def example_for_request_schema():
@@ -67,6 +72,7 @@ def example_for_request_schema():
         'list_field': [1, 2, 3],
         'nested_field': {'i': 12}
     }
+
 
 @pytest.fixture(
     # since multiple locations are no longer supported

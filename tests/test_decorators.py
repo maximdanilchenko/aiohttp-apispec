@@ -7,7 +7,7 @@ from aiohttp_apispec import docs, request_schema, response_schema
 
 class RequestSchema(Schema):
     id = fields.Int()
-    name = fields.Str(description="name")
+    name = fields.Str(metadata={"description": "name"})
     bool_field = fields.Bool()
     list_field = fields.List(fields.Int())
 
@@ -25,7 +25,7 @@ class TestViewDecorators:
             summary="Test method summary",
             description="Test method description",
         )
-        @request_schema(RequestSchema, location=["querystring"])
+        @request_schema(RequestSchema, location="querystring")
         @response_schema(ResponseSchema, 200)
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
@@ -46,7 +46,7 @@ class TestViewDecorators:
 
     @pytest.fixture
     def aiohttp_view_kwargs(self):
-        @request_schema(RequestSchema, location=["querystring"])
+        @request_schema(RequestSchema, location="querystring")
         async def index(request, **data):
             return web.json_response({"msg": "done", "data": {}})
 
@@ -91,7 +91,7 @@ class TestViewDecorators:
             aiohttp_view_kwargs.__schemas__[0].pop("schema"), RequestSchema
         )
         assert aiohttp_view_kwargs.__schemas__ == [
-            {"location": ["querystring"], 'put_into': None}
+            {"location": "querystring", 'put_into': None}
         ]
         for param in ("parameters", "responses"):
             assert param in aiohttp_view_kwargs.__apispec__
@@ -161,10 +161,10 @@ class TestViewDecorators:
     def test_view_multiple_body_parameters(self):
         with pytest.raises(RuntimeError) as ex:
 
-            @request_schema(RequestSchema, location=["body"])
-            @request_schema(RequestSchema, location=["body"])
+            @request_schema(RequestSchema)
+            @request_schema(RequestSchema, location="json")
             async def index(request, **data):
                 return web.json_response({"msg": "done", "data": {}})
 
         assert isinstance(ex.value, RuntimeError)
-        assert str(ex.value) == "Multiple body parameters are not allowed"
+        assert str(ex.value) == "Multiple json locations are not allowed"

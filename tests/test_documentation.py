@@ -38,7 +38,6 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                     "type": "boolean",
                 },
                 {
-                    "format": "int32",
                     "in": "query",
                     "name": "id",
                     "required": False,
@@ -47,7 +46,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                 {
                     "collectionFormat": "multi",
                     "in": "query",
-                    "items": {"format": "int32", "type": "integer"},
+                    "items": {"type": "integer"},
                     "name": "list_field",
                     "required": False,
                     "type": "array",
@@ -97,7 +96,6 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                     "type": "boolean",
                 },
                 {
-                    "format": "int32",
                     "in": "query",
                     "name": "id",
                     "required": False,
@@ -106,7 +104,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
                 {
                     "collectionFormat": "multi",
                     "in": "query",
-                    "items": {"format": "int32", "type": "integer"},
+                    "items": {"type": "integer"},
                     "name": "list_field",
                     "required": False,
                     "type": "array",
@@ -140,7 +138,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
             'name': 'body',
             'schema': {
                 'allOf': [
-                    '#/definitions/Request'
+                    {'$ref': '#/definitions/#/definitions/Request'}
                 ],
                 'example': example_for_request_schema
             }
@@ -150,9 +148,9 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
     _request_properties = {
         "properties": {
             "bool_field": {"type": "boolean"},
-            "id": {"format": "int32", "type": "integer"},
+            "id": {"type": "integer"},
             "list_field": {
-                "items": {"format": "int32", "type": "integer"},
+                "items": {"type": "integer"},
                 "type": "array",
             },
             "name": {"description": "name", "type": "string"},
@@ -163,7 +161,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
     assert json.dumps(docs["definitions"], sort_keys=True) == json.dumps(
         {
             "MyNested": {
-                "properties": {"i": {"format": "int32", "type": "integer"}},
+                "properties": {"i": {"type": "integer"}},
                 "type": "object",
             },
             "Request": {**_request_properties, 'example': example_for_request_schema},
@@ -175,6 +173,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
         },
         sort_keys=True,
     )
+
 
 async def test_not_register_route_for_none_url():
     app = web.Application()

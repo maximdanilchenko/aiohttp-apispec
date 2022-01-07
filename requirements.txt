@@ -1,4 +1,4 @@
 aiohttp>=3.0.1,<4.0
-apispec>=3.0.0,<4.0
+apispec>=5.1.1
 webargs>=8.0.1
 jinja2<3.0

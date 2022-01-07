@@ -2,7 +2,21 @@ from functools import partial
 import copy
 
 
-def request_schema(schema, location=None, put_into=None, example=None, add_to_refs=False, **kwargs):
+# locations supported by both openapi and webargs.aiohttpparser
+VALID_SCHEMA_LOCATIONS = (
+    "cookies",
+    "files",
+    "form",
+    "headers",
+    "json",
+    "match_info",
+    "path",
+    "query",
+    "querystring",
+)
+
+
+def request_schema(schema, location="json", put_into=None, example=None, add_to_refs=False, **kwargs):
     """
     Add request info into the swagger spec and
     prepare injection keyword arguments from the specified
@@ -29,7 +43,7 @@ def request_schema(schema, location=None, put_into=None, example=None, add_to_re
                                       'id': data['id']})
 
     :param schema: :class:`Schema <marshmallow.Schema>` class or instance
-    :param locations: Default request locations to parse
+    :param location: Default request locations to parse
     :param put_into: name of the key in Request object
                      where validated data will be placed.
                      If None (by default) default key will be used
@@ -39,19 +53,14 @@ def request_schema(schema, location=None, put_into=None, example=None, add_to_re
                              Otherwise add example to endpoint.
                              Default False
     """
+
+    if location not in VALID_SCHEMA_LOCATIONS:
+        raise ValueError(f"Invalid location argument: {location}")
+
     if callable(schema):
         schema = schema()
-    
-    # Compatability with old versions should be dropped,
-    # multiple locations are no longer supported by a single call
-    # so therefore **locations should never be used
 
     options = {"required": kwargs.pop("required", False)}
-    # to support apispec >=4 need to rename default_in
-    if location:
-        options["default_in"] = location
-    elif "default_in" not in options:
-        options["default_in"] = "body"
 
     def wrapper(func):
         if not hasattr(func, "__apispec__"):
@@ -61,14 +70,17 @@ def request_schema(schema, location=None, put_into=None, example=None, add_to_re
         _example = copy.copy(example) or {}
         if _example:
             _example['add_to_refs'] = add_to_refs
-        func.__apispec__["schemas"].append({"schema": schema, "options": options, "example": _example})
+        func.__apispec__["schemas"].append(
+            {"schema": schema, "location": location, "options": options, "example": _example}
+        )
+
         # TODO: Remove this block?
-        if location and "body" in location:
-            body_schema_exists = (
-                "body" in func_schema["location"] for func_schema in func.__schemas__
-            )
-            if any(body_schema_exists):
-                raise RuntimeError("Multiple body parameters are not allowed")
+        # "body" location was replaced by "json" location
+        if (
+            location == "json" and
+            any(func_schema["location"] == "json" for func_schema in func.__schemas__)
+        ):
+            raise RuntimeError("Multiple json locations are not allowed")
 
         func.__schemas__.append({"schema": schema, "location": location, "put_into": put_into})
 

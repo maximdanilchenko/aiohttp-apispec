@@ -17,6 +17,8 @@ _AiohttpView = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 VALID_RESPONSE_FIELDS = {"description", "headers", "examples"}
 
+DEFAULT_RESPONSE_LOCATION = "json"
+
 NAME_SWAGGER_SPEC = "swagger.spec"
 NAME_SWAGGER_DOCS = "swagger.docs"
 NAME_SWAGGER_STATIC = "swagger.static"
@@ -160,7 +162,7 @@ class AiohttpApiSpec:
             return None
         for schema in data.pop("schemas", []):
             parameters = self.plugin.converter.schema2parameters(
-                schema["schema"], **schema["options"]
+                schema["schema"], location=schema["location"], **schema["options"]
             )
             self._add_examples(schema["schema"], parameters, schema["example"])
             data["parameters"].extend(parameters)
@@ -178,6 +180,7 @@ class AiohttpApiSpec:
                 if "schema" in actual_params:
                     raw_parameters = self.plugin.converter.schema2parameters(
                         actual_params["schema"],
+                        location=DEFAULT_RESPONSE_LOCATION,
                         required=actual_params.get("required", False),
                     )[0]
                     updated_params = {
@@ -200,7 +203,7 @@ class AiohttpApiSpec:
     def _add_examples(self, ref_schema, endpoint_schema, example):
         def add_to_endpoint_or_ref():
             if add_to_refs:
-                self.spec.components._schemas[name]["example"] = example
+                self.spec.components.schemas[name]["example"] = example
             else:
                 endpoint_schema[0]['schema']['allOf'] = [endpoint_schema[0]['schema'].pop('$ref')]
                 endpoint_schema[0]['schema']["example"] = example
@@ -210,7 +213,7 @@ class AiohttpApiSpec:
         name = self.plugin.converter.schema_name_resolver(schema_instance)
         add_to_refs = example.pop('add_to_refs')
         if self.spec.components.openapi_version.major < 3:
-            if name and name in self.spec.components._schemas:
+            if name and name in self.spec.components.schemas:
                 add_to_endpoint_or_ref()
         else:
             add_to_endpoint_or_ref()
