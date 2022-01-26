@@ -29,6 +29,8 @@ Look [here](#more-decorators) for more info.
 
 ```aiohttp-apispec``` api is fully inspired by ```flask-apispec``` library
 
+**Version 3.0.0b1 with apispec>=5.0 webargs>=8.0 is in beta now** (`pip install aiohttp-apispec==3.0.0b1`).
+
 ## Contents
 
 - [Install](#install)
