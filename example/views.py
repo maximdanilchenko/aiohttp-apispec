@@ -2,8 +2,7 @@
 from aiohttp import web
 
 from aiohttp_apispec import docs
-
-from aiohttp_apispec.decorators import json_schema, headers_schema, querystring_schema
+from aiohttp_apispec.decorators import headers_schema, json_schema, querystring_schema
 
 from .schemas import Message, User, UsersList
 

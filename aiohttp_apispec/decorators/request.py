@@ -1,6 +1,5 @@
-from functools import partial
 import copy
-
+from functools import partial
 
 # locations supported by both openapi and webargs.aiohttpparser
 VALID_SCHEMA_LOCATIONS = (
@@ -16,7 +15,9 @@ VALID_SCHEMA_LOCATIONS = (
 )
 
 
-def request_schema(schema, location="json", put_into=None, example=None, add_to_refs=False, **kwargs):
+def request_schema(
+    schema, location="json", put_into=None, example=None, add_to_refs=False, **kwargs
+):
     """
     Add request info into the swagger spec and
     prepare injection keyword arguments from the specified
@@ -71,18 +72,24 @@ def request_schema(schema, location="json", put_into=None, example=None, add_to_
         if _example:
             _example['add_to_refs'] = add_to_refs
         func.__apispec__["schemas"].append(
-            {"schema": schema, "location": location, "options": options, "example": _example}
+            {
+                "schema": schema,
+                "location": location,
+                "options": options,
+                "example": _example,
+            }
         )
 
         # TODO: Remove this block?
         # "body" location was replaced by "json" location
-        if (
-            location == "json" and
-            any(func_schema["location"] == "json" for func_schema in func.__schemas__)
+        if location == "json" and any(
+            func_schema["location"] == "json" for func_schema in func.__schemas__
         ):
             raise RuntimeError("Multiple json locations are not allowed")
 
-        func.__schemas__.append({"schema": schema, "location": location, "put_into": put_into})
+        func.__schemas__.append(
+            {"schema": schema, "location": location, "put_into": put_into}
+        )
 
         return func
 
@@ -94,14 +101,10 @@ use_kwargs = request_schema
 
 # Decorators for specific request data validations (shortenings)
 match_info_schema = partial(
-    request_schema,
-    location="match_info",
-    put_into="match_info"
+    request_schema, location="match_info", put_into="match_info"
 )
 querystring_schema = partial(
-    request_schema,
-    location="querystring",
-    put_into="querystring"
+    request_schema, location="querystring", put_into="querystring"
 )
 form_schema = partial(request_schema, location="form", put_into="form")
 json_schema = partial(request_schema, location="json", put_into="json")

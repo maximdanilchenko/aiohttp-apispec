@@ -30,28 +30,33 @@ async def test_response_400_post(aiohttp_app):
         'text': 'Oops',
     }
 
+
 async def test_response_400_post_unknown_toplevel_field(aiohttp_app):
     # unknown_field is not a field in RequestSchema, default behavior is RAISE exception
-    res = await aiohttp_app.post("/v1/test", json={"id": 1, "name": "max", "unknown_field": "string"})
+    res = await aiohttp_app.post(
+        "/v1/test", json={"id": 1, "name": "max", "unknown_field": "string"}
+    )
     assert res.status == 400
     assert await res.json() == {
         'errors': {'json': {'unknown_field': ['Unknown field.']}},
         'text': 'Oops',
     }
 
+
 async def test_response_400_post_nested_fields(aiohttp_app):
     payload = {
-                'nested_field': {
-                    'i': 12,
-                    'j': 12, # unknown nested field
-                }
-            }
+        'nested_field': {
+            'i': 12,
+            'j': 12,  # unknown nested field
+        }
+    }
     res = await aiohttp_app.post("/v1/test", json=payload)
     assert res.status == 400
     assert await res.json() == {
         'errors': {'json': {'nested_field': {'j': ['Unknown field.']}}},
         'text': 'Oops',
     }
+
 
 async def test_response_not_docked(aiohttp_app):
     res = await aiohttp_app.get("/v1/other", params={"id": 1, "name": "max"})
@@ -175,11 +180,13 @@ async def test_validators(aiohttp_app):
         "match_info": {"uuid": 123456},
     }
 
+
 async def test_swagger_path(aiohttp_app):
     res = await aiohttp_app.get("/v1/api/docs")
     assert res.status == 200
 
 
 async def test_swagger_static(aiohttp_app):
-    assert (await aiohttp_app.get("/static/swagger/swagger-ui.css")).status == 200 \
-        or (await aiohttp_app.get("/v1/static/swagger/swagger-ui.css")).status == 200
+    assert (await aiohttp_app.get("/static/swagger/swagger-ui.css")).status == 200 or (
+        await aiohttp_app.get("/v1/static/swagger/swagger-ui.css")
+    ).status == 200

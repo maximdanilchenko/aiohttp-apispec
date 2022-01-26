@@ -1,15 +1,12 @@
 from .docs import docs
 from .request import (
+    cookies_schema,
+    form_schema,
+    headers_schema,
+    json_schema,
+    match_info_schema,
+    querystring_schema,
     request_schema,
-    use_kwargs,  # for backward compatibility
-    match_info_schema,  # request_schema with locations=["match_info"]
-    querystring_schema,  # request_schema with locations=["querystring"]
-    form_schema,  # request_schema with locations=["form"]
-    json_schema,  # request_schema with locations=["json"]
-    headers_schema,  # request_schema with locations=["headers"]
-    cookies_schema,  # request_schema with locations=["cookies"]
+    use_kwargs,
 )
-from .response import (
-    response_schema,
-    marshal_with,  # for backward compatibility
-)
+from .response import marshal_with, response_schema

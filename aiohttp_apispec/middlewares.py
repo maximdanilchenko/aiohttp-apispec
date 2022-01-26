@@ -34,7 +34,7 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
             schema["schema"],
             request,
             location=schema["location"],
-            unknown=None # Pass None to use the schema’s setting instead.
+            unknown=None,  # Pass None to use the schema’s setting instead.
         )
         if schema["put_into"]:
             request[schema["put_into"]] = data
