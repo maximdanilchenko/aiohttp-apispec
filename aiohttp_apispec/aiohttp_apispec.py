@@ -300,8 +300,10 @@ def setup_aiohttp_apispec(
     :param prefix: prefix to add to all registered routes
     :param schema_name_resolver: custom schema_name_resolver for MarshmallowPlugin.
     :param kwargs: any apispec.APISpec kwargs
+    :return: return instance of AiohttpApiSpec class
+    :rtype: AiohttpApiSpec
     """
-    AiohttpApiSpec(
+    return AiohttpApiSpec(
         url,
         app,
         request_data_name,
