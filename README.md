@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <a href="https://travis-ci.org/maximdanilchenko/aiohttp-apispec"><img src="https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg" alt="build status"></a>
+  <a href="https://app.travis-ci.com/github/maximdanilchenko/aiohttp-apispec"><img src="https://app.travis-ci.com/maximdanilchenko/aiohttp-apispec.svg?branch=master" alt="build status"></a>
   <a href="https://aiohttp-apispec.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/aiohttp-apispec/badge/?version=latest" alt="[docs]"></a>
   <a href="https://codecov.io/gh/maximdanilchenko/aiohttp-apispec"><img src="https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg" alt="[codcov]"></a>
   <a href="https://github.com/ambv/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a>
