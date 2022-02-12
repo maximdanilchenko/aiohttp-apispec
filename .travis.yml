@@ -3,9 +3,11 @@ dist: xenial
 language: python
 
 python:
-  - 3.6
-  - 3.7
-  - 3.8
+  - 3.6.15
+  - 3.7.12
+  - 3.8.12
+  - 3.9.10
+  - 3.10.2
   - nightly
   - pypy3.5-6.0
 matrix:
