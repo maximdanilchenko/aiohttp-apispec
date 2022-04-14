@@ -243,7 +243,7 @@ def setup_aiohttp_apispec(
     prefix: str = '',
     schema_name_resolver: Callable = resolver,
     **kwargs,
-) -> None:
+) -> AiohttpApiSpec:
     """
     aiohttp-apispec extension.
 
