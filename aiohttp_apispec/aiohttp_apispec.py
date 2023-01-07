@@ -1,5 +1,6 @@
 import copy
 import enum
+import json
 import os
 from pathlib import Path
 from typing import Awaitable, Callable, Union
@@ -140,8 +141,13 @@ class AiohttpApiSpec:
                 )
                 static_path = os.path.dirname(str(static_path))
 
+            if not self.spec.options.get("display_configurations"):
+                self.spec.options["display_configurations"] = {}
+
             self._index_page = Template(swg_tmp.read()).render(
-                path=url, static=static_path
+                path=url,
+                static=static_path,
+                display_configurations=json.dumps(self.spec.options["display_configurations"])
             )
 
         return self._index_page
@@ -272,7 +278,7 @@ def setup_aiohttp_apispec(
     schema_name_resolver: Callable = resolver,
     openapi_version: Union[str, OpenApiVersion] = OpenApiVersion.V20,
     **kwargs,
-) -> None:
+) -> AiohttpApiSpec:
     """
     aiohttp-apispec extension.
 
