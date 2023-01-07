@@ -2,7 +2,7 @@ import copy
 import os
 from pathlib import Path
 from typing import Awaitable, Callable
-
+import json
 from aiohttp import web
 from aiohttp.hdrs import METH_ALL, METH_ANY
 from apispec import APISpec
@@ -119,8 +119,13 @@ class AiohttpApiSpec:
                 )
                 static_path = os.path.dirname(str(static_path))
 
+            if not self.spec.options.get("display_configurations"):
+                self.spec.options["display_configurations"] = {}
+
             self._index_page = Template(swg_tmp.read()).render(
-                path=url, static=static_path
+                path=url,
+                static=static_path,
+                display_configurations=json.dumps(self.spec.options["display_configurations"])
             )
 
         return self._index_page
