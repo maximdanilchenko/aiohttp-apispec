@@ -147,7 +147,9 @@ class AiohttpApiSpec:
             self._index_page = Template(swg_tmp.read()).render(
                 path=url,
                 static=static_path,
-                display_configurations=json.dumps(self.spec.options["display_configurations"])
+                display_configurations=json.dumps(
+                    self.spec.options["display_configurations"]
+                ),
             )
 
         return self._index_page
