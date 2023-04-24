@@ -183,7 +183,6 @@ class AiohttpApiSpec:
     def _register_route(
         self, route: web.AbstractRoute, method: str, view: _AiohttpView
     ):
-
         if not hasattr(view, "__apispec__"):
             return None
 
@@ -197,11 +196,29 @@ class AiohttpApiSpec:
         if method not in VALID_METHODS_OPENAPI_V2:
             return None
         for schema in data.pop("schemas", []):
-            parameters = self.plugin.converter.schema2parameters(
-                schema["schema"], location=schema["location"], **schema["options"]
-            )
-            self._add_examples(schema["schema"], parameters, schema["example"])
-            data["parameters"].extend(parameters)
+            if (
+                self.spec.components.openapi_version.major > 2
+                and self._is_body_location(schema["location"])
+            ):
+                # in OpenAPI 3.0 in=body parameters must be put into requestBody
+                # https://apispec.readthedocs.io/en/latest/api_ext.html#apispec.ext.marshmallow.openapi.OpenAPIConverter.schema2parameters
+                # lets reinvent something that works, because apispec doesn't provide anything with which we could work
+                body = dict(**schema["options"])
+                body["schema"] = self.plugin.converter.resolve_nested_schema(
+                    schema["schema"]
+                )
+                self._add_examples(schema["schema"], [body], schema["example"])
+                data["requestBody"] = {
+                    "content": {
+                        self._content_type(schema["location"]): body,
+                    },
+                }
+            else:
+                parameters = self.plugin.converter.schema2parameters(
+                    schema["schema"], location=schema["location"], **schema["options"]
+                )
+                self._add_examples(schema["schema"], parameters, schema["example"])
+                data["parameters"].extend(parameters)
 
         existing = [p["name"] for p in data["parameters"] if p["in"] == "path"]
         data["parameters"].extend(
@@ -263,6 +280,33 @@ class AiohttpApiSpec:
                 add_to_endpoint_or_ref()
         else:
             add_to_endpoint_or_ref()
+
+    def _content_type(self, location):
+        """
+        extract body content type from parameters location
+
+        :param location: body location name, e.g. json, form etc
+        :return: return valid content-type header
+        """
+        if not self._is_body_location(location):
+            raise ValueError(
+                f"Illegal location {location}, cannnot be converted to body"
+            )
+        if location == "json":
+            return "application/json"
+        if location == "form":
+            return "application/x-www-form-urlencoded"
+        # fallback to something generic
+        return "application/octet-stream"
+
+    def _is_body_location(self, location):
+        """
+        check if location is valid body location
+
+        :param location: body location name, e.g. json, form etc
+        :return: True in case if location looks like body and False otherwises
+        """
+        return location in ("files", "form", "json")
 
 
 def setup_aiohttp_apispec(

@@ -14,6 +14,7 @@ from aiohttp_apispec import (
     setup_aiohttp_apispec,
     validation_middleware,
 )
+from aiohttp_apispec.aiohttp_apispec import OpenApiVersion
 
 
 class HeaderSchema(Schema):
@@ -79,14 +80,14 @@ def example_for_request_schema():
     # since multiple locations are no longer supported
     # in a single call, location should always expect string
     params=[
-        ({"location": "querystring"}, True),
-        ({"location": "querystring"}, True),
-        ({"location": "querystring"}, False),
-        ({"location": "querystring"}, False),
+        ({"location": "querystring"}, True, OpenApiVersion.V20),
+        ({"location": "querystring"}, False, OpenApiVersion.V20),
+        ({"location": "querystring"}, True, OpenApiVersion.V300),
+        ({"location": "querystring"}, False, OpenApiVersion.V300),
     ]
 )
 def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
-    location, nested = request.param
+    location, nested, openapi_version = request.param
 
     @docs(
         tags=["mytag"],
@@ -191,6 +192,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
             url="/api/docs/api-docs",
             swagger_path="/api/docs",
             error_callback=my_error_handler,
+            openapi_version=openapi_version,
         )
         v1.router.add_routes(
             [
@@ -216,6 +218,7 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
             url="/v1/api/docs/api-docs",
             swagger_path="/v1/api/docs",
             error_callback=my_error_handler,
+            openapi_version=openapi_version,
         )
         app.router.add_routes(
             [
