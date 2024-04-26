@@ -1,5 +1,6 @@
 import json
 
+import pytest
 from aiohttp import web
 from aiohttp.web_urldispatcher import StaticResource
 from yarl import URL
@@ -7,7 +8,8 @@ from yarl import URL
 from aiohttp_apispec import setup_aiohttp_apispec
 
 
-def test_app_swagger_url(aiohttp_app):
+@pytest.mark.anyio
+async def test_app_swagger_url(aiohttp_app):
     def safe_url_for(route):
         if isinstance(route._resource, StaticResource):
             # url_for on StaticResource requires filename arg
@@ -21,6 +23,7 @@ def test_app_swagger_url(aiohttp_app):
     assert URL("/v1/api/docs/api-docs") in urls
 
 
+@pytest.mark.anyio
 async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
     resp = await aiohttp_app.get("/v1/api/docs/api-docs")
     docs = await resp.json()
@@ -174,6 +177,7 @@ async def test_app_swagger_json(aiohttp_app, example_for_request_schema):
     )
 
 
+@pytest.mark.anyio
 async def test_not_register_route_for_none_url():
     app = web.Application()
     routes_count = len(app.router.routes())
@@ -182,6 +186,7 @@ async def test_not_register_route_for_none_url():
     assert routes_count == routes_count_after_setup_apispec
 
 
+@pytest.mark.anyio
 async def test_register_route_for_relative_url():
     app = web.Application()
     routes_count = len(app.router.routes())
