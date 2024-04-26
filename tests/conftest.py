@@ -90,7 +90,7 @@ def example_for_request_schema():
         ({"location": "querystring"}, False),
     ]
 )
-def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
+def aiohttp_app(event_loop, aiohttp_client, request, example_for_request_schema):
     location, nested = request.param
 
     @docs(
@@ -240,4 +240,4 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
         )
         app.middlewares.extend([intercept_error, validation_middleware])
 
-    return loop.run_until_complete(aiohttp_client(app))
+    return event_loop.run_until_complete(aiohttp_client(app))
