@@ -16,6 +16,11 @@ from aiohttp_apispec import (
 )
 
 
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
+
+
 class HeaderSchema(Schema):
     class Meta:
         unknown = EXCLUDE
