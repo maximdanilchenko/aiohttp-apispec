@@ -43,7 +43,7 @@ async def validation_middleware(request: web.Request, handler) -> web.Response:
                 if isinstance(data, list):
                     result.extend(data)
                 else:
-                    result=data
+                    result = data
             except (ValueError, TypeError):
                 result = data
                 break
