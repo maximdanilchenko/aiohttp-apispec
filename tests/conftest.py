@@ -1,5 +1,8 @@
+from typing import Any, Dict
+
 import pytest
 from aiohttp import web
+from aiohttp.test_utils import TestClient
 from marshmallow import EXCLUDE, INCLUDE, Schema, fields
 
 from aiohttp_apispec import (
@@ -14,6 +17,11 @@ from aiohttp_apispec import (
     setup_aiohttp_apispec,
     validation_middleware,
 )
+
+
+@pytest.fixture(scope="session")
+def anyio_backend():
+    return "asyncio"
 
 
 class HeaderSchema(Schema):
@@ -65,7 +73,7 @@ class MyException(Exception):
 
 
 @pytest.fixture
-def example_for_request_schema():
+def example_for_request_schema() -> Dict[str, Any]:
     return {
         'id': 1,
         'name': 'test',
@@ -85,7 +93,11 @@ def example_for_request_schema():
         ({"location": "querystring"}, False),
     ]
 )
-def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
+async def aiohttp_app(
+    aiohttp_client: TestClient,
+    request: pytest.FixtureRequest,
+    example_for_request_schema: Dict[str, Any],
+):
     location, nested = request.param
 
     @docs(
@@ -235,4 +247,5 @@ def aiohttp_app(loop, aiohttp_client, request, example_for_request_schema):
         )
         app.middlewares.extend([intercept_error, validation_middleware])
 
-    return loop.run_until_complete(aiohttp_client(app))
+    client = await aiohttp_client(app)
+    return client
