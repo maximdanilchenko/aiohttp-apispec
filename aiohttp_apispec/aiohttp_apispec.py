@@ -282,7 +282,7 @@ def setup_aiohttp_apispec(
     **kwargs,
 ) -> AiohttpApiSpec:
     """
-    aiohttp-apispec extension.
+    apispec-aiohttp extension.
 
     Usage:
 

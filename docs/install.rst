@@ -5,4 +5,4 @@ Installation
 
 ::
 
-    $ pip install -U aiohttp-apispec
+    $ pip install -U apispec-aiohttp

@@ -8,7 +8,7 @@ def read(file_name):
 
 
 setup(
-    name='aiohttp-apispec',
+    name='apispec-aiohttp',
     version='3.0.0b2',
     description='Build and document REST APIs with aiohttp and apispec',
     long_description=read('README.md'),
@@ -20,7 +20,7 @@ setup(
     include_package_data=True,
     install_requires=read('requirements.txt').split(),
     license='MIT',
-    url='https://github.com/maximdanilchenko/aiohttp-apispec',
+    url='https://github.com/kulapard/apispec-aiohttp',
     zip_safe=False,
     keywords='aiohttp marshmallow apispec swagger',
     python_requires='>=3.6',

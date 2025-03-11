@@ -1,22 +1,22 @@
-<h1 align="center">aiohttp-apispec</h1>
+<h1 align="center">apispec-aiohttp</h1>
 <p align="center">Build and document REST APIs with <a href="https://github.com/aio-libs/aiohttp">aiohttp</a> and <a href="https://github.com/marshmallow-code/apispec">apispec</a></p>
 
 <p align="center">
-  <a href="https://pypi.python.org/pypi/aiohttp-apispec"><img src="https://badge.fury.io/py/aiohttp-apispec.svg" alt="Pypi"></a>
-  <a href="https://github.com/maximdanilchenko/aiohttp-apispec/graphs/contributors"><img src="https://img.shields.io/github/contributors/maximdanilchenko/aiohttp-apispec.svg" alt="Contributors"></a>
-  <a href="https://pepy.tech/project/aiohttp-apispec"><img src="https://pepy.tech/badge/aiohttp-apispec" alt="Downloads"></a>
+  <a href="https://pypi.python.org/pypi/apispec-aiohttp"><img src="https://badge.fury.io/py/apispec-aiohttp.svg" alt="Pypi"></a>
+  <a href="https://github.com/kulapard/apispec-aiohttp/graphs/contributors"><img src="https://img.shields.io/github/contributors/kulapard/apispec-aiohttp.svg" alt="Contributors"></a>
+  <a href="https://pepy.tech/project/apispec-aiohttp"><img src="https://pepy.tech/badge/apispec-aiohttp" alt="Downloads"></a>
 </p>
 
 <p align="center">
-  <a href="https://app.travis-ci.com/github/maximdanilchenko/aiohttp-apispec"><img src="https://app.travis-ci.com/maximdanilchenko/aiohttp-apispec.svg?branch=master" alt="build status"></a>
-  <a href="https://aiohttp-apispec.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/aiohttp-apispec/badge/?version=latest" alt="[docs]"></a>
-  <a href="https://codecov.io/gh/maximdanilchenko/aiohttp-apispec"><img src="https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg" alt="[codcov]"></a>
+  <a href="https://app.travis-ci.com/github/kulapard/apispec-aiohttp"><img src="https://app.travis-ci.com/kulapard/apispec-aiohttp.svg?branch=master" alt="build status"></a>
+  <a href="https://apispec-aiohttp.readthedocs.io/en/latest/?badge=latest"><img src="https://readthedocs.org/projects/apispec-aiohttp/badge/?version=latest" alt="[docs]"></a>
+  <a href="https://codecov.io/gh/kulapard/apispec-aiohttp"><img src="https://codecov.io/gh/kulapard/apispec-aiohttp/branch/master/graph/badge.svg" alt="[codcov]"></a>
   <a href="https://github.com/ambv/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a>
 </p>
 
 <p>
 
-```aiohttp-apispec``` key features:
+```apispec-aiohttp``` key features:
 - ```docs``` and ```request_schema``` decorators 
 to add swagger spec support out of the box;
 - ```validation_middleware``` middleware to enable validating 
@@ -27,9 +27,9 @@ with marshmallow schemas from those decorators;
 decorators for specific request parts validation. 
 Look [here](#more-decorators) for more info.
 
-```aiohttp-apispec``` api is fully inspired by ```flask-apispec``` library
+```apispec-aiohttp``` api is fully inspired by ```flask-apispec``` library
 
-**Version 3.0.0b1 with apispec>=5.0 webargs>=8.0 is in beta now** (`pip install aiohttp-apispec==3.0.0b1`).
+**Version 3.0.0b1 with apispec>=5.0 webargs>=8.0 is in beta now** (`pip install apispec-aiohttp==3.0.0b1`).
 
 ## Contents
 
@@ -45,12 +45,12 @@ Look [here](#more-decorators) for more info.
 ## Install
 
 ```
-pip install aiohttp-apispec
+pip install apispec-aiohttp
 ```
 
 ## Quickstart
 
-*Also you can read [blog post](https://dmax.blog/how_to_easily_build_modern_web_apis_with_python_and_aiohttp) about quickstart with aiohttp-apispec*
+*Also you can read [blog post](https://dmax.blog/how_to_easily_build_modern_web_apis_with_python_and_aiohttp) about quickstart with apispec-aiohttp*
 
 ```Python
 from aiohttp_apispec import (
@@ -303,7 +303,7 @@ Then go to `/docs` and see awesome SwaggerUI
 
 If you prefer older version you can use 
 [aiohttp_swagger](https://github.com/cr0hn/aiohttp-swagger) library.
-`aiohttp-apispec` adds `swagger_dict` parameter to aiohttp web application 
+`apispec-aiohttp` adds `swagger_dict` parameter to aiohttp web application 
 after initialization (with `setup_aiohttp_apispec` function). 
 So you can use it easily like:
 

@@ -6,7 +6,7 @@ sys.path.insert(0, os.path.abspath('..'))
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.intersphinx', 'sphinx.ext.viewcode']
 
-project = 'aiohttp-apispec'
+project = 'apispec-aiohttp'
 author = 'Maksim Danilchenko'
 copyright = 'Maksim Danilchenko and contributors {0:%Y}'.format(dt.datetime.utcnow())
 version = '0.3.2'
@@ -21,5 +21,5 @@ html_theme_options = {
     'show_powered_by': False,
     'display_version': True,
 }
-html_title = 'aiohttp-apispec Documentation'
-html_short_title = 'aiohttp-apispec'
+html_title = 'apispec-aiohttp Documentation'
+html_short_title = 'apispec-aiohttp'

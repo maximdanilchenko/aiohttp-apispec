@@ -246,7 +246,7 @@ Then go to ``/docs`` and see awesome SwaggerUI
 2.X SwaggerUI version
 *********************
 
-``aiohttp-apispec`` adds ``swagger_dict`` parameter to aiohttp
+``apispec-aiohttp`` adds ``swagger_dict`` parameter to aiohttp
 web application after initialization (with ``setup_aiohttp_apispec`` function).
 So you can use it easily with ``aiohttp_swagger`` library:
 

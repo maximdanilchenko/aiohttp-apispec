@@ -1,19 +1,19 @@
 ===============
-aiohttp-apispec
+apispec-aiohttp
 ===============
 
-.. image:: https://badge.fury.io/py/aiohttp-apispec.svg
-    :target: https://pypi.python.org/pypi/aiohttp-apispec
+.. image:: https://badge.fury.io/py/apispec-aiohttp.svg
+    :target: https://pypi.python.org/pypi/apispec-aiohttp
 
-.. image:: https://travis-ci.org/maximdanilchenko/aiohttp-apispec.svg
-    :target: https://travis-ci.org/maximdanilchenko/aiohttp-apispec
+.. image:: https://travis-ci.org/kulapard/apispec-aiohttp.svg
+    :target: https://travis-ci.org/kulapard/apispec-aiohttp
 
-.. image:: https://codecov.io/gh/maximdanilchenko/aiohttp-apispec/branch/master/graph/badge.svg
-    :target: https://codecov.io/gh/maximdanilchenko/aiohttp-apispec
+.. image:: https://codecov.io/gh/kulapard/apispec-aiohttp/branch/master/graph/badge.svg
+    :target: https://codecov.io/gh/kulapard/apispec-aiohttp
 
 Build and document REST APIs with aiohttp and apispec
 
-``aiohttp-apispec`` key features:
+``apispec-aiohttp`` key features:
 
 - ``docs``, ``request_schema``, ``match_info_schema``, ``querystring_schema``, ``form_schema``, ``json_schema``, ``headers_schema``, ``cookies_schema``, decorators to add swagger spec support out of the box;
 
@@ -21,7 +21,7 @@ Build and document REST APIs with aiohttp and apispec
 
 - **SwaggerUI** support.
 
-``aiohttp-apispec`` api is fully inspired by ``flask-apispec`` library
+``apispec-aiohttp`` api is fully inspired by ``flask-apispec`` library
 
 Guide
 -----
