@@ -5,9 +5,9 @@ pytest
 pytest-cov
 pytest-sugar
 pytest-aiohttp
+pytest-asyncio
 codecov
 sphinx
 sphinx_issues
 sphinx_rtd_theme
 isort
-typed-ast
